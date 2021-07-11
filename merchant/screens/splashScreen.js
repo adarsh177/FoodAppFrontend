@@ -1,10 +1,10 @@
 import React from 'react';
-import {View, Text, Image, ImageBackground, StyleSheet} from 'react-native';
+import {View, Text, Image, StyleSheet} from 'react-native';
 
 function SplashScreen(props) {
   setTimeout(() => {
     props.navigation.navigate('Login');
-  }, 5000);
+  }, 3000);
   return (
     <View style={style.container}>
       <View style={style.innerContainer}>
@@ -13,7 +13,7 @@ function SplashScreen(props) {
           source={require('../components/assets/logo.png')} //brand logo
         />
       </View>
-      <Text style={style.brandText}>Brand Name </Text>
+      <Text style={style.brandText}>GoodForLowPrice</Text>
     </View>
     //brand text
   );
