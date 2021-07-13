@@ -1,5 +1,5 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 // All screens in proper order-----------------------------------
@@ -13,8 +13,26 @@ function InnerApp() {
   const bottomTab = createBottomTabNavigator();
   return (
     <bottomTab.Navigator
-      screenOptions={{
-        headerShown: true,
+      initialRouteName="store"
+      screenOptions={({route}) => {
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName;
+
+          if (route.name === 'store') {
+            iconName = focused ? 'store' : 'store';
+          } else if (route.name === 'order') {
+            iconName = focused ? 'shopping-bag' : 'shopping-bag';
+          } else if (route.name === 'profile') {
+            iconName = focused ? 'user' : 'user';
+          } else if (route.name === 'earning') {
+            iconName = focused ? 'dollar-sign' : 'dollar-sign';
+          }
+          return <Icon name={iconName} color={color} size={size} />;
+        };
+      }}
+      tabBarOptions={{
+        activeTintColor: '#00B875',
+        inactiveTineColor: '#a4a4a4',
       }}>
       <bottomTab.Screen name="store" component={Store} />
       <bottomTab.Screen name="order" component={Order} />
