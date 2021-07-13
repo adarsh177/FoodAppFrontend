@@ -1,3 +1,4 @@
+import {ToInt32} from 'es-abstract/es5';
 import React, {useState} from 'react';
 import {
   View,
@@ -5,14 +6,28 @@ import {
   StyleSheet,
   TextInput,
   Image,
-  Button,
   Alert,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
+import {OTP} from 'react-native-otp-form';
 
-function Login() {
+function Login(props) {
   const [number, onChangeNumber] = React.useState(null);
-  const [Focus, setFocus] = useState(false);
+  const [Focus, setFocus] = useState(false); //CHANGING THE BORDER COLOUR WHEN FOCUSED
+  const [modalVisible, setModalVisible] = useState(false);
+  const [otp, onfinishOtp] = useState(null); //otp has the value of otp entered by the user
+  //submit otp function--------------------------------------
+  const submitOtp = () => {
+    console.log(`${otp}`);
+    props.navigation.navigate('onBoarding');
+  };
+
+  // resend otp function------------------------------------
+  const reSendOTP = () => {
+    Alert.alert('Innitiate resend OTP');
+  };
+
   return (
     <View style={style.loginContainer}>
       <View style={style.innerLoginContainer}>
@@ -29,6 +44,9 @@ function Login() {
             Enter you mobile number to sign in
           </Text>
         </View>
+
+        {/* Text field for mobile number ---------------------- */}
+
         <TextInput
           style={style.textFieldOtp}
           value={number}
@@ -46,23 +64,59 @@ function Login() {
           }}
           style={Focus ? style.textFieldFocused : style.textFieldOtp}
         />
+
+        {/* Get OTP button  -----------------------------------*/}
+
         <TouchableOpacity
           activeOpacity={0.6}
-          onPress={() =>
-            Alert.alert(
-              'Validate the otp and redirect to business and normal user account',
-            )
-          }
+          onPress={() => setModalVisible(true)}
           color="#00B875"
           accessibilityLabel="Learn more about this purple button"
           style={style.getOtpButton}>
           <Text style={style.otpButtonText}>Get OTP</Text>
         </TouchableOpacity>
+
+        {/*Modal for otp verification ----------------------------------- */}
+        <View style={style.otpModalContainer}>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(!modalVisible);
+            }}>
+            <View style={style.OtpModalInnerContainer}>
+              <Text style={style.boldDescriptionTitle}>OTP</Text>
+              <Text style={style.smallDescriptionTitle}>
+                Verification code is sent to your mobile number
+              </Text>
+              <Text style={style.numberAndResendOtp}>{number}</Text>
+              <OTP
+                codeCount={6}
+                containerStyle={{marginVertical: 20}}
+                otpStyles={{
+                  backgroundColor: '#FAFAFA',
+                  fontSize: 20,
+                }}
+                onFinish={onfinishOtp}
+              />
+              <TouchableOpacity
+                activeOpacity={0.6}
+                style={style.getOtpButton}
+                onPress={submitOtp}>
+                <Text style={style.otpButtonText}>Submit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.6} onPress={reSendOTP}>
+                <Text style={style.numberAndResendOtp}>Resend OTP</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+        </View>
       </View>
     </View>
   );
 }
-
+// Style section ---------------------------------------------------------------
 const style = StyleSheet.create({
   loginContainer: {
     backgroundColor: '#fff',
@@ -99,6 +153,7 @@ const style = StyleSheet.create({
   boldDescriptionTitle: {
     fontSize: 24,
     color: '#00B875',
+    marginVertical: 10,
   },
   smallDescriptionTitle: {
     fontSize: 12,
@@ -130,6 +185,21 @@ const style = StyleSheet.create({
     color: '#fff',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  // Modal Styles ------------------------------------
+  otpModalContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  OtpModalInnerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  numberAndResendOtp: {
+    color: '#00B875',
+    fontSize: 14,
+    marginTop: 20,
   },
 });
 
