@@ -1,6 +1,7 @@
 import React from 'react';
 import {Image, View, Text, TouchableOpacity} from 'react-native';
 import Onboarding from 'react-native-onboarding-swiper';
+import AppConfig from '../AppConfig.json';
 
 function onBoarding(props) {
   //navigate to login screen for test
@@ -34,7 +35,7 @@ function onBoarding(props) {
 
   const Done = ({isLight, ...props}) => (
     <TouchableOpacity style={{marginHorizontal: 20}} onPress={finishOnboard}>
-      <Text style={{color: '#00B875', fontWeight: 'bold'}}>Get Started</Text>
+      <Text style={{color: AppConfig.primaryColor, fontWeight: 'bold'}}>Get Started</Text>
     </TouchableOpacity>
   );
 
@@ -43,7 +44,7 @@ function onBoarding(props) {
       DotComponent={Square}
       DoneButtonComponent={Done}
       bottomBarColor="#fff"
-      titleStyles={{fontSize: 24, color: '#00B875'}}
+      titleStyles={{fontSize: 24, color: AppConfig.primaryColor}}
       subTitleStyles={{fontSize: 14, color: '#707070'}}
       //navigation two buttons to login screen
       onSkip={finishOnboard}
