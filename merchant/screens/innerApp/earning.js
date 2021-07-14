@@ -1,5 +1,6 @@
 import React from 'react';
 import {Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import AppConfig from '../../AppConfig.json';
 
 function Earning() {
   //----------------------Details of earnings----------------------------
@@ -74,10 +75,10 @@ const style = StyleSheet.create({
     width: '90%',
     height: 150,
     marginVertical: 50,
-    backgroundColor: '#00B875',
+    backgroundColor: AppConfig.primaryColor,
     borderRadius: 6,
     borderBottomWidth: 0,
-    shadowColor: '#00B875',
+    shadowColor: AppConfig.primaryColor,
     shadowOffset: {width: 0, height: 14},
     shadowOpacity: 0.4,
     shadowRadius: 3,
@@ -112,12 +113,12 @@ const style = StyleSheet.create({
   titleText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#00B875',
+    color: AppConfig.primaryColor,
   },
   withdrawButton: {
     width: '90%',
     height: 40,
-    backgroundColor: '#00B875',
+    backgroundColor: AppConfig.primaryColor,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 6,
@@ -142,7 +143,7 @@ const style = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
     borderColor: '#eee',
-    shadowColor: '#00B875',
+    shadowColor: AppConfig.primaryColor,
     shadowOffset: {width: 0, height: 14},
     shadowOpacity: 0.4,
     shadowRadius: 3,
@@ -156,10 +157,10 @@ const style = StyleSheet.create({
   },
   currencySymbolSmall: {
     fontSize: 16,
-    color: '#00B875',
+    color: AppConfig.primaryColor,
   },
   currencySmall: {
-    color: '#00B875',
+    color: AppConfig.primaryColor,
     fontSize: 24,
   },
   smallTitleContianer: {

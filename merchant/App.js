@@ -10,35 +10,28 @@ import Login from './screens/login';
 import OnBoarding from './screens/onBoarding';
 import InnerApp from './screens/innerApp/innerApp';
 
-const Tab = createStackNavigator();
+const Stack = createStackNavigator();
 
 function App() {
   return (
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen
-          options={{
-            headerShown: false,
-          }}
+      <Stack.Navigator headerMode="none">
+        <Stack.Screen
           name="Splash screen"
           component={SplashScreen}
         />
-        <Tab.Screen
-          options={{
-            headerShown: false,
-          }}
+        <Stack.Screen
           name="Login"
           component={Login}
         />
-        <Tab.Screen
-          options={{
-            headerShown: false,
-          }}
+        <Stack.Screen
           name="onBoarding"
           component={OnBoarding}
         />
-        <Tab.Screen name="innerApp" component={InnerApp} />
-      </Tab.Navigator>
+        <Stack.Screen 
+          name="innerApp" 
+          component={InnerApp} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
