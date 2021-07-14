@@ -19,7 +19,6 @@ function InnerApp() {
         return {
           tabBarIcon: ({focused, color, size}) => {
             let iconName;
-            console.log(route.name);
 
             if (route.name === 'store') {
               iconName = focused ? 'store' : 'store';
@@ -31,8 +30,8 @@ function InnerApp() {
               iconName = focused ? 'dollar-sign' : 'dollar-sign';
             }
             return <Icon name={iconName} color={color} size={size} />;
-          }
-        }
+          },
+        };
       }}
       tabBarOptions={{
         activeTintColor: AppConfig.primaryColor,

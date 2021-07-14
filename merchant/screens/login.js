@@ -1,4 +1,3 @@
-import {ToInt32} from 'es-abstract/es5';
 import React, {useState} from 'react';
 import {
   View,
@@ -72,7 +71,7 @@ function Login(props) {
           activeOpacity={0.6}
           onPress={() => setModalVisible(true)}
           color={AppConfig.primaryColor}
-          accessibilityLabel="Learn more about this purple button"
+          accessibilityLabel="Get OTP button"
           style={style.getOtpButton}>
           <Text style={style.otpButtonText}>Get OTP</Text>
         </TouchableOpacity>
