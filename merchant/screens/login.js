@@ -11,6 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import {OTP} from 'react-native-otp-form';
+import AppConfig from '../AppConfig.json';
 
 function Login(props) {
   const [number, onChangeNumber] = React.useState(null);
@@ -70,7 +71,7 @@ function Login(props) {
         <TouchableOpacity
           activeOpacity={0.6}
           onPress={() => setModalVisible(true)}
-          color="#00B875"
+          color={AppConfig.primaryColor}
           accessibilityLabel="Learn more about this purple button"
           style={style.getOtpButton}>
           <Text style={style.otpButtonText}>Get OTP</Text>
@@ -152,7 +153,7 @@ const style = StyleSheet.create({
   },
   boldDescriptionTitle: {
     fontSize: 24,
-    color: '#00B875',
+    color: AppConfig.primaryColor,
     marginVertical: 10,
   },
   smallDescriptionTitle: {
@@ -167,7 +168,7 @@ const style = StyleSheet.create({
     width: 300,
   },
   textFieldFocused: {
-    borderColor: '#00B875',
+    borderColor: AppConfig.primaryColor,
     borderWidth: 1,
     paddingHorizontal: 20,
     borderRadius: 6,
@@ -176,7 +177,7 @@ const style = StyleSheet.create({
   getOtpButton: {
     width: 170,
     height: 50,
-    backgroundColor: '#00B875',
+    backgroundColor: AppConfig.primaryColor,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 6,
@@ -197,7 +198,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
   },
   numberAndResendOtp: {
-    color: '#00B875',
+    color: AppConfig.primaryColor,
     fontSize: 14,
     marginTop: 20,
   },
