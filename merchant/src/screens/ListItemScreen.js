@@ -13,7 +13,7 @@ import AppConfig from '../../AppConfig.json';
 
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
-function ListItem() {
+function ListItemScreen(props) {
   // Handle Inventory selection ---------------------------------
 
   const [selectInventory, setselectInventory] = useState();
@@ -55,7 +55,8 @@ function ListItem() {
           onValueChange={(itemValue, itemIndex) =>
             setselectInventory(itemValue)
           }>
-          <Picker.Item label="Select Item from Inventory" value="" />
+          <Picker.Item style={{color: "grey"}} label="Select Item from Inventory" value="select" />
+          <Picker.Item style={{color: AppConfig.primaryColor}} label="Create New Item" value="new" />
           <Picker.Item label="Inventory 1" value="Inventory1" />
           <Picker.Item label="Inventory 2" value="Inventory2" />
           <Picker.Item label="Inventory 3" value="Inventory3" />
@@ -82,10 +83,10 @@ function ListItem() {
         </TouchableOpacity>
 
         {/* <DateTimePickerModal
-          isVisible={isDatePickerVisible}
+          isVisible={true}
           mode="time"
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
+          onConfirm={() => {}}
+          onCancel={() => {}}
         /> */}
       </View>
       <TouchableOpacity
@@ -112,10 +113,9 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#fff',
-    paddingVertical: 10,
+    padding: 10,
   },
   inputLable: {
-    marginHorizontal: 20,
     color: '#5C5C5C',
   },
   inputs: {
@@ -127,7 +127,6 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderRadius: 3,
-    marginHorizontal: 20,
     height: 45,
     marginVertical: 10,
     borderColor: AppConfig.primaryColor,
@@ -136,13 +135,12 @@ const style = StyleSheet.create({
     paddingHorizontal: 20,
   },
   listItemButton: {
-    height: 50,
+    paddingVertical: 10,
     backgroundColor: AppConfig.primaryColor,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 6,
+    borderRadius: 3,
     marginTop: 40,
-    marginHorizontal: 20,
   },
 
   listItemButtonText: {
@@ -151,20 +149,18 @@ const style = StyleSheet.create({
     fontWeight: 'bold',
   },
   cancelButton: {
-    height: 50,
+    paddingVertical: 10,
     borderWidth: 2,
     borderColor: '#FF5353',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 6,
-    marginTop: 20,
-    marginHorizontal: 20,
+    borderRadius: 3,
+    marginTop: 10,
   },
   cancelButtonText: {
     color: '#FF5353',
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 18,
   },
 });
 
-export default ListItem;
+export default ListItemScreen;

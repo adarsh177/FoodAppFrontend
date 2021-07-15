@@ -3,7 +3,7 @@ import {Image, Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 
 function InventoryCard(props) {
   // Image source
-  const imageSource = './assets/restaurant.jpg';
+  const imageSource = '../assets/restaurant.jpg';
 
   return (
     <View style={style.InventoryCardInnerContainer}>

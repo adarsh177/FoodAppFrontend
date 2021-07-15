@@ -6,19 +6,22 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import {FAB} from 'react-native-paper';
-import AppConfig from '../../AppConfig.json';
-import ItemCard from '../../components/itemCard';
+import AppConfig from '../../../../AppConfig.json';
+import ItemCard from '../../../components/itemCard';
+import ListingInfoDialog from '../../../dialogs/ListingInfoDialog';
 
-function Store(props) {
+function StoreTab(props) {
   // store name for the title of page  --------------------
 
   const storeName = 'Store Name';
 
   // store activity status ----------------------------------
 
-  const [shopStatus, setShopStatus] = useState('Shop Closed');
+  const [shopStatus, setShopStatus] = useState('Store Closed');
+  const [showInfoDialog, setInfoDialogVisibility] = useState(false);
 
   //Changing shop status text with change in switch ----------------
 
@@ -29,7 +32,7 @@ function Store(props) {
       setShopStatus('Accepting Orders');
     } else {
       setIsEnabled(previousState => !previousState);
-      setShopStatus('Shop Closed');
+      setShopStatus('Store Closed');
     }
   };
 
@@ -40,13 +43,13 @@ function Store(props) {
 
   //Manage Inventory Button ---------------------------
   const manageInventory = () => {
-    props.navigation.push('Inventory');
+    props.navigation.push('inventory');
   };
 
   // add List Item Button ---------------------------
 
   const addListItemButton = () => {
-    props.navigation.push('List Item');
+    props.navigation.push('listItem');
   };
 
   //listd card press event --------------------------
@@ -57,20 +60,20 @@ function Store(props) {
 
   return (
     <View style={style.storeContainer}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={style.scrollContainer}>
         <View style={style.headerContainer}>
           <View>
             <Text style={style.shopNameText}>{storeName}</Text>
             <Text
               style={
-                isEnabled ? {color: AppConfig.primaryColor} : {color: '#FF5353'}
+                isEnabled ? {color: AppConfig.primaryColor} : {color: '#B80000'}
               }>
               {shopStatus}
             </Text>
           </View>
           <Switch
             trackColor={{false: '#E8E8E8', true: '#DDD'}}
-            thumbColor={isEnabled ? AppConfig.primaryColor : '#FF5353'}
+            thumbColor={isEnabled ? AppConfig.primaryColor : '#B80000'}
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
             value={isEnabled}
@@ -105,87 +108,26 @@ function Store(props) {
             sold out or expired.
           </Text>
         </View>
-        <View>
-          {/*Listed Item Cards ------------------------
+        <FlatList
+          columnWrapperStyle={{justifyContent: 'space-between'}}
+          numColumns={2}
+          data={[0,0,0,0,0]}
+          renderItem={({item, index}) => {
+            return <ItemCard
+                    key={index}
+                    title={`Title Name : ${index}`}
+                    price="200"
+                    handelCardPress={() => setInfoDialogVisibility(true)}
+                    expiry="5"
+                    stock="5"
+                    // imageSource="../components/assets/restaurant.jpg"
+                  />;
+          }}
+          />
         
-        ##########---Props  used int he card---###########
-
-
-        title = title for the item
-        Price = price for the listed item
-        expiry = time duration in *hour* within which the item will expire
-        stock = Number of item left in the stock
-        imageSource = path of image   {not working}
-
-
-        */}
-          <ItemCard
-            title="Title Name"
-            price="200"
-            handelCardPress={handelListedCard}
-            expiry="5"
-            stock="5"
-            // imageSource="../components/assets/restaurant.jpg"
-          />
-          <ItemCard
-            title="Title Name"
-            price="200"
-            handelCardPress={handelListedCard}
-            expiry="5"
-            stock="5"
-            // imageSource="../components/assets/restaurant.jpg"
-          />
-          <ItemCard
-            title="Title Name"
-            price="200"
-            handelCardPress={handelListedCard}
-            expiry="5"
-            stock="5"
-            // imageSource="../components/assets/restaurant.jpg"
-          />
-          <ItemCard
-            title="Title Name"
-            price="200"
-            handelCardPress={handelListedCard}
-            expiry="5"
-            stock="5"
-            // imageSource="../components/assets/restaurant.jpg"
-          />
-          <ItemCard
-            title="Title Name"
-            price="200"
-            handelCardPress={handelListedCard}
-            expiry="5"
-            stock="5"
-            // imageSource="../components/assets/restaurant.jpg"
-          />
-          <ItemCard
-            title="Title Name"
-            price="200"
-            handelCardPress={handelListedCard}
-            expiry="5"
-            stock="5"
-            // imageSource="../components/assets/restaurant.jpg"
-          />
-          <ItemCard
-            title="Title Name"
-            price="200"
-            handelCardPress={handelListedCard}
-            expiry="5"
-            stock="5"
-            imageSource="../components/assets/restaurant.jpg"
-          />
-          <ItemCard
-            title="Title Name"
-            price="200"
-            handelCardPress={handelListedCard}
-            expiry="5"
-            stock="5"
-            imageSource="../components/assets/restaurant.jpg"
-          />
-        </View>
       </ScrollView>
-      <FAB style={style.fab} small icon="plus" onPress={addListItemButton} />
+      <FAB style={style.fab} icon="plus" onPress={addListItemButton} />
+      <ListingInfoDialog show={showInfoDialog} close={() => setInfoDialogVisibility(false)}/>
     </View>
   );
 }
@@ -194,7 +136,9 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#fff',
-    padding: 20,
+  },
+  scrollContainer: {
+    padding: 10,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -214,11 +158,14 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 10,
     borderRadius: 3,
-    shadowColor: '#000000',
-    shadowOffset: {width: 1, height: 1},
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    shadowColor: "#88888840",
+    shadowOffset: {
+      height: 1,
+      width: 1,
+    },
+    shadowRadius: 1
   },
   overviewInnerContainer: {
     alignItems: 'center',
@@ -275,4 +222,4 @@ const style = StyleSheet.create({
   },
 });
 
-export default Store;
+export default StoreTab;

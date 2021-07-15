@@ -3,14 +3,14 @@ import {View, Text, Image, StyleSheet} from 'react-native';
 
 function SplashScreen(props) {
   setTimeout(() => {
-    props.navigation.navigate('Login');
+    props.navigation.navigate('login');
   }, 3000);
   return (
     <View style={style.container}>
       <View style={style.innerContainer}>
         <Image
           style={style.brandImg}
-          source={require('../components/assets/logo.png')} //brand logo
+          source={require('../assets/logo.png')} //brand logo
         />
       </View>
       <Text style={style.brandText}>GoodForLowPrice</Text>

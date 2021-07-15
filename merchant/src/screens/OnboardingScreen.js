@@ -1,12 +1,12 @@
 import React from 'react';
 import {Image, View, Text, TouchableOpacity} from 'react-native';
 import Onboarding from 'react-native-onboarding-swiper';
-import AppConfig from '../AppConfig.json';
+import AppConfig from '../../AppConfig.json';
 
-function onBoarding(props) {
+function OnboardingScreen(props) {
   //navigate to login screen for test
   var finishOnboard = () => {
-    props.navigation.navigate('innerApp');
+    props.navigation.navigate('home');
   };
 
   // Custom dot component for the bottom bar of the onBoarding---------------------
@@ -57,7 +57,7 @@ function onBoarding(props) {
           image: (
             <Image
               style={{width: 350, height: 350, resizeMode: 'contain'}}
-              source={require('../components/assets/onBoarding1.png')}
+              source={require('../assets/onBoarding1.png')}
             />
           ),
         },
@@ -68,7 +68,7 @@ function onBoarding(props) {
           image: (
             <Image
               style={{width: 350, height: 350, resizeMode: 'contain'}}
-              source={require('../components/assets/onBoarding2.png')}
+              source={require('../assets/onBoarding2.png')}
             />
           ),
         },
@@ -79,7 +79,7 @@ function onBoarding(props) {
           image: (
             <Image
               style={{width: 350, height: 350, resizeMode: 'contain'}}
-              source={require('../components/assets/onBoarding3.png')}
+              source={require('../assets/onBoarding3.png')}
             />
           ),
         },
@@ -88,4 +88,4 @@ function onBoarding(props) {
   );
 }
 
-export default onBoarding;
+export default OnboardingScreen;

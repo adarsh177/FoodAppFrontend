@@ -6,12 +6,13 @@ import AppConfig from './AppConfig.json';
 
 // All screens in proper order-----------------------------------
 
-import SplashScreen from './screens/splashScreen';
-import Login from './screens/login';
-import OnBoarding from './screens/onBoarding';
-import InnerApp from './screens/innerApp/innerApp';
-import Inventory from './screens/headerScreens/inventory';
-import ListItem from './screens/headerScreens/listItem';
+import SplashScreen from './src/screens/SplashScreen';
+import Login from './src/screens/LoginScreen';
+import OnboardingScreen from './src/screens/OnboardingScreen';
+import HomeScreen from './src/screens/HomeScreen/HomeScreen';
+import InventoryScreen from './src/screens/InventoryScreen';
+import ListItemScreen from './src/screens/ListItemScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -21,41 +22,53 @@ function App() {
       <Stack.Navigator>
         <Stack.Screen
           options={{headerShown: false}}
-          name="Splash screen"
+          name="splash"
           component={SplashScreen}
         />
         <Stack.Screen
           options={{headerShown: false}}
-          name="Login"
+          name="login"
           component={Login}
         />
         <Stack.Screen
           options={{headerShown: false}}
-          name="onBoarding"
-          component={OnBoarding}
+          name="onboarding"
+          component={OnboardingScreen}
         />
         <Stack.Screen
           options={{headerShown: false}}
-          name="innerApp"
-          component={InnerApp}
+          name="home"
+          component={HomeScreen}
         />
         <Stack.Screen
           options={{
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
+            title: "Inventory"
           }}
-          name="Inventory"
-          component={Inventory}
+          name="inventory"
+          component={InventoryScreen}
         />
         <Stack.Screen
           options={{
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
+            title: "List Item"
           }}
-          name="List Item"
-          component={ListItem}
+          name="listItem"
+          component={ListItemScreen}
+        />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: AppConfig.primaryColor,
+            headerTitleAlign: 'center',
+            title: "Profile"
+          }}
+          name="editProfile"
+          component={EditProfileScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

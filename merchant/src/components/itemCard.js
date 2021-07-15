@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import AppConfig from '../AppConfig.json';
+import AppConfig from '../../AppConfig.json';
 
 function ItemCard(props) {
   return (
@@ -10,7 +10,7 @@ function ItemCard(props) {
       style={style.listItemContainer}>
       <Image
         style={style.listItemImage}
-        source={require('../components/assets/restaurant.jpg')}
+        source={require('../assets/restaurant.jpg')}
       />
       <View style={style.cardTitleAndPriceContainer}>
         <Text style={style.cardTitle}>{props.title}</Text>
@@ -32,12 +32,13 @@ const style = StyleSheet.create({
   listItemContainer: {
     borderWidth: 1,
     borderColor: '#cecece',
-    width: 172.5,
+    width: "48%",
     borderRadius: 3,
-    margin: 5,
+    marginBottom: 20,
+    paddingBottom: 5
   },
   listItemImage: {
-    width: 170,
+    width: "100%",
     height: 100,
     resizeMode: 'cover',
     borderRadius: 3,
@@ -50,7 +51,7 @@ const style = StyleSheet.create({
   },
   cardTitle: {
     marginBottom: 5,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
   },
   cardPrice: {
@@ -64,11 +65,12 @@ const style = StyleSheet.create({
     marginBottom: 2,
   },
   cardDetailTitle: {
+    fontSize: 12,
     fontWeight: '700',
     color: '#707070',
   },
   cardDetailValue: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#707070',
   },
 });
