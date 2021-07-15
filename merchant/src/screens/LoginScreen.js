@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
-import {OTP} from 'react-native-otp-form';
 import AppConfig from '../../AppConfig.json';
 import OTPDialog from '../dialogs/OTPDialog';
 
@@ -32,14 +31,14 @@ function Login(props) {
   return (
     <View style={style.loginContainer}>
       <Image
-          style={style.brandingImg}
-          source={require('../assets/logo_name.png')}
+        style={style.brandingImg}
+        source={require('../assets/logo_name.png')}
       />
 
       <View style={style.illustrationContainer}>
         <Image
-            style={style.illustration}
-            source={require('../assets/login_illustration.png')}
+          style={style.illustration}
+          source={require('../assets/login_illustration.png')}
         />
       </View>
 
@@ -76,7 +75,14 @@ function Login(props) {
         </TouchableOpacity>
       </View>
 
-      <OTPDialog phone={number} show={otpDialogVisible} close={() => {setOTPDialogVisibility(false); submitOtp();}}/>
+      <OTPDialog
+        phone={number}
+        show={otpDialogVisible}
+        close={() => {
+          setOTPDialogVisibility(false);
+          submitOtp();
+        }}
+      />
     </View>
   );
 }
@@ -93,59 +99,59 @@ const style = StyleSheet.create({
   innerLoginContainer: {
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '100%'
+    width: '100%',
   },
   brandingImg: {
-    width: "100%",
+    width: '100%',
     height: 40,
-    resizeMode: "contain",
-    marginTop: 20
+    resizeMode: 'contain',
+    marginTop: 20,
   },
   illustration: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain"
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
   illustrationContainer: {
     flex: 1,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 50
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 50,
   },
   screenDescriptionContainer: {
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    width: "100%"
+    width: '100%',
   },
   boldDescriptionTitle: {
     fontSize: 28,
-    fontWeight: "bold",
-    color: "#656565"
+    fontWeight: 'bold',
+    color: '#656565',
   },
   textFieldOtp: {
     borderWidth: 1,
     borderColor: '#ddd',
     paddingHorizontal: 20,
     borderRadius: 3,
-    width: "100%",
+    width: '100%',
   },
   textFieldFocused: {
     borderColor: AppConfig.primaryColor,
     borderWidth: 1,
     paddingHorizontal: 20,
     borderRadius: 3,
-    width: "100%",
-    marginTop: 20
+    width: '100%',
+    marginTop: 20,
   },
   getOtpButton: {
-    width: "100%",
+    width: '100%',
     paddingVertical: 10,
     backgroundColor: AppConfig.primaryColor,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 3,
-    marginTop: 10
+    marginTop: 10,
   },
   otpButtonText: {
     color: '#fff',
