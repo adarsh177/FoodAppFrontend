@@ -1,7 +1,14 @@
 import React, {useState} from 'react';
-import {Text, View, StyleSheet, ScrollView} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import AppConfig from '../../../../AppConfig.json';
+import OrderDetailDialog from '../../../dialogs/OrderDetailsDialog';
 
 //Importing cards for order tabs -----------------------
 
@@ -12,9 +19,18 @@ import HistoryOrderCard from './OrderTab/HistoryOrderCard';
 // 3 orders top tab components--------------------------
 
 function OrderOngoing() {
+  const [orderDetailDialogVisible, setorderDetailDialogVisibility] =
+    useState(false);
+
   return (
     <ScrollView style={style.orderContainer}>
       <View>
+        <TouchableOpacity
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}>
+          <Text>Modal</Text>
+        </TouchableOpacity>
         <OnGoingOrderCard
           orderID="Order Id"
           price="200"
@@ -58,6 +74,12 @@ function OrderOngoing() {
           status="On the way"
         />
       </View>
+      <OrderDetailDialog
+        show={orderDetailDialogVisible}
+        close={() => {
+          setorderDetailDialogVisibility(false);
+        }}
+      />
     </ScrollView>
   );
 }

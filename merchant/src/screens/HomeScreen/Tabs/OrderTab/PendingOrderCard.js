@@ -84,7 +84,7 @@ const style = StyleSheet.create({
   },
   rejectOrder: {
     paddingHorizontal: 30,
-    paddingVertical: 10,
+    paddingVertical: 7,
     backgroundColor: '#FF5353',
     justifyContent: 'center',
     alignItems: 'center',
@@ -93,7 +93,7 @@ const style = StyleSheet.create({
   },
   acceptOrder: {
     paddingHorizontal: 30,
-    paddingVertical: 10,
+    paddingVertical: 7,
     backgroundColor: AppConfig.primaryColor,
     justifyContent: 'center',
     alignItems: 'center',

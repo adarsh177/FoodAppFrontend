@@ -1,67 +1,74 @@
-import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, TextInput, Modal } from 'react-native';
+import React, {useState} from 'react';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+  TextInput,
+  Modal,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AppConfig from '../../AppConfig.json';
 
-function AddInventoryItemDialog(props){
-    const [text, onChangeText] = useState("");
+function AddInventoryItemDialog(props) {
+  const [text, onChangeText] = useState('');
 
-    return(
-        <Modal
-        animationType="fade"
-        transparent={true}
-        visible={props.show}
-        onRequestClose={() => {
-          props.close();
-        }}>
-        <View style={style.mainContainer}>
-          <View style={style.inventoryModalContainer}>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              style={style.getImageButton}
-              onPress={() => {}}>
-              <View style={style.addImageContainer}>
-                <Icon name="plus" size={24} color={AppConfig.primaryColor} />
-                <Text style={style.selectImageText}>Select Image</Text>
-              </View>
-            </TouchableOpacity>
-
-            <View style={style.modalTextInputContainer}>
-              <TextInput
-                placeholder="Item Name (max 70 characters)"
-                style={style.modalTextInput}
-                maxLength={70}
-              />
-              <TextInput
-                placeholder="Enter description (max 120 characters)"
-                style={style.modalTextInput}
-                multiline
-                numberOfLines={4}
-                maxLength={120}
-                onChangeText={text => onChangeText(text)}
-                value={text}
-              />
+  return (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={props.show}
+      onRequestClose={() => {
+        props.close();
+      }}>
+      <View style={style.mainContainer}>
+        <View style={style.inventoryModalContainer}>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            style={style.getImageButton}
+            onPress={() => {}}>
+            <View style={style.addImageContainer}>
+              <Icon name="plus" size={24} color={AppConfig.primaryColor} />
+              <Text style={style.selectImageText}>Select Image</Text>
             </View>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              style={style.addItem}
-              onPress={() => props.close()}>
-              <Text style={style.addItemButtonText}>Add Item</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
+
+          <View style={style.modalTextInputContainer}>
+            <TextInput
+              placeholder="Item Name (max 70 characters)"
+              style={style.modalTextInput}
+              maxLength={70}
+            />
+            <TextInput
+              placeholder="Enter description (max 120 characters)"
+              style={style.modalTextInput}
+              multiline
+              numberOfLines={4}
+              maxLength={120}
+              onChangeText={text => onChangeText(text)}
+              value={text}
+            />
           </View>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            style={style.addItem}
+            onPress={() => props.close()}>
+            <Text style={style.addItemButtonText}>Add Item</Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
-    );
+      </View>
+    </Modal>
+  );
 }
 
 const style = StyleSheet.create({
   mainContainer: {
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: "rgba(0,0,0,0.2)",
-      ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    ...StyleSheet.absoluteFill,
   },
-    //Modal styling ------------------------------
+  //Modal styling ------------------------------
   inventoryModalContainer: {
     height: 250,
     width: '90%',
@@ -118,6 +125,6 @@ const style = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-})
+});
 
 export default AddInventoryItemDialog;

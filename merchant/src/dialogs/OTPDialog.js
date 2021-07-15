@@ -31,9 +31,7 @@ function OTPDialog(props) {
           <TouchableOpacity
             activeOpacity={0.6}
             style={style.getOtpButton}
-            onPress={() => {
-              props.navigation.push('onboarding');
-            }}>
+            onPress={() => {}}>
             <Text style={style.otpButtonText}>Submit</Text>
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.6} onPress={() => {}}>
