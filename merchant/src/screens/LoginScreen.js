@@ -76,7 +76,7 @@ function Login(props) {
         </TouchableOpacity>
       </View>
 
-      <OTPDialog phone={number} show={otpDialogVisible} close={() => setOTPDialogVisibility(false)}/>
+      <OTPDialog phone={number} show={otpDialogVisible} close={() => {setOTPDialogVisibility(false); submitOtp();}}/>
     </View>
   );
 }
