@@ -25,18 +25,15 @@ function OrderOngoing() {
   return (
     <ScrollView style={style.orderContainer}>
       <View>
-        <TouchableOpacity
+        <OnGoingOrderCard
+          orderID="Order Id"
+          price="200"
+          date="12/12/2021"
+          items="Item1x2, item2x3"
+          status="Packing"
           onPress={() => {
             setorderDetailDialogVisibility(true);
-          }}>
-          <Text>Modal</Text>
-        </TouchableOpacity>
-        <OnGoingOrderCard
-          orderID="Order Id"
-          price="200"
-          date="12/12/2021"
-          items="Item1x2, item2x3"
-          status="Packing"
+          }}
         />
         <OnGoingOrderCard
           orderID="Order Id"
@@ -44,6 +41,9 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="On the way"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
         <OnGoingOrderCard
           orderID="Order Id"
@@ -51,6 +51,9 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="Packing"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
         <OnGoingOrderCard
           orderID="Order Id"
@@ -58,6 +61,9 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="On the way"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
         <OnGoingOrderCard
           orderID="Order Id"
@@ -65,6 +71,9 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="Packing"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
         <OnGoingOrderCard
           orderID="Order Id"
@@ -72,6 +81,9 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="On the way"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
       </View>
       <OrderDetailDialog
