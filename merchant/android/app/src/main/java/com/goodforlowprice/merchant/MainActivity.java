@@ -1,4 +1,4 @@
-package com.merchant;
+package com.goodforlowprice.merchant;
 
 import com.facebook.react.ReactActivity;
 

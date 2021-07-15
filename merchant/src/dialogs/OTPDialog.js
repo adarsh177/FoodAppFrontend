@@ -1,9 +1,21 @@
-import React from 'react';
-import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, { useState } from 'react';
+import {Alert, Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {OTP} from 'react-native-otp-form';
 import AppConfig from '../../AppConfig.json';
 
 function OTPDialog(props) {
+
+  const [code, setCode] = useState('');
+
+  const Submit = () => {
+    if(code.length < 6){
+      Alert.alert('Error', 'Please enter a valid 6 digit OTP');
+      return;
+    }
+
+    props.submit(code);
+  }
+
   return (
     <Modal
       animationType="fade"
@@ -21,22 +33,23 @@ function OTPDialog(props) {
           <Text style={style.numberAndResendOtp}>{props.phone}</Text>
           <OTP
             codeCount={6}
+            onTyping={code => setCode(code)}
             containerStyle={{marginVertical: 20}}
             otpStyles={{
               backgroundColor: '#FAFAFA',
               fontSize: 20,
             }}
-            onFinish={() => {}}
+            onFinish={(code) => {props.submit(code)}}
           />
           <TouchableOpacity
             activeOpacity={0.6}
             style={style.getOtpButton}
             onPress={() => {
-              props.navigation.push('onboarding');
+              Submit()
             }}>
             <Text style={style.otpButtonText}>Submit</Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.6} onPress={() => {}}>
+          <TouchableOpacity activeOpacity={0.6} onPress={() => Resend()}>
             <Text style={style.numberAndResendOtp}>Resend OTP</Text>
           </TouchableOpacity>
         </View>
@@ -64,6 +77,11 @@ const style = StyleSheet.create({
     width: '100%',
     width: '90%',
     borderRadius: 3,
+  },
+  boldDescriptionTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#656565',
   },
   numberAndResendOtp: {
     color: AppConfig.primaryColor,

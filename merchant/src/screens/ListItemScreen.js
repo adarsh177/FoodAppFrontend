@@ -17,6 +17,7 @@ function ListItemScreen(props) {
   // Handle Inventory selection ---------------------------------
 
   const [selectInventory, setselectInventory] = useState();
+  const [selectCategory, setSelectCategory] = useState();
 
   //Handle List item -----------------------------------------
   const handleListItem = () => {
@@ -47,7 +48,24 @@ function ListItemScreen(props) {
 
   return (
     <View style={style.listItemContainer}>
-      <Text style={style.inputLable}>List Items</Text>
+      <Text style={style.inputLable}>Select Category</Text>
+      <View style={style.inputWrapper}>
+        <Picker
+          style={style.inputs}
+          selectedValue={selectCategory}
+          onValueChange={(itemValue, itemIndex) =>
+            setSelectCategory(itemValue)
+          }>
+          <Picker.Item style={{color: "grey"}} label="Select Category" value="select" />
+          <Picker.Item label="Category 1" value="cat1" />
+          <Picker.Item label="Category 2" value="cat2" />
+          <Picker.Item label="Category 3" value="cat3" />
+          <Picker.Item label="Category 4" value="cat4" />
+          <Picker.Item label="Category 5" value="cat5" />
+        </Picker>
+      </View>
+
+      <Text style={style.inputLable}>Select Item</Text>
       <View style={style.inputWrapper}>
         <Picker
           style={style.inputs}

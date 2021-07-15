@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "781117811423",
+    "project_id": "good-for-low-price",
+    "storage_bucket": "good-for-low-price.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781117811423:android:111cad4436540dddbc976a",
+        "android_client_info": {
+          "package_name": "com.goodforlowprice.merchant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781117811423-5imhi7ehejm08h410fansgom8fqh8i0t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.goodforlowprice.merchant",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "781117811423-d2vo1ivcaum78tta00frg8a5e5t53qbe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.goodforlowprice.merchant",
+            "certificate_hash": "5fe2208fcd2574690f7d97a1b00bd41bda53c03b"
+          }
+        },
+        {
+          "client_id": "781117811423-hnjgtr1tlvdrl7srkal6o3dd44fleo22.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBYTeI2awQx_Tzxx8sCX-qWs9vFLmowDM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781117811423-hnjgtr1tlvdrl7srkal6o3dd44fleo22.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

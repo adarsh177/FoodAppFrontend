@@ -117,7 +117,7 @@ const style = StyleSheet.create({
   },
   resaurantImage: {
     width: "100%",
-    height: 180,
+    height: 240,
     borderRadius: 3,
     resizeMode: 'cover',
   },

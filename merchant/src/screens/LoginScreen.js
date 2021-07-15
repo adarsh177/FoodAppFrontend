@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,12 +11,20 @@ import {
 } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 import OTPDialog from '../dialogs/OTPDialog';
+import {CountryPicker} from 'react-native-country-codes-picker/CountryPicker';
+import {countryCodes} from "react-native-country-codes-picker/constants/countryCodes";
+import * as RNLocalize from "react-native-localize";
+import auth from '@react-native-firebase/auth';
 
 function Login(props) {
-  const [number, onChangeNumber] = React.useState(null);
+  const [phoneNumber, onChangeNumber] = React.useState("");
   const [Focus, setFocus] = useState(false); //CHANGING THE BORDER COLOUR WHEN FOCUSED
   const [otpDialogVisible, setOTPDialogVisibility] = useState(false);
   const [otp, onfinishOtp] = useState(null); //otp has the value of otp entered by the user
+  const [showCountryCodePicker, setCountryCodePickerVisibility] = useState(false);
+  const [countryCode, setCountryCode] = useState("+1");
+  const [sendResult, setSendResult] = useState(null);
+
   //submit otp function--------------------------------------
   const submitOtp = () => {
     console.log(`${otp}`);
@@ -27,6 +35,51 @@ function Login(props) {
   const reSendOTP = () => {
     Alert.alert('Innitiate resend OTP');
   };
+
+  const sendOTP = async ()  => {
+    if(phoneNumber.length < 10){
+      Alert.alert('Error', 'Invalid phone number entered');
+      return;
+    }
+    try{
+      setSendResult(await auth().signInWithPhoneNumber(`${countryCode}${phoneNumber}`, true));
+      setOTPDialogVisibility(true);
+    }catch(ex){
+      console.log('Error sending otp', ex);
+      Alert.alert('Error', 'Error sending OTP : ' + ex);
+    }
+  }
+
+  const VerifyOTP = async (code) => {
+    if(sendResult == null){
+      Alert.alert('Error', 'Error verifying OTP');
+      setOTPDialogVisibility(false);
+      return;
+    }
+    
+    try{
+      let result = await sendResult.confirm(code);
+      if(result !== null){
+        setOTPDialogVisibility(false);
+        props.navigation.replace('home');
+      }
+    }catch(ex){
+      console.log('Error verifying otp', ex);
+      Alert.alert('Error', 'Error verifying OTP : ' + ex);
+    }
+  }
+
+  useEffect(() => {
+    // loading app's countrty code
+    let country = RNLocalize.getCountry();
+    console.log('Country Code: ', country);
+
+    countryCodes.forEach(val => {
+      if(val.code == country){
+        setCountryCode(val.dial_code);
+      }
+    });
+  }, []);
 
   return (
     <View style={style.loginContainer}>
@@ -47,42 +100,61 @@ function Login(props) {
           <Text style={style.boldDescriptionTitle}>Let’s get started</Text>
         </View>
 
-        <TextInput
-          style={style.textFieldOtp}
-          value={number}
-          onChangeText={onChangeNumber}
-          placeholder="Enter mobile number to get OTP"
-          keyboardType="numeric"
-          autoFocus={true}
-          dataDetectorTypes={'phoneNumber'}
-          maxLength={10}
-          onFocus={() => {
-            setFocus(true);
-          }}
-          onBlur={() => {
-            setFocus(false);
-          }}
-          style={Focus ? style.textFieldFocused : style.textFieldOtp}
-        />
+        <View
+          style={Focus ? style.PhoneFieldFocused : style.PhoneField}>
+            <TouchableOpacity activeOpacity={0.8} onPress={() => setCountryCodePickerVisibility(true)}>
+              <Text style={style.countryCode}>{countryCode}</Text>
+            </TouchableOpacity>
+            <TextInput
+              style={style.textFieldOtp}
+              value={phoneNumber}
+              onChangeText={onChangeNumber}
+              placeholder="Enter mobile number to get OTP"
+              keyboardType="numeric"
+              autoFocus={true}
+              dataDetectorTypes={'phoneNumber'}
+              maxLength={10}
+              onFocus={() => {
+                setFocus(true);
+              }}
+              onBlur={() => {
+                setFocus(false);
+              }}
+            />
+        </View>
+        
 
         <TouchableOpacity
           activeOpacity={0.6}
-          onPress={() => setOTPDialogVisibility(true)}
+          onPress={() => sendOTP()}
           color={AppConfig.primaryColor}
           accessibilityLabel="Get OTP button"
           style={style.getOtpButton}>
-          <Text style={style.otpButtonText}>Get OTP</Text>
+            <Text style={style.otpButtonText}>Get OTP</Text>
         </TouchableOpacity>
       </View>
 
       <OTPDialog
-        phone={number}
+        phone={`${countryCode}${phoneNumber}`}
         show={otpDialogVisible}
         close={() => {
           setOTPDialogVisibility(false);
-          submitOtp();
+        }}
+        submit={code => {
+          VerifyOTP(code);
         }}
       />
+
+      <CountryPicker
+        show={showCountryCodePicker}
+        pickerButtonOnPress={val => {
+          console.log(val);
+          setCountryCode(val.dial_code);
+          setCountryCodePickerVisibility(false);
+        }}
+        setClose={() => setCountryCodePickerVisibility(false)}
+        onBackdropClose={() => setCountryCodePickerVisibility(false)}
+       />
     </View>
   );
 }
@@ -130,19 +202,33 @@ const style = StyleSheet.create({
     color: '#656565',
   },
   textFieldOtp: {
+    flex: 1,
+  },
+  PhoneField: {
+    width: '100%',
+    borderRadius: 3,
+    paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: '#ddd',
-    paddingHorizontal: 20,
-    borderRadius: 3,
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center"
   },
-  textFieldFocused: {
+  PhoneFieldFocused: {
     borderColor: AppConfig.primaryColor,
     borderWidth: 1,
     paddingHorizontal: 20,
     borderRadius: 3,
     width: '100%',
     marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center"
+  },
+  countryCode:{
+    color: AppConfig.primaryColor,
+    fontSize: 16,
+    marginRight: 10
   },
   getOtpButton: {
     width: '100%',

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
-import AppConfig from '../../../../../AppConfig.json';
+import AppConfig from '../../AppConfig.json';
 
 function OnGoingOrderCard(props) {
   //handel card press ongoinf -----------------------
@@ -8,7 +8,7 @@ function OnGoingOrderCard(props) {
     return null;
   };
   return (
-    <TouchableOpacity activeOpacity={0.6} onPress={onGoingCardPress}>
+    <TouchableOpacity activeOpacity={0.8} onPress={onGoingCardPress}>
       <View style={style.cardContainer}>
         <View style={style.orderIdandPriceContainer}>
           <Text style={style.orderId}>#{props.orderID}</Text>
@@ -30,19 +30,17 @@ const style = StyleSheet.create({
     width: '100%',
     height: 130,
     borderRadius: 3,
-    shadowColor: '#F0F0F0',
+    shadowColor: '#cfcfcf',
     shadowOffset: {width: 1, height: 1},
-    shadowOpacity: 1,
     shadowRadius: 5,
-    elevation: 2,
+    elevation: 1,
     padding: 10,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     marginBottom: 10,
   },
   orderIdandPriceContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
   },
   orderId: {
     fontSize: 16,
@@ -54,14 +52,16 @@ const style = StyleSheet.create({
     fontSize: 16,
   },
   date: {
+    fontSize: 14,
     color: '#7d7d7d',
-    marginBottom: 3,
+    marginBottom: 10,
   },
   items: {
     fontWeight: '700',
     marginBottom: 3,
   },
   statusTitleText: {
+    fontSize: 14,
     fontWeight: '700',
   },
 });

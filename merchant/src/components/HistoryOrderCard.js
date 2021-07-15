@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
-import AppConfig from '../../../../../AppConfig.json';
+import AppConfig from '../../AppConfig.json';
 
 function HistoryOrderCard(props) {
   return (
@@ -18,15 +18,14 @@ function HistoryOrderCard(props) {
 const style = StyleSheet.create({
   cardContainer: {
     width: '100%',
-    height: 105,
+    height: 130,
     borderRadius: 3,
-    shadowColor: '#F0F0F0',
+    shadowColor: '#cfcfcf',
     shadowOffset: {width: 1, height: 1},
-    shadowOpacity: 1,
     shadowRadius: 5,
-    elevation: 2,
+    elevation: 1,
     padding: 10,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     marginBottom: 10,
   },
   orderIdandPriceContainer: {

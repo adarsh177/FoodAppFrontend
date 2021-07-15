@@ -5,9 +5,9 @@ import AppConfig from '../../../../AppConfig.json';
 
 //Importing cards for order tabs -----------------------
 
-import OnGoingOrderCard from './OrderTab/OnGoingOrderCard';
-import PendingOrderCard from './OrderTab/PendingOrderCard';
-import HistoryOrderCard from './OrderTab/HistoryOrderCard';
+import OnGoingOrderCard from '../../../components/OnGoingOrderCard';
+import PendingOrderCard from '../../../components/PendingOrderCard';
+import HistoryOrderCard from '../../../components/HistoryOrderCard';
 
 // 3 orders top tab components--------------------------
 
@@ -176,7 +176,7 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 10,
   },
 });
 

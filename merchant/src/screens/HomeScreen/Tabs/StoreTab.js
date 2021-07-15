@@ -108,10 +108,47 @@ function StoreTab(props) {
             sold out or expired.
           </Text>
         </View>
+        <Text style={style.categoryName}>Category 1</Text>
         <FlatList
           columnWrapperStyle={{justifyContent: 'space-between'}}
           numColumns={2}
-          data={[0,0,0,0,0]}
+          data={[0,0]}
+          renderItem={({item, index}) => {
+            return <ItemCard
+                    key={index}
+                    title={`Title Name : ${index}`}
+                    price="200"
+                    handelCardPress={() => setInfoDialogVisibility(true)}
+                    expiry="5"
+                    stock="5"
+                    // imageSource="../components/assets/restaurant.jpg"
+                  />;
+          }}
+          />
+
+        <Text style={style.categoryName}>Category 2</Text>
+        <FlatList
+          columnWrapperStyle={{justifyContent: 'space-between'}}
+          numColumns={2}
+          data={[0,0,0]}
+          renderItem={({item, index}) => {
+            return <ItemCard
+                    key={index}
+                    title={`Title Name : ${index}`}
+                    price="200"
+                    handelCardPress={() => setInfoDialogVisibility(true)}
+                    expiry="5"
+                    stock="5"
+                    // imageSource="../components/assets/restaurant.jpg"
+                  />;
+          }}
+          />
+
+        <Text style={style.categoryName}>Category 3</Text>
+        <FlatList
+          columnWrapperStyle={{justifyContent: 'space-between'}}
+          numColumns={2}
+          data={[0,0,0]}
           renderItem={({item, index}) => {
             return <ItemCard
                     key={index}
@@ -205,12 +242,18 @@ const style = StyleSheet.create({
   },
 
   listedItemText: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: '700',
     marginBottom: 5,
   },
-  listedItemTextContainer: {
+  categoryName: {
+    fontSize: 18,
+    fontWeight: "bold",
     marginBottom: 10,
+    color: AppConfig.primaryColor
+  },
+  listedItemTextContainer: {
+    marginBottom: 20,
   },
   //Floating action button style ----------------
   fab: {
