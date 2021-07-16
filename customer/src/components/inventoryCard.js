@@ -1,19 +1,48 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Image, Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import AppConfig from '../../AppConfig.json';
+
+//external poackage ---------------------------------------
+
+import NumericInput from 'react-native-numeric-input';
 
 function InventoryCard(props) {
   // Image source
   const imageSource = '../assets/restaurant.jpg';
 
+  // stora value of numeric input ----------------
+
+  const [quantity, setQuantity] = useState(0);
+  console.log(quantity);
+
   return (
     <View style={style.InventoryCardInnerContainer}>
       <Image style={style.InventoryCardImage} source={require(imageSource)} />
       <View style={style.cardDetailsContainer}>
-        <Text style={style.itemName}>{props.itemName}</Text>
+        <View style={style.cardTitleAndPriceContaienr}>
+          <Text style={style.itemName}>{props.itemName}</Text>
+          <Text style={style.price}>₹ {props.price}</Text>
+        </View>
         <Text style={style.itemDescription}>{props.description}</Text>
-        <TouchableOpacity activeOpacity={0.6} onPress={props.handelDelete}>
-          <Text style={style.deleteItem}>Delete Item</Text>
-        </TouchableOpacity>
+        <View style={style.numericInputContainer}>
+          <NumericInput
+            value={quantity}
+            onChange={value => setQuantity({value})}
+            minValue={0}
+            onLimitReached={(isMax, msg) => console.log(isMax, msg)}
+            totalWidth={100}
+            totalHeight={25}
+            iconSize={12}
+            step={1}
+            valueType="real"
+            rounded
+            textColor={AppConfig.primaryColor}
+            iconStyle={{color: 'white'}}
+            rightButtonBackgroundColor={AppConfig.primaryColor}
+            leftButtonBackgroundColor="#B80000"
+            borderColor="#f4f4f4"
+          />
+        </View>
       </View>
     </View>
   );
@@ -42,6 +71,10 @@ const style = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 3,
   },
+  cardTitleAndPriceContaienr: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   cardDetailsContainer: {
     padding: 10,
     flex: 1,
@@ -49,6 +82,11 @@ const style = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     height: '100%',
+  },
+  price: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: AppConfig.primaryColor,
   },
   itemName: {
     fontSize: 15,
@@ -59,10 +97,9 @@ const style = StyleSheet.create({
     color: '#707070',
     marginBottom: 5,
   },
-  deleteItem: {
-    color: '#FF5353',
-    fontSize: 13,
-    fontWeight: '700',
+  numericInputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
 });
 export default InventoryCard;

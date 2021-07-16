@@ -9,63 +9,66 @@ import {
   TextInput,
   FlatList,
 } from 'react-native';
-import {FAB} from 'react-native-paper';
 import AppConfig from '../../AppConfig.json';
 import InventoryCard from '../components/inventoryCard';
 
 // External package ---------------------------------------
-import Icon from 'react-native-vector-icons/FontAwesome';
-import AddInventoryItemDialog from '../dialogs/AddInventoryItemDialog';
+import IconMCI from 'react-native-vector-icons/MaterialCommunityIcons';
+
+//Component for bottom cart Indicator ------------------------------
+
+const NoItem = () => {
+  return (
+    <View style={style.flagComponentContainer}>
+      <IconMCI name="cart-outline" size={30} color="#fff" />
+      <Text style={style.flagText}>No item added yet.</Text>
+    </View>
+  );
+};
+
+const ItemAdded = () => {
+  const cartValue = '200';
+  return (
+    <TouchableOpacity
+      style={style.flagComponentContainerItemAdded}
+      activeOpacity={0.6}>
+      <View style={style.iconAndValueContainer}>
+        <IconMCI name="cart-outline" size={30} color="#fff" />
+        <Text style={style.flagText}>Cart value : ₹ {cartValue}</Text>
+      </View>
+      <View>
+        <Text style={style.flagText}>Checkout &#9654;</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+//#####################################################################
 
 function InventoryScreen(props) {
-  // add inventory button ---------------------------
-  const addInventoryItemButton = () => {
-    setAddItemVisibility(true);
-  };
-  // handle delete event -----------------------------
-  const deleteInventoryItem = () => {
-    return null;
-  };
-  //Modal-------------------------------------------
-  const [showAddItem, setAddItemVisibility] = useState(false);
-
-  //Get image from user button------------------------------
-  const getImage = () => {
-    return null;
-  };
-
-  //Handle modal Inputs --------------------------
-  const [value, onChangeText] = React.useState('');
-
-  //Handle add item button
-  const addItem = () => {
-    props.navigation.pop();
-  };
   return (
     <View style={style.inventoryContainer}>
       <FlatList
         contentContainerStyle={style.InventoryCardContainer}
-        data={[0,0,0,0,0,0,0]}
+        data={[0, 0, 0, 0, 0, 0, 0]}
         renderItem={(item, index) => {
-          return <InventoryCard
-            key={index}
-            itemName="Item Name"
-            description="Description here, Description here, Description here Description here dasd ca Vcva Description here dsdfasf"
-            handelDelete={deleteInventoryItem}
-          />;
-        }} />
-      <View>
-        <FAB
-          style={style.fab}
-          icon="plus"
-          onPress={addInventoryItemButton}
-        />
+          return (
+            <InventoryCard
+              key={index}
+              itemName="Item Name"
+              price="200"
+              description="Description here, Description here, Description here Description here dasd ca Vcva Description here dsdfasf"
+            />
+          );
+        }}
+      />
+      {/* ###################### Render one of the below component according to condition ############################# */}
+      <View style={style.flagMessageContainer}>
+        <ItemAdded />
       </View>
-
-      {/*----------Modal starts here -------------------------------*/}
-      <AddInventoryItemDialog
-        show={showAddItem}
-        close={() => setAddItemVisibility(false)} />
+      <View style={style.flagMessageContainer}>
+        <NoItem />
+      </View>
     </View>
   );
 }
@@ -81,12 +84,38 @@ const style = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
   },
-  fab: {
-    position: 'absolute',
-    margin: 20,
-    right: 0,
-    bottom: 0,
+  flagMessageContainer: {
+    width: '100%',
+    height: 60,
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: AppConfig.primaryColor,
+    paddingHorizontal: 20,
+  },
+
+  // flag message Component style ############################################
+
+  flagComponentContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  flagText: {
+    fontSize: 16,
+    color: '#fff',
+    marginHorizontal: 10,
+  },
+
+  ///////////////// - -item added ////////////////////////
+  flagComponentContainerItemAdded: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  iconAndValueContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 

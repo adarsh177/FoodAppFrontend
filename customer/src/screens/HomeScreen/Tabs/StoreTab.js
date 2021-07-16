@@ -112,59 +112,67 @@ function StoreTab(props) {
         <FlatList
           columnWrapperStyle={{justifyContent: 'space-between'}}
           numColumns={2}
-          data={[0,0]}
+          data={[0, 0]}
           renderItem={({item, index}) => {
-            return <ItemCard
-                    key={index}
-                    title={`Title Name : ${index}`}
-                    price="200"
-                    handelCardPress={() => setInfoDialogVisibility(true)}
-                    expiry="5"
-                    stock="5"
-                    // imageSource="../components/assets/restaurant.jpg"
-                  />;
+            return (
+              <ItemCard
+                key={index}
+                title={`Title Name : ${index}`}
+                price="200"
+                handelCardPress={() => setInfoDialogVisibility(true)}
+                expiry="5"
+                stock="5"
+                // imageSource="../components/assets/restaurant.jpg"
+              />
+            );
           }}
-          />
+        />
 
         <Text style={style.categoryName}>Category 2</Text>
         <FlatList
           columnWrapperStyle={{justifyContent: 'space-between'}}
           numColumns={2}
-          data={[0,0,0]}
+          data={[0, 0, 0]}
           renderItem={({item, index}) => {
-            return <ItemCard
-                    key={index}
-                    title={`Title Name : ${index}`}
-                    price="200"
-                    handelCardPress={() => setInfoDialogVisibility(true)}
-                    expiry="5"
-                    stock="5"
-                    // imageSource="../components/assets/restaurant.jpg"
-                  />;
+            return (
+              <ItemCard
+                key={index}
+                title={`Title Name : ${index}`}
+                price="200"
+                handelCardPress={() => setInfoDialogVisibility(true)}
+                expiry="5"
+                stock="5"
+                // imageSource="../components/assets/restaurant.jpg"
+              />
+            );
           }}
-          />
+        />
 
         <Text style={style.categoryName}>Category 3</Text>
         <FlatList
           columnWrapperStyle={{justifyContent: 'space-between'}}
           numColumns={2}
-          data={[0,0,0]}
+          data={[0, 0, 0]}
           renderItem={({item, index}) => {
-            return <ItemCard
-                    key={index}
-                    title={`Title Name : ${index}`}
-                    price="200"
-                    handelCardPress={() => setInfoDialogVisibility(true)}
-                    expiry="5"
-                    stock="5"
-                    // imageSource="../components/assets/restaurant.jpg"
-                  />;
+            return (
+              <ItemCard
+                key={index}
+                title={`Title Name : ${index}`}
+                price="200"
+                handelCardPress={() => setInfoDialogVisibility(true)}
+                expiry="5"
+                stock="5"
+                // imageSource="../components/assets/restaurant.jpg"
+              />
+            );
           }}
-          />
-        
+        />
       </ScrollView>
       <FAB style={style.fab} icon="plus" onPress={addListItemButton} />
-      <ListingInfoDialog show={showInfoDialog} close={() => setInfoDialogVisibility(false)}/>
+      <ListingInfoDialog
+        show={showInfoDialog}
+        close={() => setInfoDialogVisibility(false)}
+      />
     </View>
   );
 }
@@ -196,13 +204,13 @@ const style = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 3,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
-    shadowColor: "#88888840",
+    borderColor: '#E0E0E0',
+    shadowColor: '#88888840',
     shadowOffset: {
       height: 1,
       width: 1,
     },
-    shadowRadius: 1
+    shadowRadius: 1,
   },
   overviewInnerContainer: {
     alignItems: 'center',
@@ -248,9 +256,9 @@ const style = StyleSheet.create({
   },
   categoryName: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 10,
-    color: AppConfig.primaryColor
+    color: AppConfig.primaryColor,
   },
   listedItemTextContainer: {
     marginBottom: 20,

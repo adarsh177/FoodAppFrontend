@@ -1,22 +1,21 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 function SplashScreen(props) {
-
   useEffect(() => {
     auth().onAuthStateChanged(user => {
       console.log('User logged in: ', user);
       setTimeout(() => {
-        if(user === null){
+        if (user === null) {
           // user not logged in
-          props.navigation.replace("onboarding");
-        }else{
+          props.navigation.replace('home');
+        } else {
           // user logged in
-          props.navigation.replace("home");
+          props.navigation.replace('onboarding');
         }
       }, 1500);
-    })
+    });
   }, []);
 
   return (

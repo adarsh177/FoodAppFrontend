@@ -1,6 +1,6 @@
 import React from 'react';
 import IconFA from 'react-native-vector-icons/FontAwesome';
-import IconEN from 'react-native-vector-icons/Entypo';
+import IconMI from 'react-native-vector-icons/MaterialIcons';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AppConfig from '../../../AppConfig.json';
 
@@ -21,14 +21,14 @@ function HomeScreen() {
           tabBarIcon: ({focused, color, size}) => {
             let iconName;
 
-            if (route.name === 'store') {
-              return <IconEN name="shop" color={color} size={size} />;
-            } else if (route.name === 'order') {
-              return <IconFA name="shopping-bag" color={color} size={size} />;
+            if (route.name === 'explore') {
+              return <IconMI name="explore" color={color} size={size} />;
+            } else if (route.name === 'favorite') {
+              return <IconMI name="favorite" color={color} size={size} />;
             } else if (route.name === 'profile') {
               return <IconFA name="user" color={color} size={size} />;
-            } else if (route.name === 'earning') {
-              return <IconFA name="money" color={color} size={size} />;
+            } else if (route.name === 'order') {
+              return <IconFA name="shopping-bag" color={color} size={size} />;
             }
           },
         };
@@ -37,10 +37,10 @@ function HomeScreen() {
         activeTintColor: AppConfig.primaryColor,
         inactiveTineColor: '#a4a4a4',
       }}>
-      <bottomTab.Screen name="store" component={StoreTab} />
-      <bottomTab.Screen name="order" component={OrderTab} />
+      <bottomTab.Screen name="explore" component={StoreTab} />
+      <bottomTab.Screen name="favorite" component={OrderTab} />
       <bottomTab.Screen name="profile" component={ProfileTab} />
-      <bottomTab.Screen name="earning" component={EarningTab} />
+      <bottomTab.Screen name="order" component={OrderTab} />
     </bottomTab.Navigator>
   );
 }
