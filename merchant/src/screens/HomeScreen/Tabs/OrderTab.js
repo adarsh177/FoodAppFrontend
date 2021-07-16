@@ -1,7 +1,14 @@
 import React, {useState} from 'react';
-import {Text, View, StyleSheet, ScrollView} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import AppConfig from '../../../../AppConfig.json';
+import OrderDetailDialog from '../../../dialogs/OrderDetailsDialog';
 
 //Importing cards for order tabs -----------------------
 
@@ -12,6 +19,9 @@ import HistoryOrderCard from '../../../components/HistoryOrderCard';
 // 3 orders top tab components--------------------------
 
 function OrderOngoing() {
+  const [orderDetailDialogVisible, setorderDetailDialogVisibility] =
+    useState(false);
+
   return (
     <ScrollView style={style.orderContainer}>
       <View>
@@ -21,6 +31,9 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="Packing"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
         <OnGoingOrderCard
           orderID="Order Id"
@@ -28,6 +41,9 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="On the way"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
         <OnGoingOrderCard
           orderID="Order Id"
@@ -35,6 +51,9 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="Packing"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
         <OnGoingOrderCard
           orderID="Order Id"
@@ -42,6 +61,9 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="On the way"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
         <OnGoingOrderCard
           orderID="Order Id"
@@ -49,6 +71,9 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="Packing"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
         <OnGoingOrderCard
           orderID="Order Id"
@@ -56,8 +81,17 @@ function OrderOngoing() {
           date="12/12/2021"
           items="Item1x2, item2x3"
           status="On the way"
+          onPress={() => {
+            setorderDetailDialogVisibility(true);
+          }}
         />
       </View>
+      <OrderDetailDialog
+        show={orderDetailDialogVisible}
+        close={() => {
+          setorderDetailDialogVisibility(false);
+        }}
+      />
     </ScrollView>
   );
 }

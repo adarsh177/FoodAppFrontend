@@ -4,11 +4,11 @@ import AppConfig from '../../AppConfig.json';
 
 function OnGoingOrderCard(props) {
   //handel card press ongoinf -----------------------
-  const onGoingCardPress = () => {
-    return null;
-  };
+  // const onGoingCardPress = () => {
+  //   return null;
+  // };
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={onGoingCardPress}>
+    <TouchableOpacity activeOpacity={0.6} onPress={props.onPress}>
       <View style={style.cardContainer}>
         <View style={style.orderIdandPriceContainer}>
           <Text style={style.orderId}>#{props.orderID}</Text>
