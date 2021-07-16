@@ -1,4 +1,4 @@
-package com.customer;
+package com.goodforlowprice.customer;
 
 import com.facebook.react.ReactActivity;
 
