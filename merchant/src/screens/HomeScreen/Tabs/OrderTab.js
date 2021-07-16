@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import AppConfig from '../../../../AppConfig.json';
-import OrderDetailDialog from '../../../dialogs/OrderDetailsDialog';
 
 //Importing cards for order tabs -----------------------
 
@@ -18,9 +17,7 @@ import HistoryOrderCard from '../../../components/HistoryOrderCard';
 
 // 3 orders top tab components--------------------------
 
-function OrderOngoing() {
-  const [orderDetailDialogVisible, setorderDetailDialogVisibility] =
-    useState(false);
+function OrderOngoing(props) {
 
   return (
     <ScrollView style={style.orderContainer}>
@@ -32,7 +29,7 @@ function OrderOngoing() {
           items="Item1x2, item2x3"
           status="Packing"
           onPress={() => {
-            setorderDetailDialogVisibility(true);
+            props.route.params.baseNavigation.push("orderDetail", {data: "hello"});
           }}
         />
         <OnGoingOrderCard
@@ -42,7 +39,7 @@ function OrderOngoing() {
           items="Item1x2, item2x3"
           status="On the way"
           onPress={() => {
-            setorderDetailDialogVisibility(true);
+            props.route.params.baseNavigation.push("orderDetail", {data: "hello"});
           }}
         />
         <OnGoingOrderCard
@@ -52,7 +49,7 @@ function OrderOngoing() {
           items="Item1x2, item2x3"
           status="Packing"
           onPress={() => {
-            setorderDetailDialogVisibility(true);
+            props.route.params.baseNavigation.push("orderDetail", {data: "hello"});
           }}
         />
         <OnGoingOrderCard
@@ -62,7 +59,7 @@ function OrderOngoing() {
           items="Item1x2, item2x3"
           status="On the way"
           onPress={() => {
-            setorderDetailDialogVisibility(true);
+            props.route.params.baseNavigation.push("orderDetail", {data: "hello"});
           }}
         />
         <OnGoingOrderCard
@@ -72,7 +69,7 @@ function OrderOngoing() {
           items="Item1x2, item2x3"
           status="Packing"
           onPress={() => {
-            setorderDetailDialogVisibility(true);
+            props.route.params.baseNavigation.push("orderDetail", {data: "hello"});
           }}
         />
         <OnGoingOrderCard
@@ -82,21 +79,15 @@ function OrderOngoing() {
           items="Item1x2, item2x3"
           status="On the way"
           onPress={() => {
-            setorderDetailDialogVisibility(true);
+            props.route.params.baseNavigation.push("orderDetail", {data: "hello"});
           }}
         />
       </View>
-      <OrderDetailDialog
-        show={orderDetailDialogVisible}
-        close={() => {
-          setorderDetailDialogVisibility(false);
-        }}
-      />
     </ScrollView>
   );
 }
 
-function OrderPending() {
+function OrderPending(props) {
   return (
     <ScrollView style={style.orderContainer}>
       <View>
@@ -141,7 +132,7 @@ function OrderPending() {
   );
 }
 
-function OrderHistory() {
+function OrderHistory(props) {
   return (
     <ScrollView style={style.orderContainer}>
       <View>
@@ -188,7 +179,7 @@ function OrderHistory() {
 
 //Top navigation configuration-------------------------
 
-function OrderTab() {
+function OrderTab(props) {
   const TopTab = createMaterialTopTabNavigator();
   return (
     <TopTab.Navigator
@@ -199,9 +190,9 @@ function OrderTab() {
         },
         indicatorStyle: {backgroundColor: AppConfig.primaryColor},
       }}>
-      <TopTab.Screen name="Ongoing" component={OrderOngoing} />
-      <TopTab.Screen name="Pending" component={OrderPending} />
-      <TopTab.Screen name="History" component={OrderHistory} />
+      <TopTab.Screen name="Ongoing" component={OrderOngoing} initialParams={{baseNavigation: props.navigation}} />
+      <TopTab.Screen name="Pending" component={OrderPending} initialParams={{baseNavigation: props.navigation}} />
+      <TopTab.Screen name="History" component={OrderHistory} initialParams={{baseNavigation: props.navigation}} />
     </TopTab.Navigator>
   );
 }

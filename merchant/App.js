@@ -13,6 +13,7 @@ import HomeScreen from './src/screens/HomeScreen/HomeScreen';
 import InventoryScreen from './src/screens/InventoryScreen';
 import ListItemScreen from './src/screens/ListItemScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
+import OrderDetailScreen from './src/screens/OrderDetailScreen';
 
 const Stack = createStackNavigator();
 
@@ -69,6 +70,16 @@ function App() {
           }}
           name="editProfile"
           component={EditProfileScreen}
+        />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: AppConfig.primaryColor,
+            headerTitleAlign: 'center',
+            title: "Order Details"
+          }}
+          name="orderDetail"
+          component={OrderDetailScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
