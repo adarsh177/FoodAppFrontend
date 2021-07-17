@@ -6,10 +6,9 @@ import AppConfig from '../../../AppConfig.json';
 
 // All screens in proper order-----------------------------------
 
-import StoreTab from './Tabs/StoreTab';
+import Explore from './Tabs/Explore';
 import OrderTab from './Tabs/OrderTab';
-import ProfileTab from './Tabs/ProfileTab';
-import EarningTab from './Tabs/EarningTab';
+import FavouriteTab from './Tabs/FavouriteTab';
 
 function HomeScreen() {
   const bottomTab = createBottomTabNavigator();
@@ -25,8 +24,6 @@ function HomeScreen() {
               return <IconMI name="explore" color={color} size={size} />;
             } else if (route.name === 'favorite') {
               return <IconMI name="favorite" color={color} size={size} />;
-            } else if (route.name === 'profile') {
-              return <IconFA name="user" color={color} size={size} />;
             } else if (route.name === 'order') {
               return <IconFA name="shopping-bag" color={color} size={size} />;
             }
@@ -37,9 +34,8 @@ function HomeScreen() {
         activeTintColor: AppConfig.primaryColor,
         inactiveTineColor: '#a4a4a4',
       }}>
-      <bottomTab.Screen name="explore" component={StoreTab} />
-      <bottomTab.Screen name="favorite" component={OrderTab} />
-      <bottomTab.Screen name="profile" component={ProfileTab} />
+      <bottomTab.Screen name="explore" component={Explore} />
+      <bottomTab.Screen name="favorite" component={FavouriteTab} />
       <bottomTab.Screen name="order" component={OrderTab} />
     </bottomTab.Navigator>
   );

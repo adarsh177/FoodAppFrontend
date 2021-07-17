@@ -10,10 +10,10 @@ import SplashScreen from './src/screens/SplashScreen';
 import Login from './src/screens/LoginScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import HomeScreen from './src/screens/HomeScreen/HomeScreen';
-import InventoryScreen from './src/screens/InventoryScreen';
 import ListItemScreen from './src/screens/ListItemScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 import OrderDetailScreen from './src/screens/OrderDetailScreen';
+import RestaurantProfile from './src/screens/RestaurantProfile';
 
 const Stack = createStackNavigator();
 
@@ -41,22 +41,13 @@ function App() {
           name="home"
           component={HomeScreen}
         />
+
         <Stack.Screen
           options={{
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: "Inventory"
-          }}
-          name="inventory"
-          component={InventoryScreen}
-        />
-        <Stack.Screen
-          options={{
-            headerShown: true,
-            headerTintColor: AppConfig.primaryColor,
-            headerTitleAlign: 'center',
-            title: "List Item"
+            title: 'List Item',
           }}
           name="listItem"
           component={ListItemScreen}
@@ -66,7 +57,7 @@ function App() {
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: "Profile"
+            title: 'Profile',
           }}
           name="editProfile"
           component={EditProfileScreen}
@@ -76,10 +67,20 @@ function App() {
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: "Order Details"
+            title: 'Order Details',
           }}
           name="orderDetail"
           component={OrderDetailScreen}
+        />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: AppConfig.primaryColor,
+            headerTitleAlign: 'center',
+            title: 'Restaurant Profile',
+          }}
+          name="restaurantProfile"
+          component={RestaurantProfile}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -6,7 +6,7 @@ import {Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import Rating from 'react-native-easy-rating';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-function ProfileTab(props) {
+function RestaurantProfile(props) {
   // Details of restaurant --------------------------------------------------------
 
   const RestaurantName = 'Restaurent Name';
@@ -17,7 +17,7 @@ function ProfileTab(props) {
   // handel Edit Profile button --------------------------------
 
   const handelEditProfile = () => {
-    props.navigation.push("editProfile");
+    props.navigation.push('editProfile');
   };
 
   // handel Logout button --------------------------------
@@ -30,7 +30,7 @@ function ProfileTab(props) {
       <View style={style.resaurantImageContainer}>
         <Image
           style={style.resaurantImage}
-          source={require('../../../assets/restaurant.jpg')}
+          source={require('../assets/restaurant.jpg')}
         />
       </View>
       <View style={style.detailsContainer}>
@@ -71,34 +71,6 @@ function ProfileTab(props) {
             Lorem ipsum dolor sit amet, consectetur
           </Text>
         </View>
-        <View style={style.rowFlexContainer}>
-          <Icon
-            style={style.rightMargin}
-            name="address-card"
-            size={28}
-            color="#00B875"
-          />
-          <Text style={style.smallDescriptionTitle}>
-            Lorem ipsum dolor sit amet, consectetur
-          </Text>
-        </View>
-
-        {/*Button for Edit profile------------------------------------- */}
-
-        <TouchableOpacity
-          activeOpacity={0.6}
-          style={style.editProfile}
-          onPress={handelEditProfile}>
-          <Text style={style.editProfileButtonText}>Edit Profile</Text>
-        </TouchableOpacity>
-
-        {/*Button for Logout  -------------------------------------- */}
-
-        <TouchableOpacity
-          activeOpacity={0.6}
-          onPress={handleLogout}>
-          <Text style={style.logoutButtonText}>Logout</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -109,14 +81,14 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#fff',
-    padding: 10
+    padding: 10,
   },
   resaurantImageContainer: {
     width: '100%',
     alignItems: 'center',
   },
   resaurantImage: {
-    width: "100%",
+    width: '100%',
     height: 240,
     borderRadius: 3,
     resizeMode: 'cover',
@@ -129,7 +101,7 @@ const style = StyleSheet.create({
     fontSize: 24,
     color: '#000000',
     fontWeight: 'bold',
-    marginTop: 20
+    marginTop: 20,
   },
   smallDescriptionTitle: {
     fontSize: 14,
@@ -151,8 +123,8 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 3,
-    alignSelf: "center",
-    marginTop: 40
+    alignSelf: 'center',
+    marginTop: 40,
   },
   editProfileButtonText: {
     color: '#fff',
@@ -161,10 +133,10 @@ const style = StyleSheet.create({
   },
   logoutButtonText: {
     marginTop: 10,
-    alignSelf: "center",
+    alignSelf: 'center',
     color: '#FF5353',
     fontSize: 16,
     fontWeight: 'bold',
   },
 });
-export default ProfileTab;
+export default RestaurantProfile;
