@@ -18,7 +18,7 @@ import RestaurantCard from '../../../components/RestaurantCard';
 function Explore(props) {
   //handle card press ---------------------
   const handelCardPress = () => {
-    return null;
+    props.navigation.push('restaurantMenu');
   };
   //handel Restaurant Profile Button
   const handelRestaurantProfileButton = () => {

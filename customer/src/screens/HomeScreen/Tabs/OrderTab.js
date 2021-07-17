@@ -4,7 +4,7 @@ import AppConfig from '../../../../AppConfig.json';
 
 //Importing cards for order tabs -----------------------
 
-import OnGoingOrderCard from '../../../components/OnGoingOrderCard';
+import OrderCard from '../../../components/OrderCard';
 
 // 3 orders top tab components--------------------------
 
@@ -13,7 +13,7 @@ function Orders(props) {
     <ScrollView style={style.orderContainer}>
       <Text style={style.orderPageTitle}>Orders</Text>
       <View>
-        <OnGoingOrderCard
+        <OrderCard
           orderID="Order Id"
           price="200"
           date="12/12/2021"
@@ -25,7 +25,7 @@ function Orders(props) {
             });
           }}
         />
-        <OnGoingOrderCard
+        <OrderCard
           orderID="Order Id"
           price="200"
           date="12/12/2021"
@@ -37,7 +37,7 @@ function Orders(props) {
             });
           }}
         />
-        <OnGoingOrderCard
+        <OrderCard
           orderID="Order Id"
           price="200"
           date="12/12/2021"
@@ -49,7 +49,7 @@ function Orders(props) {
             });
           }}
         />
-        <OnGoingOrderCard
+        <OrderCard
           orderID="Order Id"
           price="200"
           date="12/12/2021"
@@ -61,7 +61,7 @@ function Orders(props) {
             });
           }}
         />
-        <OnGoingOrderCard
+        <OrderCard
           orderID="Order Id"
           price="200"
           date="12/12/2021"
@@ -73,7 +73,7 @@ function Orders(props) {
             });
           }}
         />
-        <OnGoingOrderCard
+        <OrderCard
           orderID="Order Id"
           price="200"
           date="12/12/2021"

@@ -2,7 +2,7 @@ import React from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import AppConfig from '../../AppConfig.json';
 
-function OnGoingOrderCard(props) {
+function OrderCard(props) {
   //handel card press ongoinf -----------------------
   // const onGoingCardPress = () => {
   //   return null;
@@ -65,4 +65,4 @@ const style = StyleSheet.create({
     fontWeight: '700',
   },
 });
-export default OnGoingOrderCard;
+export default OrderCard;

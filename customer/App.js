@@ -10,7 +10,7 @@ import SplashScreen from './src/screens/SplashScreen';
 import Login from './src/screens/LoginScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import HomeScreen from './src/screens/HomeScreen/HomeScreen';
-import ListItemScreen from './src/screens/ListItemScreen';
+import RestaurantMenu from './src/screens/RestaurantMenu';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 import OrderDetailScreen from './src/screens/OrderDetailScreen';
 import RestaurantProfile from './src/screens/RestaurantProfile';
@@ -41,17 +41,17 @@ function App() {
           name="home"
           component={HomeScreen}
         />
-
         <Stack.Screen
           options={{
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: 'List Item',
+            title: 'Restaurant Menu',
           }}
-          name="listItem"
-          component={ListItemScreen}
+          name="restaurantMenu"
+          component={RestaurantMenu}
         />
+
         <Stack.Screen
           options={{
             headerShown: true,

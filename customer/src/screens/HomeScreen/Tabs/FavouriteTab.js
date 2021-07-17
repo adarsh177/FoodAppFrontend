@@ -13,7 +13,7 @@ import AppConfig from '../../../../AppConfig.json';
 function FavouriteTab(props) {
   //handle card press ---------------------
   const handelCardPress = () => {
-    return null;
+    props.navigation.push('restaurantMenu');
   };
 
   //handel Restaurant Profile Button --------------------------------
