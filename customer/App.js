@@ -12,8 +12,10 @@ import OnboardingScreen from './src/screens/OnboardingScreen';
 import HomeScreen from './src/screens/HomeScreen/HomeScreen';
 import RestaurantMenu from './src/screens/RestaurantMenu';
 import EditProfileScreen from './src/screens/EditProfileScreen';
-import OrderDetailScreen from './src/screens/OrderDetailScreen';
+import CheckoutScreen from './src/screens/CheckoutScreen';
 import RestaurantProfile from './src/screens/RestaurantProfile';
+import ChatScreen from './src/screens/ChatScreen';
+import UserProfile from './src/screens/UserProfile';
 
 const Stack = createStackNavigator();
 
@@ -57,7 +59,7 @@ function App() {
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: 'Profile',
+            title: 'Edit Profile',
           }}
           name="editProfile"
           component={EditProfileScreen}
@@ -67,10 +69,10 @@ function App() {
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: 'Order Details',
+            title: 'Checkout',
           }}
-          name="orderDetail"
-          component={OrderDetailScreen}
+          name="checkoutScreen"
+          component={CheckoutScreen}
         />
         <Stack.Screen
           options={{
@@ -81,6 +83,30 @@ function App() {
           }}
           name="restaurantProfile"
           component={RestaurantProfile}
+        />
+
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: AppConfig.primaryColor,
+            headerTitleAlign: 'center',
+            title: 'Chat',
+            headerStyle: {
+              backgroundColor: '#f4f4f4',
+            },
+          }}
+          name="chatScreen"
+          component={ChatScreen}
+        />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: AppConfig.primaryColor,
+            headerTitleAlign: 'center',
+            title: 'Profile',
+          }}
+          name="userProfile"
+          component={UserProfile}
         />
       </Stack.Navigator>
     </NavigationContainer>

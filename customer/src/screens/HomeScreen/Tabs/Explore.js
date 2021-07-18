@@ -17,29 +17,41 @@ import RestaurantCard from '../../../components/RestaurantCard';
 
 function Explore(props) {
   //handle card press ---------------------
+
   const handelCardPress = () => {
     props.navigation.push('restaurantMenu');
   };
-  //handel Restaurant Profile Button
+
+  //handel Restaurant Profile Button -------------------------
+
   const handelRestaurantProfileButton = () => {
     props.navigation.push('restaurantProfile');
   };
 
-  //  handel profile button
+  //  handel profile button -------------------------------
+
   const handleProfile = () => {
+    props.navigation.push('userProfile');
+  };
+
+  //handle User Location ------------------------------------
+  const handleUserLocation = () => {
     return null;
   };
   return (
     <View style={style.storeContainer}>
       <View style={style.locationContainer}>
-        <View style={style.locationInnerContainer}>
+        <TouchableOpacity
+          activeOpacity={0.6}
+          onPress={handleUserLocation}
+          style={style.locationInnerContainer}>
           <IconMI
             name="location-pin"
             size={20}
             color={AppConfig.primaryColor}
           />
           <Text style={style.locationText}>Home - Pushpa Nagar</Text>
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.6}
           onPress={handleProfile}

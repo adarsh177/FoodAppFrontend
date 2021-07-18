@@ -26,12 +26,13 @@ const NoItem = () => {
   );
 };
 
-const ItemAdded = () => {
+const ItemAdded = props => {
   const cartValue = '200';
   return (
     <TouchableOpacity
       style={style.flagComponentContainerItemAdded}
-      activeOpacity={0.6}>
+      activeOpacity={0.6}
+      onPress={props.onPress}>
       <View style={style.iconAndValueContainer}>
         <IconMCI name="cart-outline" size={30} color="#fff" />
         <Text style={style.flagText}>Cart value : ₹ {cartValue}</Text>
@@ -46,6 +47,9 @@ const ItemAdded = () => {
 //#####################################################################
 
 function RestaurantMenu(props) {
+  const handlePressOnCartValue = () => {
+    props.navigation.navigate('checkoutScreen');
+  };
   return (
     <View style={style.inventoryContainer}>
       <FlatList
@@ -64,7 +68,7 @@ function RestaurantMenu(props) {
       />
       {/* ###################### Render one of the below component according to condition ############################# */}
       <View style={style.flagMessageContainer}>
-        <ItemAdded />
+        <ItemAdded onPress={handlePressOnCartValue} />
       </View>
       <View style={style.flagMessageContainer}>
         <NoItem />
