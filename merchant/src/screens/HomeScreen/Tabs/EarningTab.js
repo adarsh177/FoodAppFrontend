@@ -22,7 +22,16 @@ function EarningTab() {
           <Text style={style.currency}>{"₹"} {totalBalanceInWallet}</Text>
         </View>
         <View style={style.titleContainer}>
-          <Text style={style.titleText}>Total balance in wallet</Text>
+          <Text style={style.titleText}>Balance earned till date</Text>
+        </View>
+      </View>
+
+      <View style={style.totalBalanceInWalletContainer}>
+        <View style={style.moneyContainer}>
+          <Text style={style.currency}>{"₹"} {totalBalanceInWallet}</Text>
+        </View>
+        <View style={style.titleContainer}>
+          <Text style={style.titleText}>Outstanding Balance</Text>
         </View>
       </View>
 
@@ -35,7 +44,7 @@ function EarningTab() {
 
       <View style={style.horizontalRule} />
 
-      <Text style={style.summary}>Summary</Text>
+      {/* <Text style={style.summary}>Summary</Text>
 
       <View style={{width: "100%", flexDirection: "row"}}>
         <View style={{flex: 1}}>
@@ -56,7 +65,7 @@ function EarningTab() {
       <View style={style.cardContainer}>
         <Text style={style.cardAmount}>₹ 5000</Text>
         <Text style={style.cardTitle}>This month</Text>
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -82,6 +91,7 @@ const style = StyleSheet.create({
     shadowRadius: 3,
     elevation: 30,
     justifyContent: 'center',
+    marginBottom: 20
   },
   moneyContainer: {
     flexDirection: 'row',
@@ -119,8 +129,7 @@ const style = StyleSheet.create({
     backgroundColor: AppConfig.primaryColor,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 3,
-    marginVertical: 20,
+    borderRadius: 3
   },
   withdrawButtonText: {
     color: '#fff',

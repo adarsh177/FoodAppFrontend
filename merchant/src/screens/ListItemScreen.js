@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import AppConfig from '../../AppConfig.json';
@@ -12,12 +13,17 @@ import AppConfig from '../../AppConfig.json';
 // External package ----------------------------------
 
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { GetCommodities, ListItem } from '../APIs/StoreManager';
+import { GetProfile } from '../APIs/ProfileManager';
 
 function ListItemScreen(props) {
   // Handle Inventory selection ---------------------------------
 
-  const [selectInventory, setselectInventory] = useState();
-  const [selectCategory, setSelectCategory] = useState();
+  const [selectInventory, setselectInventory] = useState(null);
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [expireDate, setExpireDate] = useState(null);
+  const [price, setPrice] = useState('');
+  const [stock, setStock] = useState('');
 
   //Handle List item -----------------------------------------
   const handleListItem = () => {
@@ -26,90 +32,140 @@ function ListItemScreen(props) {
 
   //Handle Cancel button -----------------------------------------
   const handlecancel = () => {
-    return null;
+    props.navigation.pop();
   };
+
+  const loadInventory = () => {
+    GetCommodities().then(commodities => {
+      GetProfile().then(profile => {
+        const commodityIds = profile.listings ? profile.listings.map(val => val.commodityId) : [];
+        setInventoryItems(commodities.filter(val => !commodityIds.includes(val.id)));
+      }).catch(err => {});
+    }).catch(err => {});
+  }
+
+  const addListing = async () => {
+    if(selectInventory === null || selectInventory === "new"){
+      alert("Please select item to list");
+      return;
+    }
+    if(price.length === 0 || isNaN(price)){
+      alert("Please enter a valid price");
+      return;
+    }
+    if(stock.length === 0 || isNaN(stock)){
+      alert("Please enter a valid stock count");
+      return;
+    }
+    if(expireDate === null){
+      alert("Please select an expiry date time");
+      return;
+    }
+
+    const commodity = inventoryItems.filter(val => val.id === selectInventory)[0];
+
+    const data = {
+      commodityId: commodity.id,
+      name: commodity.name,
+      description: commodity.description,
+      image: commodity.image,
+      price: parseFloat(price),
+      dateAdded: new Date().getTime(),
+      expiresOn: expireDate.getTime(),
+      stock: parseInt(stock),
+    }
+
+    console.log(data);
+
+    ListItem(data).then(() => {
+      Alert.alert('Success', 'Item listed successfully', [
+        {
+          text: "Ok",
+          onPress: () => props.navigation.pop()
+        }
+      ]);
+    }).catch(err => {
+      console.log('Error listing item', err);
+      Alert.alert('Error', 'Error listing item', [
+        {
+          text: "Ok"
+        }
+      ]);
+    })
+    
+  }
+
+  useEffect(() => {
+    props.navigation.addListener('focus', () => {
+      loadInventory();
+    })
+    loadInventory();
+  }, []);
 
   //Handle date picker --------------------------------------------
 
-  //   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-  //   const showDatePicker = () => {
-  //     setDatePickerVisibility(true);
-  //   };
+    const showDatePicker = () => {
+      setDatePickerVisibility(true);
+    };
 
-  //   const hideDatePicker = () => {
-  //     setDatePickerVisibility(false);
-  //   };
-
-  //   const handleConfirm = time => {
-  //     console.warn('A date has been picked: ', time.toString());
-  //     hideDatePicker();
-  //   };
+    const hideDatePicker = () => {
+      setDatePickerVisibility(false);
+    };
 
   return (
     <View style={style.listItemContainer}>
-      <Text style={style.inputLable}>Select Category</Text>
-      <View style={style.inputWrapper}>
-        <Picker
-          style={style.inputs}
-          selectedValue={selectCategory}
-          onValueChange={(itemValue, itemIndex) =>
-            setSelectCategory(itemValue)
-          }>
-          <Picker.Item style={{color: "grey"}} label="Select Category" value="select" />
-          <Picker.Item label="Category 1" value="cat1" />
-          <Picker.Item label="Category 2" value="cat2" />
-          <Picker.Item label="Category 3" value="cat3" />
-          <Picker.Item label="Category 4" value="cat4" />
-          <Picker.Item label="Category 5" value="cat5" />
-        </Picker>
-      </View>
-
+      <Text style={style.subhead}>
+        To relist already listed item, first unlist it from store page then list it again from here.
+      </Text>
       <Text style={style.inputLable}>Select Item</Text>
       <View style={style.inputWrapper}>
         <Picker
           style={style.inputs}
           selectedValue={selectInventory}
-          onValueChange={(itemValue, itemIndex) =>
+          onValueChange={(itemValue, itemIndex) =>{
+            if(itemValue === "new"){
+              props.navigation.push('inventory');
+              return;
+            }
             setselectInventory(itemValue)
-          }>
-          <Picker.Item style={{color: "grey"}} label="Select Item from Inventory" value="select" />
-          <Picker.Item style={{color: AppConfig.primaryColor}} label="Create New Item" value="new" />
-          <Picker.Item label="Inventory 1" value="Inventory1" />
-          <Picker.Item label="Inventory 2" value="Inventory2" />
-          <Picker.Item label="Inventory 3" value="Inventory3" />
-          <Picker.Item label="Inventory 4" value="Inventory4" />
-          <Picker.Item label="Inventory 5" value="Inventory5" />
+          }}>
+          <Picker.Item label="Select Item from Inventory" value="select" />
+          <Picker.Item label="Create New Item" value="new" />
+          {inventoryItems.map(item => {
+            return <Picker.Item label={item.name} value={item.id} />;
+          })}
         </Picker>
       </View>
-      <Text style={style.inputLable}>List Price</Text>
+      <Text style={style.inputLable}>Selling Price ({"₹"})</Text>
       <View style={style.inputWrapper}>
-        <TextInput style={style.inputTextField} placeholder="₹" />
-      </View>
-      <Text style={style.inputLable}>Selling Price</Text>
-      <View style={style.inputWrapper}>
-        <TextInput style={style.inputTextField} placeholder="₹" />
+        <TextInput keyboardType="decimal-pad" style={style.inputTextField} onChangeText={setPrice}/>
       </View>
       <Text style={style.inputLable}>Stock Available</Text>
       <View style={style.inputWrapper}>
-        <TextInput style={style.inputTextField} placeholder="#" />
+        <TextInput keyboardType="numeric" style={style.inputTextField} onChangeText={setStock} />
       </View>
       <Text style={style.inputLable}>Expiry Date</Text>
       <View style={style.inputWrapper}>
-        <TouchableOpacity style={style.inputTextField}>
-          <Text> &#x1F4C5; Select date</Text>
+        <TouchableOpacity onPress={showDatePicker} style={style.inputTextField}>
+          <Text>{expireDate ? expireDate.toLocaleString() : "Select Expiry date"}</Text>
         </TouchableOpacity>
 
-        {/* <DateTimePickerModal
-          isVisible={true}
-          mode="time"
-          onConfirm={() => {}}
-          onCancel={() => {}}
-        /> */}
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="datetime"
+          minimumDate={new Date()}
+          onConfirm={(date) => {
+            setExpireDate(date);
+            hideDatePicker()
+          }}
+          onCancel={() => hideDatePicker()}
+        />
       </View>
       <TouchableOpacity
         activeOpacity={0.6}
-        onPress={handleListItem}
+        onPress={addListing}
         color={AppConfig.primaryColor}
         accessibilityLabel="List Item button"
         style={style.listItemButton}>
@@ -179,6 +235,11 @@ const style = StyleSheet.create({
     color: '#FF5353',
     fontSize: 18,
   },
+  subhead: {
+    fontSize: 16,
+    color: "gray",
+    marginBottom: 20
+  }
 });
 
 export default ListItemScreen;

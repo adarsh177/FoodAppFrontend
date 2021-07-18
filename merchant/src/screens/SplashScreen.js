@@ -1,22 +1,32 @@
 import React, { useEffect } from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
+import { GetProfile } from '../APIs/ProfileManager';
 
 function SplashScreen(props) {
-
+  
   useEffect(() => {
-    auth().onAuthStateChanged(user => {
+    const authSubscription = auth().onAuthStateChanged(user => {
       console.log('User logged in: ', user);
-      setTimeout(() => {
-        if(user === null){
-          // user not logged in
-          props.navigation.replace("onboarding");
-        }else{
-          // user logged in
-          props.navigation.replace("home");
-        }
-      }, 1500);
+      if(user === null){
+        // user not logged in
+        props.navigation.replace("onboarding");
+      }else{
+        // user logged in
+        GetProfile().then(profile => {
+          if(profile !== null){
+            props.navigation.replace("home");
+          }else{
+            props.navigation.replace("editProfile", {forced: true});
+          }
+        }).catch(err => {
+            console.log("ERROR GETTING PROFILE", err);
+            props.navigation.replace("editProfile", {forced: true});
+        })
+      }
     })
+
+    return authSubscription;
   }, []);
 
   return (

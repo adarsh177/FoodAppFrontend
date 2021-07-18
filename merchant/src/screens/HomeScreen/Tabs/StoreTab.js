@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Switch,
   Text,
@@ -10,8 +10,14 @@ import {
 } from 'react-native';
 import {FAB} from 'react-native-paper';
 import AppConfig from '../../../../AppConfig.json';
+import { GetProfile } from '../../../APIs/ProfileManager';
+import { GetListings, GetOrderSummary, UpdateStoreStatus } from '../../../APIs/StoreManager';
 import ItemCard from '../../../components/itemCard';
 import ListingInfoDialog from '../../../dialogs/ListingInfoDialog';
+import StartStoreDialog from '../../../dialogs/StartStoreDialog';
+import { GetTimeInWords } from '../../../Utils';
+
+const REFRESH_TIME = 10000; // 10sec
 
 function StoreTab(props) {
   // store name for the title of page  --------------------
@@ -20,31 +26,35 @@ function StoreTab(props) {
 
   // store activity status ----------------------------------
 
-  const [shopStatus, setShopStatus] = useState('Store Closed');
+  const [shopStatus, setShopStatus] = useState('Accepting Orders');
   const [showInfoDialog, setInfoDialogVisibility] = useState(false);
+  const [showStartShowDialog, setStartShowDialogVisibility] = useState(false);
+  const [listings, setListings] = useState([]);
+  const [clickedItem, setClickedItem] = useState({});
+  const [orderSummary, setOrderSummary] = useState({pendingOrders: 0, ongoingOrders: 0})
+  const [intervalHandle, setIntervalHandle] = useState();
 
   //Changing shop status text with change in switch ----------------
 
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => {
-    if (isEnabled === false) {
-      setIsEnabled(previousState => !previousState);
-      setShopStatus('Accepting Orders');
-    } else {
-      setIsEnabled(previousState => !previousState);
-      setShopStatus('Store Closed');
-    }
+  const [isEnabled, setIsEnabled] = useState(true);
+  const toggleSwitch = (val) => {
+    setIsEnabled(val);
+    setShopStatus(val ? 'Accepting Orders' : 'Store Closed');
   };
-
-  //Order overview (Ongoing and pending orders)-------
-
-  const onGoingOrders = '7';
-  const pendingOrders = '2';
 
   //Manage Inventory Button ---------------------------
   const manageInventory = () => {
     props.navigation.push('inventory');
   };
+
+  const CloseStore = () => {
+    UpdateStoreStatus(new Date().getTime() - 10000).then(() => {
+      updatePage();
+    }).catch(err => {
+      console.log('Error closing store', err);
+      alert('Error closing app, try again later');
+    })
+  }
 
   // add List Item Button ---------------------------
 
@@ -52,11 +62,41 @@ function StoreTab(props) {
     props.navigation.push('listItem');
   };
 
-  //listd card press event --------------------------
+  function updatePage(){
+    GetListings().then(listings => {
+      setListings(listings ?? []);
+    }).catch(err => {
+      console.log("Error getting listings", err);
+    })
 
-  const handelListedCard = () => {
-    return null;
-  };
+    GetProfile().then(profile => {
+      toggleSwitch(profile.openTill && (profile.openTill >= new Date().getTime()))
+    }).catch(err => {
+      console.log("Error getting profile", err);
+    })
+
+    GetOrderSummary().then(summary => {
+      setOrderSummary(summary);
+    }).catch(err => {
+      console.log("Error getting order summary", err);
+    })
+  }
+
+  useEffect(() => {
+    setIntervalHandle(setInterval(() => {
+      updatePage()
+    }, REFRESH_TIME))
+
+    props.navigation.addListener('focus', () => {
+      console.log('Focus store tab');
+      clearInterval(intervalHandle)
+      setIntervalHandle(setInterval(() => {
+        updatePage()
+      }, REFRESH_TIME))
+    });
+
+    props.navigation.addListener('blur', () => clearInterval(intervalHandle))
+  }, []);
 
   return (
     <View style={style.storeContainer}>
@@ -75,18 +115,25 @@ function StoreTab(props) {
             trackColor={{false: '#E8E8E8', true: '#DDD'}}
             thumbColor={isEnabled ? AppConfig.primaryColor : '#B80000'}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
+            onValueChange={bool => {
+              if(bool){
+                setStartShowDialogVisibility(true);
+                return;
+              }else{
+                CloseStore();
+              }
+            }}
             value={isEnabled}
           />
         </View>
         <View style={style.overviewContainer}>
           <View style={style.overviewInnerContainer}>
-            <Text style={style.overviewNumber}>{onGoingOrders}</Text>
+            <Text style={style.overviewNumber}>{orderSummary.ongoingOrders}</Text>
             <Text style={style.overviewText}>Ongoing Orders</Text>
           </View>
           <View style={style.verticalLine}></View>
           <View style={style.overviewInnerContainer}>
-            <Text style={style.overviewNumber}>{pendingOrders}</Text>
+            <Text style={style.overviewNumber}>{orderSummary.pendingOrders}</Text>
             <Text style={style.overviewText}>Pending Orders</Text>
           </View>
         </View>
@@ -108,63 +155,37 @@ function StoreTab(props) {
             sold out or expired.
           </Text>
         </View>
-        <Text style={style.categoryName}>Category 1</Text>
         <FlatList
+          scrollEnabled={false}
           columnWrapperStyle={{justifyContent: 'space-between'}}
           numColumns={2}
-          data={[0,0]}
+          data={listings}
           renderItem={({item, index}) => {
             return <ItemCard
-                    key={index}
-                    title={`Title Name : ${index}`}
-                    price="200"
-                    handelCardPress={() => setInfoDialogVisibility(true)}
-                    expiry="5"
-                    stock="5"
-                    // imageSource="../components/assets/restaurant.jpg"
+                    key={item.id}
+                    title={item.name}
+                    price={item.price}
+                    handelCardPress={() => {
+                      setClickedItem(item);
+                      setInfoDialogVisibility(true);
+                    }}
+                    expiry={GetTimeInWords(item.expiresOn - new Date().getTime())}
+                    stock={item.currentStockCount}
+                    image={item.image}
                   />;
           }}
           />
-
-        <Text style={style.categoryName}>Category 2</Text>
-        <FlatList
-          columnWrapperStyle={{justifyContent: 'space-between'}}
-          numColumns={2}
-          data={[0,0,0]}
-          renderItem={({item, index}) => {
-            return <ItemCard
-                    key={index}
-                    title={`Title Name : ${index}`}
-                    price="200"
-                    handelCardPress={() => setInfoDialogVisibility(true)}
-                    expiry="5"
-                    stock="5"
-                    // imageSource="../components/assets/restaurant.jpg"
-                  />;
-          }}
-          />
-
-        <Text style={style.categoryName}>Category 3</Text>
-        <FlatList
-          columnWrapperStyle={{justifyContent: 'space-between'}}
-          numColumns={2}
-          data={[0,0,0]}
-          renderItem={({item, index}) => {
-            return <ItemCard
-                    key={index}
-                    title={`Title Name : ${index}`}
-                    price="200"
-                    handelCardPress={() => setInfoDialogVisibility(true)}
-                    expiry="5"
-                    stock="5"
-                    // imageSource="../components/assets/restaurant.jpg"
-                  />;
-          }}
-          />
-        
+          {listings.length === 0 && <Text style={style.noItem}>No item listed yet! Click on plus button to list item</Text>}
       </ScrollView>
       <FAB style={style.fab} icon="plus" onPress={addListItemButton} />
-      <ListingInfoDialog show={showInfoDialog} close={() => setInfoDialogVisibility(false)}/>
+      <ListingInfoDialog data={clickedItem} show={showInfoDialog} close={() => {
+        updatePage();
+        setInfoDialogVisibility(false);
+      }}/>
+      <StartStoreDialog show={showStartShowDialog} close={() => {
+        updatePage();
+        setStartShowDialogVisibility(false);
+      }}/>
     </View>
   );
 }
@@ -263,6 +284,10 @@ const style = StyleSheet.create({
     bottom: 0,
     backgroundColor: AppConfig.primaryColor,
   },
+  noItem:{
+    fontSize: 16,
+    marginTop: 10
+  }
 });
 
 export default StoreTab;

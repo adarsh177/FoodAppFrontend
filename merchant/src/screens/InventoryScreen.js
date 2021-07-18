@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -16,42 +16,49 @@ import InventoryCard from '../components/inventoryCard';
 // External package ---------------------------------------
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AddInventoryItemDialog from '../dialogs/AddInventoryItemDialog';
+import { DeleteCommodity, GetCommodities } from '../APIs/StoreManager';
 
 function InventoryScreen(props) {
+  const [showAddItem, setAddItemVisibility] = useState(false);
+  const [inventory, setInventory] = useState([]);
+
   // add inventory button ---------------------------
   const addInventoryItemButton = () => {
     setAddItemVisibility(true);
   };
   // handle delete event -----------------------------
-  const deleteInventoryItem = () => {
-    return null;
-  };
-  //Modal-------------------------------------------
-  const [showAddItem, setAddItemVisibility] = useState(false);
-
-  //Get image from user button------------------------------
-  const getImage = () => {
+  const deleteInventoryItem = (id) => {
+    DeleteCommodity(id).then(() => loadCommodities())
     return null;
   };
 
-  //Handle modal Inputs --------------------------
-  const [value, onChangeText] = React.useState('');
+  const loadCommodities = () => {
+    GetCommodities().then(val => {
+      console.log("Inventory", val);
+      setInventory(val);
+    }).catch(err => {
+      console.log('Error getting commodities', err);
+    })
+  }
 
-  //Handle add item button
-  const addItem = () => {
-    props.navigation.pop();
-  };
+  useEffect(() => {
+    loadCommodities();
+  }, []);
+
   return (
     <View style={style.inventoryContainer}>
+      {inventory.length === 0 && <Text style={style.noItem}>No Item found!</Text>}
       <FlatList
         contentContainerStyle={style.InventoryCardContainer}
-        data={[0,0,0,0,0,0,0]}
+        data={inventory}
         renderItem={(item, index) => {
+          console.log(item);
           return <InventoryCard
             key={index}
-            itemName="Item Name"
-            description="Description here, Description here, Description here Description here dasd ca Vcva Description here dsdfasf"
-            handelDelete={deleteInventoryItem}
+            itemName={item.item.name}
+            description={item.item.description}
+            image={item.item.image}
+            handelDelete={() => deleteInventoryItem(item.item.id)}
           />;
         }} />
       <View>
@@ -65,7 +72,10 @@ function InventoryScreen(props) {
       {/*----------Modal starts here -------------------------------*/}
       <AddInventoryItemDialog
         show={showAddItem}
-        close={() => setAddItemVisibility(false)} />
+        close={() => {
+          loadCommodities();
+          setAddItemVisibility(false);
+        }} />
     </View>
   );
 }
@@ -88,6 +98,11 @@ const style = StyleSheet.create({
     bottom: 0,
     backgroundColor: AppConfig.primaryColor,
   },
+  noItem: {
+    alignSelf: "center",
+    fontSize: 18,
+    margin: 20,
+  }
 });
 
 export default InventoryScreen;

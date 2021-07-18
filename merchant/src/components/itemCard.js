@@ -10,7 +10,7 @@ function ItemCard(props) {
       style={style.listItemContainer}>
       <Image
         style={style.listItemImage}
-        source={require('../assets/restaurant.jpg')}
+        source={{uri: props.image}}
       />
       <View style={style.cardTitleAndPriceContainer}>
         <Text style={style.cardTitle}>{props.title}</Text>
@@ -18,7 +18,7 @@ function ItemCard(props) {
       </View>
       <View style={style.cardDetailContainer}>
         <Text style={style.cardDetailTitle}>Expires in: </Text>
-        <Text style={style.cardDetailValue}>{props.expiry} hours</Text>
+        <Text style={style.cardDetailValue}>{props.expiry}</Text>
       </View>
       <View style={style.cardDetailContainer}>
         <Text style={style.cardDetailTitle}>Stock left: </Text>

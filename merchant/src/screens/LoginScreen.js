@@ -15,6 +15,7 @@ import {CountryPicker} from 'react-native-country-codes-picker/CountryPicker';
 import {countryCodes} from "react-native-country-codes-picker/constants/countryCodes";
 import * as RNLocalize from "react-native-localize";
 import auth from '@react-native-firebase/auth';
+import { GetProfile } from '../APIs/ProfileManager';
 
 function Login(props) {
   const [phoneNumber, onChangeNumber] = React.useState("");
@@ -61,7 +62,16 @@ function Login(props) {
       let result = await sendResult.confirm(code);
       if(result !== null){
         setOTPDialogVisibility(false);
-        props.navigation.replace('home');
+        GetProfile().then(profile => {
+          if(profile !== null){
+            props.navigation.replace("home");
+          }else{
+            props.navigation.replace("editProfile", {forced: true});
+          }
+        }).catch(err => {
+            console.log("ERROR GETTING PROFILE", err);
+            props.navigation.replace("editProfile", {forced: true});
+        })
       }
     }catch(ex){
       console.log('Error verifying otp', ex);

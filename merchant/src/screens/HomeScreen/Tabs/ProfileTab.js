@@ -1,18 +1,21 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
 
 // External poackage for handeling star rating
 
 import Rating from 'react-native-easy-rating';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import auth from '@react-native-firebase/auth';
+import { GetProfile } from '../../../APIs/ProfileManager';
 
 function ProfileTab(props) {
   // Details of restaurant --------------------------------------------------------
-
-  const RestaurantName = 'Restaurent Name';
-  const RestaurantDescription =
-    'dfskhdksh shafkh,en ahdgf,bawefsd fbalkdhfgoyabdfjg  adgkfkafg jkgkgdskf hdkgfksdlfhk kghkasdb fdfdk';
-  const [rating, setRating] = useState(4);
+  const [restaurantName, setRestaurantName] = useState(null);
+  const [desc, setDesc] = useState(null);
+  const [banner, setBanner] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [location, setLocation] = useState('');
+  const [phone, setPhone] = useState(auth().currentUser.phoneNumber);
 
   // handel Edit Profile button --------------------------------
 
@@ -22,31 +25,48 @@ function ProfileTab(props) {
 
   // handel Logout button --------------------------------
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await auth().signOut();
+    console.log("User signed out");
+    props.navigation.replace("splash")
     return null;
   };
+
+  useEffect(() => {
+    props.navigation.addListener('focus', () => {
+      GetProfile().then(profile => {
+        setRestaurantName(profile.name);
+        setDesc(profile.description);
+        setBanner(profile.bannerImage);
+        setLocation(profile.location && profile.location.label ? profile.location.label : "Location not found");
+        setRating(profile.rating);
+      })
+    })
+  }, []);
+
   return (
     <View style={style.profileContainer}>
       <View style={style.resaurantImageContainer}>
         <Image
           style={style.resaurantImage}
-          source={require('../../../assets/restaurant.jpg')}
+          source={{uri: banner ? banner : "https://media.istockphoto.com/photos/top-view-table-full-of-food-picture-id1220017909?b=1&k=6&m=1220017909&s=170667a&w=0&h=yqVHUpGRq-vldcbdMjSbaDV9j52Vq8AaGUNpYBGklXs="}}
         />
       </View>
       <View style={style.detailsContainer}>
-        <Text style={style.boldDescriptionTitle}>{RestaurantName}</Text>
-        <Text style={style.smallDescriptionTitle}>{RestaurantDescription}</Text>
+        <Text style={style.boldDescriptionTitle}>{restaurantName}</Text>
+        <Text style={style.smallDescriptionTitle}>{desc}</Text>
         <View style={style.rowFlexContainer}>
           <Rating
             rating={rating}
             max={5}
             iconWidth={24}
             iconHeight={24}
-            onRate={setRating}
             style={style.rightMargin}
             editable={false}
           />
-          <Text style={style.smallDescriptionTitle}>256 Ratings</Text>
+          <Text style={style.smallDescriptionTitle}>
+            {rating ?? 0} rating
+          </Text>
         </View>
         <View style={style.rowFlexContainer}>
           <Icon
@@ -56,7 +76,7 @@ function ProfileTab(props) {
             color="#00B875"
           />
           <Text style={style.smallDescriptionTitle}>
-            Lorem ipsum dolor sit amet, consectetur
+            {location}
           </Text>
         </View>
 
@@ -68,10 +88,10 @@ function ProfileTab(props) {
             color="#00B875"
           />
           <Text style={style.smallDescriptionTitle}>
-            Lorem ipsum dolor sit amet, consectetur
+            {phone}
           </Text>
         </View>
-        <View style={style.rowFlexContainer}>
+        {/* <View style={style.rowFlexContainer}>
           <Icon
             style={style.rightMargin}
             name="address-card"
@@ -81,7 +101,7 @@ function ProfileTab(props) {
           <Text style={style.smallDescriptionTitle}>
             Lorem ipsum dolor sit amet, consectetur
           </Text>
-        </View>
+        </View> */}
 
         {/*Button for Edit profile------------------------------------- */}
 

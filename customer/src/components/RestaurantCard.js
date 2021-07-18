@@ -14,15 +14,6 @@ import AppConfig from '../../AppConfig.json';
 function RestaurantCard(props) {
   return (
     <View>
-      <View style={style.RestaurantProfileButtonContainer}>
-        <Button
-          style={style.RestaurantProfileButton}
-          activeOpacity={0.6}
-          title="Profile"
-          color={AppConfig.primaryColor}
-          onPress={props.onProfilePress}
-          accessibilityLabel="Profile button for restaurant"></Button>
-      </View>
       <TouchableOpacity
         activeOpacity={0.6}
         onPress={props.onPress}
@@ -45,8 +36,7 @@ function RestaurantCard(props) {
               <IconMI name="star" size={20} color={AppConfig.primaryColor} />
               <Text style={style.ratingText}>{props.rating}</Text>
             </View>
-            <Text style={style.closedText}>Closed now</Text>
-            <Text style={style.openText}>Open now</Text>
+            {props.storeOpen !== undefined && <Text style={props.storeOpen === true ? style.closedText : style.openText}>Open now</Text>}
           </View>
         </View>
       </TouchableOpacity>
@@ -59,21 +49,27 @@ const style = StyleSheet.create({
     borderColor: '#A8A8A8',
     borderWidth: 1,
     marginBottom: 10,
+    borderRadius: 3
   },
   restaurantCardImageContainer: {
     width: '100%',
-    height: 105,
+    height: 150,
+    borderRadius: 3
   },
   restrauntImage: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
+    borderRadius: 3
   },
   cardDetailContainer: {
     margin: 10,
+    marginTop: 5
   },
   retaurantName: {
     color: '#3C3C3C',
+    fontSize: 16,
+    fontWeight: "bold"
   },
   cardDetailInnerContainer: {
     flexDirection: 'row',

@@ -11,8 +11,9 @@ import OrderTab from './Tabs/OrderTab';
 import ProfileTab from './Tabs/ProfileTab';
 import EarningTab from './Tabs/EarningTab';
 
-function HomeScreen() {
+function HomeScreen(props) {
   const bottomTab = createBottomTabNavigator();
+
   return (
     <bottomTab.Navigator
       initialRouteName="store"

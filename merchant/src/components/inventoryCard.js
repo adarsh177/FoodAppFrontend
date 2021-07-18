@@ -7,7 +7,7 @@ function InventoryCard(props) {
 
   return (
     <View style={style.InventoryCardInnerContainer}>
-      <Image style={style.InventoryCardImage} source={require(imageSource)} />
+      <Image style={style.InventoryCardImage} source={{uri: props.image}} />
       <View style={style.cardDetailsContainer}>
         <Text style={style.itemName}>{props.itemName}</Text>
         <Text style={style.itemDescription}>{props.description}</Text>
