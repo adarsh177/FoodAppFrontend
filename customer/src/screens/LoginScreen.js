@@ -83,6 +83,7 @@ function Login(props) {
     countryCodes.forEach(val => {
       if(val.code == country){
         setCountryCode(val.dial_code);
+        console.log('Country Data', val);
       }
     });
   }, []);

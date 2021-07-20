@@ -20,6 +20,7 @@ import RestaurantCard from '../../../components/RestaurantCard'
 import ReverseGeocode from '../../../APIs/ReverseGeocoding'
 import { GetProfile, UpdateProfile } from '../../../APIs/ProfileManager'
 import { SearchNearMe } from '../../../APIs/SearchManager'
+import NoResult from '../../../assets/no_restro.png'
 
 function Explore(props) {
   const [location, setLocation] = useState({})
@@ -28,12 +29,8 @@ function Explore(props) {
   const [loadingResults, setLoadingResults] = useState(true)
   const [currentPage, setCurrentPage] = useState(0)
 
-  const handelCardPress = (restro) => {
-    props.navigation.push('restaurantMenu')
-  }
-
-  const handelRestaurantProfileButton = () => {
-    props.navigation.push('restaurantProfile')
+  const handelCardPress = (restroId) => {
+    props.navigation.push('restaurantMenu', {merchantId: restroId})
   }
 
   const handleProfile = () => {
@@ -70,6 +67,8 @@ function Explore(props) {
 
   //handle User Location ------------------------------------
   const handleUserLocation = async () => {
+      setLocation({})
+      
       RNLocation.configure({
           distanceFilter: 0.5,
       })
@@ -156,7 +155,7 @@ function Explore(props) {
           />
         </TouchableOpacity>
       </View>
-      <View style={style.textInputContainer}>
+      {/* <View style={style.textInputContainer}>
         <IconMI
             name="search"
             size={25}
@@ -167,7 +166,7 @@ function Explore(props) {
           placeholder="Search here"
           s
         />
-      </View>
+      </View> */}
       <ScrollView contentContainerStyle={style.scrollContainer}>
         {restros.map(restro => {
           return(
@@ -175,14 +174,18 @@ function Explore(props) {
               name={restro.name}
               distance={(restro.distanceInMeters / 1000).toFixed(2)}
               rating={`${restro.rating ?? 0} (${restro.ratingCount ?? 0} ratings)`}
-              onPress={() => handelCardPress(restro)}
+              onPress={() => handelCardPress(restro.userId)}
             />
           )
         })}
 
+        {!loadingResults && restros.length === 0 && <Image style={style.noResult} source={NoResult} />}
+        {!loadingResults && restros.length === 0 && <Text style={style.noResultText}>No Restaurants are open near you at the moment</Text>}
+        
+
         {loadingResults && <ActivityIndicator size="large" color={AppConfig.primaryColor} />}
 
-        {(!loadingResults && (restros.length % 10 !== 0)) &&
+        {(!loadingResults && (restros.length % 10 === 0)) &&
         <TouchableOpacity activeOpacity={0.8} onPress={loadMoreResults}>
           <Text style={style.loadMore}>Load More</Text>
         </TouchableOpacity>}
@@ -244,6 +247,17 @@ const style = StyleSheet.create({
     fontSize: 16,
     color: AppConfig.primaryColor,
     fontWeight: 'bold'
+  },
+  noResult: {
+    width: "100%",
+    height: 300,
+    resizeMode: 'contain',
+  },
+  noResultText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: AppConfig.primaryColor
   }
 })
 

@@ -5,6 +5,7 @@ import AppConfig from '../../AppConfig.json';
 //external poackage ---------------------------------------
 
 import NumericInput from 'react-native-numeric-input';
+import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
 
 function InventoryCard(props) {
   // Image source
@@ -15,21 +16,32 @@ function InventoryCard(props) {
   const [quantity, setQuantity] = useState(0);
   console.log(quantity);
 
+  const OnValueChanged = (val) => {
+    setQuantity(val)
+    props.onValueChanged(props.id, {
+      count: val,
+      price: val * props.price,
+      id: props.id,
+      name: props.itemName
+    })
+  }
+
   return (
     <View style={style.InventoryCardInnerContainer}>
       <Image style={style.InventoryCardImage} source={require(imageSource)} />
       <View style={style.cardDetailsContainer}>
         <View style={style.cardTitleAndPriceContaienr}>
           <Text style={style.itemName}>{props.itemName}</Text>
-          <Text style={style.price}>₹ {props.price}</Text>
+          <Text style={style.price}>{GetCurrencySymbol()} {props.price}</Text>
         </View>
         <Text style={style.itemDescription}>{props.description}</Text>
         <View style={style.numericInputContainer}>
           <NumericInput
             value={quantity}
-            onChange={value => setQuantity({value})}
+            onChange={OnValueChanged}
             minValue={0}
-            onLimitReached={(isMax, msg) => console.log(isMax, msg)}
+            maxValue={props.max}
+            // onLimitReached={(isMax, msg) => alert(`Currently only ${props.max} of this item are available`)}
             totalWidth={100}
             totalHeight={25}
             iconSize={12}

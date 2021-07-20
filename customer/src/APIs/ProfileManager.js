@@ -1,13 +1,14 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://a1e46b7431f6.ngrok.io/customer/"
+const BASE_URL = "https://f75784ceb3d0.ngrok.io/customer/"
 
 async function GetProfile(){
     try{
         const response = await axios.get(BASE_URL, {
             method: "GET",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             }
         })
         return Promise.resolve(response.data);
@@ -27,7 +28,8 @@ async function UpdateProfile(dataToUpdate){
         }, {
             method: "PUT",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             },
         })
         return Promise.resolve();
@@ -44,7 +46,8 @@ async function CreateProfile(dataToUpdate){
         }, {
             method: "POST",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             },
         })
         return Promise.resolve();
@@ -54,8 +57,42 @@ async function CreateProfile(dataToUpdate){
     }
 }
 
+async function GetTaxes(){
+    try{
+        const response = await axios.get(`${BASE_URL}taxes`, {
+            method: "GET",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            }
+        })
+        return Promise.resolve(response.data.taxes);
+    }catch(ex){
+        console.log("Error getting taxes", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
+async function CheckPromo(promoCode){
+    try{
+        const response = await axios.get(`${BASE_URL}promo/${promoCode}`, {
+            method: "GET",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            }
+        })
+        return Promise.resolve(response.data.promo);
+    }catch(ex){
+        console.log("Error getting promo", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
 export {
     GetProfile,
     UpdateProfile,
-    CreateProfile
+    CreateProfile,
+    GetTaxes,
+    CheckPromo
 }

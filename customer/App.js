@@ -13,7 +13,6 @@ import HomeScreen from './src/screens/HomeScreen/HomeScreen';
 import RestaurantMenu from './src/screens/RestaurantMenu';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 import CheckoutScreen from './src/screens/CheckoutScreen';
-import RestaurantProfile from './src/screens/RestaurantProfile';
 import ChatScreen from './src/screens/ChatScreen';
 import UserProfile from './src/screens/UserProfile';
 
@@ -48,7 +47,7 @@ function App() {
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: 'Restaurant Menu',
+            title: 'Restaurant',
           }}
           name="restaurantMenu"
           component={RestaurantMenu}
@@ -74,17 +73,6 @@ function App() {
           name="checkoutScreen"
           component={CheckoutScreen}
         />
-        <Stack.Screen
-          options={{
-            headerShown: true,
-            headerTintColor: AppConfig.primaryColor,
-            headerTitleAlign: 'center',
-            title: 'Restaurant Profile',
-          }}
-          name="restaurantProfile"
-          component={RestaurantProfile}
-        />
-
         <Stack.Screen
           options={{
             headerShown: true,

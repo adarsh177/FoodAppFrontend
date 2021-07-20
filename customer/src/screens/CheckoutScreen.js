@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -6,25 +6,39 @@ import {
   Text,
   TextInput,
   ScrollView,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 import IconMCI from 'react-native-vector-icons/MaterialCommunityIcons';
+import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
+import { CheckPromo, GetTaxes } from '../APIs/ProfileManager';
 
 function CheckoutScreen(props) {
-  const addressCategory = 'Home';
-  const cutomerAddress =
-    'Pushpa Nagar Colony, Near Main Railway Station, Bhopal - 462010';
-  const item = 'Item1';
-  const price = '200';
-  const cgstAmount = '80';
-  const sgstAmount = '80';
-  const TotalAmount = '626';
-
+  const [promoLoading, setPromoLoading] = useState(false)
+  const [items, setItems] = useState([])
+  const [totalBaseValue, setTotalBaseValue] = useState(0)
+  const [promoValue, setPromoValue] = useState(0)
+  const [totalTaxValue, setTotalTaxValue] = useState(0)
+  const [promoUsed, setPromoUsed] = useState(null)
+  const [taxes, setTaxes] = useState([])
+  const [promoText, setPromoText] = useState('')
+  
   console.log('Order Details', props.route.params);
 
   //handel handel Promo Code button ---------------------
   const handelPromoCodeButton = () => {
-    return null;
+    setPromoLoading(true)
+    CheckPromo(promoText).then(promo => {
+      if(promo){
+        setPromoUsed(promo)
+        setPromoValue(parseFloat((calculateTotalBase() * (promo.offPercent / 100.0)).toFixed(2)))
+        Alert.alert('Success', `Promotional code applied successfully.\nPercentage off: ${promo.offPercent}%`)
+      }else{
+        Alert.alert('Invalid Code', 'Invalid promotional code entered.')
+      }
+    }).catch(err => alert('Error applying promo code'))
+    .finally(() => setPromoLoading(false))
   };
 
   //handle payment ---------------------------------------
@@ -32,66 +46,105 @@ function CheckoutScreen(props) {
     props.navigation.push('chatScreen');
   };
 
+  const calculateTotalBase = () => {
+    let total = 0
+    props.route?.params?.items.forEach(val => {
+      total += val.price
+    })
+
+    return total
+  }
+
+  useEffect(() => {
+    const base = calculateTotalBase()
+    setItems(props.route?.params?.items ?? [])
+    setTotalBaseValue(parseFloat(base.toFixed(2)))
+
+    GetTaxes().then(val => {
+      console.log('Taxes', val)
+      
+      setTaxes(val.map(item => {
+        return {
+          ...item,
+          value: base * (item.percent / 100.0)
+        }
+      }))
+      
+      let totalTaxPercent = 0
+      val.forEach(item => {
+        totalTaxPercent += item.percent
+      })
+
+      const totalTax = base * (totalTaxPercent / 100.0)
+      console.log('Total tax', totalTax)
+
+      setTotalTaxValue(parseFloat(totalTax.toFixed(2)))
+    })
+  }, [])
+
   return (
     <View style={style.mainOuterContainer}>
       <ScrollView style={style.mainContainer}>
         <View style={style.generalContainer}>
-          <Text style={style.lightTitle}>Address</Text>
+          <Text style={style.lightTitle}>Order from</Text>
           <View style={style.addressContainer}>
-            <Text style={style.customerName}>{addressCategory}</Text>
-            <Text style={style.lightTitle}>{cutomerAddress}</Text>
+            <Text style={style.customerName}>{props.route.params.merchantName}</Text>
+            <Text style={style.lightTitle}>{props.route.params.merchantAddress}</Text>
           </View>
         </View>
         <View style={style.generalContainer}>
           <Text style={style.lightTitle}>Promotional Code</Text>
           <View style={style.inputTextContainer}>
-            <TextInput style={style.textInput} placeholder="Enter code here" />
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={handelPromoCodeButton}
-              style={style.promoCodeButton}>
-              <IconMCI name="send" size={24} color="#fff" />
-            </TouchableOpacity>
+            <TextInput onChangeText={setPromoText} style={style.textInput} placeholder="Enter code here" />
+            {promoLoading ? <ActivityIndicator style={style.promoLoad} size="small" color={AppConfig.primaryColor} /> :
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={handelPromoCodeButton}
+                style={style.promoCodeButton}>
+                <Text style={style.promoApply}>APPLY</Text>
+              </TouchableOpacity>}
           </View>
         </View>
         <View style={style.generalContainer}>
           <Text style={style.lightTitle}>Order</Text>
           <View style={style.summaryContainer}>
+
+            {items.map(item => {
+              return(
+                <View style={style.itemContainer}>
+                  <Text style={style.itemTitle}>{`${item.count} x ${item.name}`}</Text>
+                  <Text style={style.summaryPrice}>{GetCurrencySymbol()} {item.price}</Text>
+                </View>
+              )
+            })}
+
+            {promoUsed && 
             <View style={style.itemContainer}>
-              <Text style={style.itemTitle}>{item}</Text>
-              <Text style={style.summaryPrice}>₹ {price}</Text>
-            </View>
-            <View style={style.itemContainer}>
-              <Text style={style.itemTitle}>{item}</Text>
-              <Text style={style.summaryPrice}>₹ {price}</Text>
-            </View>
-            <View style={style.itemContainer}>
-              <Text style={style.itemTitle}>{item}</Text>
-              <Text style={style.summaryPrice}>₹ {price}</Text>
-            </View>
-            <View style={style.itemContainer}>
-              <Text style={style.itemTitle}>{item}</Text>
-              <Text style={style.summaryPrice}>₹ {price}</Text>
-            </View>
+              <Text style={style.itemTitle}>{`PROMO: ${promoUsed.code.toUpperCase()}`}</Text>
+              <Text style={style.promoPrice}>- {GetCurrencySymbol()} {promoValue}</Text>
+            </View>}
 
             <View style={style.horizontalLine}></View>
+
             <View>
               <Text style={style.itemTitle}>Tax</Text>
               <View style={style.taxInnerContainer}>
-                <View style={style.taxInnerInnerContainer}>
-                  <Text style={style.itemTitle}>CGST (9%)</Text>
-                  <Text style={style.summaryPrice}>₹ {cgstAmount}</Text>
-                </View>
-                <View style={style.taxInnerInnerContainer}>
-                  <Text style={style.itemTitle}>SGST (9%)</Text>
-                  <Text style={style.summaryPrice}>₹ {sgstAmount}</Text>
-                </View>
+                
+                {taxes.map(tax => {
+                  return(
+                    <View style={style.taxInnerInnerContainer}>
+                      <Text style={style.itemTitle}>{tax.name} ({tax.percent}%)</Text>
+                      <Text style={style.summaryPrice}>{GetCurrencySymbol()} {tax.value}</Text>
+                    </View>
+                  )
+                })}
+
               </View>
             </View>
             <View style={style.summaryTotalContainer}>
               <Text style={style.summaryTotalText}>Total</Text>
               <Text style={style.summaryPriceWithWhiteColor}>
-                ₹ {TotalAmount}
+                {GetCurrencySymbol()} {(totalBaseValue - promoValue + totalTaxValue).toFixed(2)}
               </Text>
             </View>
           </View>
@@ -102,7 +155,7 @@ function CheckoutScreen(props) {
           style={style.payButton}
           activeOpacity={0.6}
           onPress={handlePayment}>
-          <Text style={style.payButtonText}>Pay ₹ {TotalAmount}</Text>
+          <Text style={style.payButtonText}>Pay {GetCurrencySymbol()} {(totalBaseValue - promoValue + totalTaxValue).toFixed(2)}</Text>
           <Text style={style.payButtonTextArrow}>&#9654;</Text>
         </TouchableOpacity>
       </View>
@@ -201,6 +254,16 @@ const style = StyleSheet.create({
     paddingLeft: 8,
     borderRadius: 3,
   },
+  promoLoad: {
+    position: 'absolute',
+    alignSelf: 'center',
+    right: 10,
+  },
+  promoApply: {
+    paddingHorizontal: 10,
+    color: "#fff",
+    fontWeight: 'bold'
+  },
   summaryContainer: {
     borderWidth: 1,
     borderColor: '#B7B7B7',
@@ -218,6 +281,10 @@ const style = StyleSheet.create({
   },
   summaryPrice: {
     fontWeight: '700',
+  },
+  promoPrice: {
+    fontWeight: '700',
+    color: "#911d14"
   },
   horizontalLine: {
     width: '100%',

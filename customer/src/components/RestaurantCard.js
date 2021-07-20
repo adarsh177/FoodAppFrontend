@@ -27,16 +27,17 @@ function RestaurantCard(props) {
         <View style={style.cardDetailContainer}>
           <View style={style.cardDetailInnerContainer}>
             <Text style={style.retaurantName}>{props.name}</Text>
+            {!isNaN(props.distance) && 
             <Text style={style.retaurantDistance}>
               {props.distance} Km away
-            </Text>
+            </Text>}
           </View>
           <View style={style.cardDetailInnerContainer}>
             <View style={style.starAndRating}>
               <IconMI name="star" size={20} color={AppConfig.primaryColor} />
               <Text style={style.ratingText}>{props.rating}</Text>
             </View>
-            {props.storeOpen !== undefined && <Text style={props.storeOpen === true ? style.closedText : style.openText}>Open now</Text>}
+            {props.storeOpen !== undefined && <Text style={props.storeOpen === true ? style.openText : style.closedText}>{props.storeOpen ? "Open now" : "Closed"}</Text>}
           </View>
         </View>
       </TouchableOpacity>

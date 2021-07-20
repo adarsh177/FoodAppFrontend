@@ -7,7 +7,8 @@ async function GetProfile(){
         const response = await axios.get(BASE_URL, {
             method: "GET",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             }
         })
         return Promise.resolve(response.data);
@@ -27,7 +28,8 @@ async function UpdateProfile(dataToUpdate){
         }, {
             method: "PUT",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             },
         })
         return Promise.resolve();
@@ -44,7 +46,8 @@ async function CreateProfile(dataToUpdate){
         }, {
             method: "POST",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             },
         })
         return Promise.resolve();

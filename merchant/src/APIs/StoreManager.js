@@ -7,7 +7,8 @@ async function GetCommodities(){
         const response = await axios.get(`${BASE_URL}commodity`, {
             method: "GET",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             }
         })
         return Promise.resolve(response.data);
@@ -22,7 +23,8 @@ async function DeleteCommodity(id){
         const response = await axios.delete(`${BASE_URL}commodity/${id}`, {
             method: "DELETE",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             }
         })
         return Promise.resolve();
@@ -38,7 +40,8 @@ async function AddCommodity(data){
         const response = await axios.post(`${BASE_URL}commodity`, data, {
             method: "POST",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             }
         })
         return Promise.resolve();
@@ -53,7 +56,8 @@ async function GetListings(){
         const response = await axios.get(`${BASE_URL}listing`, {
             method: "GET",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             }
         })
         return Promise.resolve(response.data);
@@ -68,7 +72,8 @@ async function ListItem(data){
         const response = await axios.post(`${BASE_URL}listing`, data, {
             method: "POST",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             }
         })
         return Promise.resolve();
@@ -83,7 +88,8 @@ async function UnlistItem(commodityId){
         const response = await axios.delete(`${BASE_URL}listing/${commodityId}`, {
             method: "DELETE",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             }
         })
         return Promise.resolve();
@@ -100,7 +106,8 @@ async function UpdateStoreStatus(time){
         }, {
             method: "PUT",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             }
         })
         return Promise.resolve();
@@ -115,7 +122,8 @@ async function GetOrderSummary(){
         const response = await axios.get(`${BASE_URL}summary`, {
             method: "GET",
             headers: {
-                "authorization": await GetAuthToken()
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
             }
         })
         return Promise.resolve(response.data);
