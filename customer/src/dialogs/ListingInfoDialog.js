@@ -1,8 +1,27 @@
-import React from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Modal, Image } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, TouchableOpacity, View, Text, Modal, Image, ActivityIndicator } from 'react-native';
 import AppConfig from '../../AppConfig.json';
+import { UnlistItem } from '../APIs/StoreManager';
+import { GetTimeInWords } from '../Utils';
 
 function ListingInfoDialog(props){
+
+    const [loading, setLoading] = useState(false);
+
+    const unlistItem = () => {
+        if(loading)
+            return;
+        
+        setLoading(true);
+        UnlistItem(props.data.id).then(() => {
+            alert('Item unlisted');
+            props.close();
+        }).catch(err => {
+            console.log('Error unlisting item', err);
+            alert('Error unlisting item');
+        }).finally(() => setLoading(false));
+    }
+
     return(
         <Modal
         animationType="fade"
@@ -13,31 +32,34 @@ function ListingInfoDialog(props){
         }}>
             <View style={style.mainContainer}>
                 <View style={style.dialog}>
-                    <Text style={style.itemName}>Item Name</Text>
-                    <Image style={style.image} source={{uri: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"}}  />
-                    <Text style={style.price}>Rs 500</Text>
+                    <Text style={style.itemName}>{props.data.name}</Text>
+                    <Image style={style.image} source={{uri: props.data.image}}  />
+                    <Text style={style.price}>Rs {props.data.price}</Text>
 
                     <Text style={style.detail}>
                         <Text style={{fontWeight: "bold"}}>Expires in: </Text>
-                        3 Hours
+                        {GetTimeInWords(props.data.expiresOn - new Date().getTime())}
                     </Text>
 
                     <View style={style.stockDetailsContainer}>
                         <Text style={[style.detail, style.stockDetail]}>
                             <Text style={{fontWeight: "bold"}}>Stock Listed: </Text>
-                            15
+                            {props.data.initialStockCount}
                         </Text>
                         <Text style={[style.detail, style.stockDetail]}>
                             <Text style={{fontWeight: "bold"}}>Stock Left: </Text>
-                            11
+                            {props.data.currentStockCount}
                         </Text>
                     </View>
 
+                    {loading ? <ActivityIndicator color={AppConfig.primaryColor} size="large" /> :
                     <TouchableOpacity
                         activeOpacity={0.8}
-                        onPress={() => alert('yo')}>
+                        onPress={() => unlistItem()}>
                         <Text style={style.unlistBtn}>Unlist Item</Text>
                     </TouchableOpacity>
+                    }
+                    
                 </View>
             </View>
       </Modal>

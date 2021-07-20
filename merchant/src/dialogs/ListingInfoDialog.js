@@ -1,19 +1,25 @@
-import React from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Modal, Image } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, TouchableOpacity, View, Text, Modal, Image, ActivityIndicator } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 import { UnlistItem } from '../APIs/StoreManager';
 import { GetTimeInWords } from '../Utils';
 
 function ListingInfoDialog(props){
 
+    const [loading, setLoading] = useState(false);
+
     const unlistItem = () => {
+        if(loading)
+            return;
+        
+        setLoading(true);
         UnlistItem(props.data.id).then(() => {
             alert('Item unlisted');
             props.close();
         }).catch(err => {
             console.log('Error unlisting item', err);
             alert('Error unlisting item');
-        })
+        }).finally(() => setLoading(false));
     }
 
     return(
@@ -46,11 +52,14 @@ function ListingInfoDialog(props){
                         </Text>
                     </View>
 
+                    {loading ? <ActivityIndicator color={AppConfig.primaryColor} size="large" /> :
                     <TouchableOpacity
                         activeOpacity={0.8}
                         onPress={() => unlistItem()}>
                         <Text style={style.unlistBtn}>Unlist Item</Text>
                     </TouchableOpacity>
+                    }
+                    
                 </View>
             </View>
       </Modal>

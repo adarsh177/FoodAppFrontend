@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState} from 'react'
 import {
   Switch,
   Text,
@@ -9,35 +9,129 @@ import {
   FlatList,
   Image,
   TextInput,
-} from 'react-native';
-import AppConfig from '../../../../AppConfig.json';
-import IconMI from 'react-native-vector-icons/MaterialIcons';
-
-import RestaurantCard from '../../../components/RestaurantCard';
+  Alert,
+  ActivityIndicator,
+} from 'react-native'
+import AppConfig from '../../../../AppConfig.json'
+import IconMI from 'react-native-vector-icons/MaterialIcons'
+import RNLocation from 'react-native-location'
+import Geolocation from 'react-native-geolocation-service'
+import RestaurantCard from '../../../components/RestaurantCard'
+import ReverseGeocode from '../../../APIs/ReverseGeocoding'
+import { GetProfile, UpdateProfile } from '../../../APIs/ProfileManager'
+import { SearchNearMe } from '../../../APIs/SearchManager'
 
 function Explore(props) {
-  //handle card press ---------------------
+  const [location, setLocation] = useState({})
+  const [locationPoint, setLocationPoint] = useState({})
+  const [restros, setRestros] = useState([])
+  const [loadingResults, setLoadingResults] = useState(true)
+  const [currentPage, setCurrentPage] = useState(0)
 
-  const handelCardPress = () => {
-    props.navigation.push('restaurantMenu');
-  };
-
-  //handel Restaurant Profile Button -------------------------
+  const handelCardPress = (restro) => {
+    props.navigation.push('restaurantMenu')
+  }
 
   const handelRestaurantProfileButton = () => {
-    props.navigation.push('restaurantProfile');
-  };
-
-  //  handel profile button -------------------------------
+    props.navigation.push('restaurantProfile')
+  }
 
   const handleProfile = () => {
-    props.navigation.push('userProfile');
-  };
+    props.navigation.push('userProfile')
+  }
+
+  const GetTrimmedLocation = (locationText) => {
+    return locationText ? locationText.split(',')[0] : 'Fetching Location';
+  }
+
+  const loadSearchResults = () => {
+    setLoadingResults(true)
+    SearchNearMe(0).then(val => {
+      console.log('SEARCH', val);
+      setRestros(val.data)
+      setCurrentPage(parseInt(val.page))
+    })
+    .catch(err => console.log('error searching', err))
+    .finally(() => setLoadingResults(false))
+  }
+
+  const loadMoreResults = () => {
+    setLoadingResults(true)
+    SearchNearMe(currentPage + 1).then(val => {
+      console.log('SEARCH', val)
+      if(val.data.length > 0){
+        setRestros([...restros, val.data])
+        setCurrentPage(parseInt(val.page))
+      }
+    })
+    .catch(err => console.log('error searching', err))
+    .finally(() => setLoadingResults(false))
+  }
 
   //handle User Location ------------------------------------
-  const handleUserLocation = () => {
-    return null;
-  };
+  const handleUserLocation = async () => {
+      RNLocation.configure({
+          distanceFilter: 0.5,
+      })
+      
+      RNLocation.requestPermission({
+          android: {
+              detail: "fine"
+          },
+          ios: "whenInUse"
+      }).then(granted => {
+          console.log('Permission', granted)
+          if(!granted){
+              if(Object.keys(location).length === 0){
+                Alert.alert('Location Needed', 'Please grant location permission so we could show you restaurants near you', [
+                    {
+                        text: "Grant",
+                        style: "default",
+                        onPress: () => handleUserLocation()
+                    }
+                ])
+              }
+              return
+          }
+          Geolocation.getCurrentPosition(
+              (position) => {
+                console.log(position)
+                const point = {
+                    type: "Point",
+                    coordinates: [position.coords.longitude, position.coords.latitude]
+                };
+                // updating state
+                setLocationPoint(point)
+                loadSearchResults()
+                // getting address out of coords
+                ReverseGeocode(position.coords.latitude, position.coords.longitude).then(location => {
+                    // saving it on server
+                    UpdateProfile({locationPoint: point, location: location})
+                    // updating state
+                    setLocation(location)
+                }).catch(err => {
+                  console.log("Error getting rev geocode", err)
+                })
+              },
+              (error) => {
+                // See error code charts below.
+                console.log(error.code, error.message)
+              },
+              { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+          )
+      }).catch(err => {
+          console.log('Error getting location permission', err)
+      })
+  }
+
+  useState(() => {
+    GetProfile().then(profile => {
+      setLocation(profile.location ?? {})
+      setLocationPoint(profile.locationPoint ?? {})
+      loadSearchResults();
+    }).finally(() => handleUserLocation())
+  }, [])
+
   return (
     <View style={style.storeContainer}>
       <View style={style.locationContainer}>
@@ -50,7 +144,7 @@ function Explore(props) {
             size={20}
             color={AppConfig.primaryColor}
           />
-          <Text style={style.locationText}>Home - Pushpa Nagar</Text>
+          <Text style={style.locationText}>{GetTrimmedLocation(location.label)}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.6}
@@ -63,58 +157,39 @@ function Explore(props) {
         </TouchableOpacity>
       </View>
       <View style={style.textInputContainer}>
+        <IconMI
+            name="search"
+            size={25}
+            color="#8c8c8c"
+          />
         <TextInput
           style={style.textInput}
-          placeholder="&#x1F50D;  Search here"
+          placeholder="Search here"
           s
         />
       </View>
       <ScrollView contentContainerStyle={style.scrollContainer}>
-        <RestaurantCard
-          name="Merchant Name Here"
-          distance="7"
-          rating="3.7 (256 rating)"
-          onPress={handelCardPress}
-          onProfilePress={handelRestaurantProfileButton}
-        />
-        <RestaurantCard
-          name="Merchant Name Here"
-          distance="7"
-          rating="3.7 (256 rating)"
-          onPress={handelCardPress}
-          onProfilePress={handelRestaurantProfileButton}
-        />
-        <RestaurantCard
-          name="Merchant Name Here"
-          distance="7"
-          rating="3.7 (256 rating)"
-          onPress={handelCardPress}
-          onProfilePress={handelRestaurantProfileButton}
-        />
-        <RestaurantCard
-          name="Merchant Name Here"
-          distance="7"
-          rating="3.7 (256 rating)"
-          onPress={handelCardPress}
-          onProfilePress={handelRestaurantProfileButton}
-        />
-        <RestaurantCard
-          name="Merchant Name Here"
-          distance="7"
-          rating="3.7 (256 rating)"
-          onPress={handelCardPress}
-          onProfilePress={handelRestaurantProfileButton}
-        />
-        <RestaurantCard
-          name="Merchant Name Here"
-          distance="7"
-          rating="3.7 (256 rating)"
-          onPress={handelCardPress}
-          onProfilePress={handelRestaurantProfileButton}
-        />
+        {restros.map(restro => {
+          return(
+            <RestaurantCard
+              name={restro.name}
+              distance={(restro.distanceInMeters / 1000).toFixed(2)}
+              rating={`${restro.rating ?? 0} (${restro.ratingCount ?? 0} ratings)`}
+              onPress={() => handelCardPress(restro)}
+            />
+          )
+        })}
+
+        {loadingResults && <ActivityIndicator size="large" color={AppConfig.primaryColor} />}
+
+        {(!loadingResults && (restros.length % 10 !== 0)) &&
+        <TouchableOpacity activeOpacity={0.8} onPress={loadMoreResults}>
+          <Text style={style.loadMore}>Load More</Text>
+        </TouchableOpacity>}
+
       </ScrollView>
     </View>
-  );
+  )
 }
 const style = StyleSheet.create({
   storeContainer: {
@@ -126,7 +201,7 @@ const style = StyleSheet.create({
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
     width: '100%',
     justifyContent: 'space-between',
   },
@@ -151,15 +226,25 @@ const style = StyleSheet.create({
   },
   textInputContainer: {
     width: '100%',
-    marginBottom: 10,
-    height: 35,
-  },
-  textInput: {
+    marginBottom: 20,
+    alignItems: 'center',
+    flexDirection: "row",
     borderWidth: 1,
     borderColor: '#C1C1C1',
     borderRadius: 3,
-    paddingHorizontal: 10,
+    paddingHorizontal: 10
   },
-});
+  textInput: {
+    height: "100%",
+    flex: 1
+  },
+  loadMore: {
+    alignSelf: "center",
+    marginTop: 10,
+    fontSize: 16,
+    color: AppConfig.primaryColor,
+    fontWeight: 'bold'
+  }
+})
 
-export default Explore;
+export default Explore

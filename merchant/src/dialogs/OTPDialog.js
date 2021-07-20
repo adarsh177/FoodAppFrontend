@@ -39,7 +39,7 @@ function OTPDialog(props) {
               backgroundColor: '#FAFAFA',
               fontSize: 20,
             }}
-            onFinish={(code) => {props.submit(code)}}
+            onFinish={(code) => {}}
           />
           <TouchableOpacity
             activeOpacity={0.6}

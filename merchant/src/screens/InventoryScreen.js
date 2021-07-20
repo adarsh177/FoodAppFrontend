@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {FAB} from 'react-native-paper';
 import AppConfig from '../../AppConfig.json';
@@ -21,24 +23,35 @@ import { DeleteCommodity, GetCommodities } from '../APIs/StoreManager';
 function InventoryScreen(props) {
   const [showAddItem, setAddItemVisibility] = useState(false);
   const [inventory, setInventory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // add inventory button ---------------------------
   const addInventoryItemButton = () => {
     setAddItemVisibility(true);
   };
   // handle delete event -----------------------------
-  const deleteInventoryItem = (id) => {
-    DeleteCommodity(id).then(() => loadCommodities())
-    return null;
+  const deleteInventoryItem = (data) => {
+    Alert.alert('Confirm', `Are you sure you want to delete ${data.name}?`, [
+      {
+        text: "Delete",
+        style: "default",
+        onPress: () => DeleteCommodity(data.id).then(() => loadCommodities())
+      },
+      {
+        text: "Cancel",
+        style: "cancel"
+      }
+    ])
   };
 
   const loadCommodities = () => {
+    setLoading(true);
     GetCommodities().then(val => {
       console.log("Inventory", val);
       setInventory(val);
     }).catch(err => {
       console.log('Error getting commodities', err);
-    })
+    }).then(() => setLoading(false));
   }
 
   useEffect(() => {
@@ -47,7 +60,8 @@ function InventoryScreen(props) {
 
   return (
     <View style={style.inventoryContainer}>
-      {inventory.length === 0 && <Text style={style.noItem}>No Item found!</Text>}
+      {inventory.length === 0 && !loading && <Text style={style.noItem}>No Item found!</Text>}
+      {loading && <ActivityIndicator color={AppConfig.primaryColor} size="large" />}
       <FlatList
         contentContainerStyle={style.InventoryCardContainer}
         data={inventory}
@@ -58,7 +72,7 @@ function InventoryScreen(props) {
             itemName={item.item.name}
             description={item.item.description}
             image={item.item.image}
-            handelDelete={() => deleteInventoryItem(item.item.id)}
+            handelDelete={() => deleteInventoryItem(item.item)}
           />;
         }} />
       <View>

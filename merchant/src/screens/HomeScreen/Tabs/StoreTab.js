@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import {FAB} from 'react-native-paper';
 import AppConfig from '../../../../AppConfig.json';
@@ -20,26 +21,25 @@ import { GetTimeInWords } from '../../../Utils';
 const REFRESH_TIME = 10000; // 10sec
 
 function StoreTab(props) {
-  // store name for the title of page  --------------------
-
-  const storeName = 'Store Name';
-
-  // store activity status ----------------------------------
-
-  const [shopStatus, setShopStatus] = useState('Accepting Orders');
+  const [shopStatus, setShopStatus] = useState('Store Closed');
   const [showInfoDialog, setInfoDialogVisibility] = useState(false);
   const [showStartShowDialog, setStartShowDialogVisibility] = useState(false);
   const [listings, setListings] = useState([]);
   const [clickedItem, setClickedItem] = useState({});
   const [orderSummary, setOrderSummary] = useState({pendingOrders: 0, ongoingOrders: 0})
   const [intervalHandle, setIntervalHandle] = useState();
+  const [storeName, setStoreName] = useState('');
+
+  const [switchLoading, setSwitchLoading] = useState(true);
+  const [listedLoading, setListedLoading] = useState(true);
 
   //Changing shop status text with change in switch ----------------
 
-  const [isEnabled, setIsEnabled] = useState(true);
+  const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = (val) => {
     setIsEnabled(val);
-    setShopStatus(val ? 'Accepting Orders' : 'Store Closed');
+    if(!val)
+      setShopStatus('Store Closed');
   };
 
   //Manage Inventory Button ---------------------------
@@ -53,7 +53,7 @@ function StoreTab(props) {
     }).catch(err => {
       console.log('Error closing store', err);
       alert('Error closing app, try again later');
-    })
+    }).finally(() => setSwitchLoading(false));
   }
 
   // add List Item Button ---------------------------
@@ -65,12 +65,18 @@ function StoreTab(props) {
   function updatePage(){
     GetListings().then(listings => {
       setListings(listings ?? []);
+      setListedLoading(false);
     }).catch(err => {
       console.log("Error getting listings", err);
     })
 
     GetProfile().then(profile => {
-      toggleSwitch(profile.openTill && (profile.openTill >= new Date().getTime()))
+      setStoreName(profile.name);
+      toggleSwitch(profile.openTill && (profile.openTill >= new Date().getTime()));
+      if(profile.openTill && (profile.openTill >= new Date().getTime())){
+        setShopStatus(`Closes in: ${GetTimeInWords(profile.openTill - new Date().getTime())}`)
+      }
+      setSwitchLoading(false);
     }).catch(err => {
       console.log("Error getting profile", err);
     })
@@ -106,16 +112,18 @@ function StoreTab(props) {
             <Text style={style.shopNameText}>{storeName}</Text>
             <Text
               style={
-                isEnabled ? {color: AppConfig.primaryColor} : {color: '#B80000'}
+                isEnabled ? {color: AppConfig.primaryColor, fontWeight: "bold"} : {color: '#B80000'}
               }>
               {shopStatus}
             </Text>
           </View>
+          {switchLoading ? <ActivityIndicator size="small" color={AppConfig.primaryColor} /> : 
           <Switch
             trackColor={{false: '#E8E8E8', true: '#DDD'}}
             thumbColor={isEnabled ? AppConfig.primaryColor : '#B80000'}
             ios_backgroundColor="#3e3e3e"
             onValueChange={bool => {
+              setSwitchLoading(true);
               if(bool){
                 setStartShowDialogVisibility(true);
                 return;
@@ -125,8 +133,12 @@ function StoreTab(props) {
             }}
             value={isEnabled}
           />
+          }
         </View>
-        <View style={style.overviewContainer}>
+        <Text style={style.subhead}>
+          Selling food is very simple! Just add items in your inventory and then list them for sale
+        </Text>
+        {/* <View style={style.overviewContainer}>
           <View style={style.overviewInnerContainer}>
             <Text style={style.overviewNumber}>{orderSummary.ongoingOrders}</Text>
             <Text style={style.overviewText}>Ongoing Orders</Text>
@@ -136,7 +148,7 @@ function StoreTab(props) {
             <Text style={style.overviewNumber}>{orderSummary.pendingOrders}</Text>
             <Text style={style.overviewText}>Pending Orders</Text>
           </View>
-        </View>
+        </View> */}
         <View style={style.manageInventoryButtonContainer}>
           <TouchableOpacity
             activeOpacity={0.6}
@@ -151,10 +163,11 @@ function StoreTab(props) {
         <View style={style.listedItemTextContainer}>
           <Text style={style.listedItemText}>Listed Items</Text>
           <Text>
-            These items will be automatically be removed from here once they are
+            These items will automatically be removed from here once they are
             sold out or expired.
           </Text>
         </View>
+        {listedLoading && <ActivityIndicator color={AppConfig.primaryColor} size="large" />}
         <FlatList
           scrollEnabled={false}
           columnWrapperStyle={{justifyContent: 'space-between'}}
@@ -175,7 +188,7 @@ function StoreTab(props) {
                   />;
           }}
           />
-          {listings.length === 0 && <Text style={style.noItem}>No item listed yet! Click on plus button to list item</Text>}
+          {(listings.length === 0 && !listedLoading) && <Text style={style.noItem}>No item listed yet! Click on plus button to list item</Text>}
       </ScrollView>
       <FAB style={style.fab} icon="plus" onPress={addListItemButton} />
       <ListingInfoDialog data={clickedItem} show={showInfoDialog} close={() => {
@@ -287,6 +300,10 @@ const style = StyleSheet.create({
   noItem:{
     fontSize: 16,
     marginTop: 10
+  },
+  subhead: {
+    fontSize: 16,
+    marginVertical: 10
   }
 });
 

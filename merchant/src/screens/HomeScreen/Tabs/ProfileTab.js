@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, Image, StyleSheet, TouchableOpacity, ActivityIndicator} from 'react-native';
 
 // External poackage for handeling star rating
 
@@ -7,6 +7,7 @@ import Rating from 'react-native-easy-rating';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import auth from '@react-native-firebase/auth';
 import { GetProfile } from '../../../APIs/ProfileManager';
+import AppConfig from '../../../../AppConfig.json';
 
 function ProfileTab(props) {
   // Details of restaurant --------------------------------------------------------
@@ -16,6 +17,7 @@ function ProfileTab(props) {
   const [rating, setRating] = useState(0);
   const [location, setLocation] = useState('');
   const [phone, setPhone] = useState(auth().currentUser.phoneNumber);
+  const [loading, setLoading] = useState(true);
 
   // handel Edit Profile button --------------------------------
 
@@ -35,6 +37,7 @@ function ProfileTab(props) {
   useEffect(() => {
     props.navigation.addListener('focus', () => {
       GetProfile().then(profile => {
+        setLoading(false);
         setRestaurantName(profile.name);
         setDesc(profile.description);
         setBanner(profile.bannerImage);
@@ -43,6 +46,9 @@ function ProfileTab(props) {
       })
     })
   }, []);
+
+  if(loading)
+    return <ActivityIndicator color={AppConfig.primaryColor} size="large" />;
 
   return (
     <View style={style.profileContainer}>

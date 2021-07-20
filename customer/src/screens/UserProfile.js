@@ -11,6 +11,7 @@ import {
 import AppConfig from '../../AppConfig.json';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMIC from 'react-native-vector-icons/MaterialCommunityIcons';
+import auth from '@react-native-firebase/auth';
 
 function UserProfile(props) {
   const customerName = 'Rajesh kumar';
@@ -26,8 +27,9 @@ function UserProfile(props) {
 
   // handel Logout button --------------------------------
 
-  const handleLogout = () => {
-    return null;
+  const handleLogout = async () => {
+    await auth().signOut();
+    props.navigation.navigate('splash');
   };
   return (
     <ScrollView style={style.profileContainer}>

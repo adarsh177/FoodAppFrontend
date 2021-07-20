@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Button, Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import AppConfig from '../../AppConfig.json';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CreateProfile, GetProfile, UpdateProfile } from "../APIs/ProfileManager";
@@ -20,12 +20,17 @@ function EditProfileScreen(props){
     const [banner, setBanner] = useState(null);
     const [locationText, setLocationText] = useState('Get location');
 
+    const [dataLoading, setDataLoading] = useState(true);
+    const [profileUpdateLoading, setProfileUpdateLoading] = useState(false);
+    const [imageLoading, setImageLoading] = useState(false);
+
     const reference = storage().ref(`/MerchantBanner/${auth().currentUser.uid}`);
 
     useEffect(() => {
         setPhone(auth().currentUser.phoneNumber);
 
         GetProfile().then(profile => {
+            setDataLoading(false);
             if(profile == null) return;
 
             setStoreName(profile.name);
@@ -55,6 +60,7 @@ function EditProfileScreen(props){
     
             console.log(response.assets[0]);
             
+            setImageLoading(true);
             reference.putFile(source).then(
               async (snap) => {
                 console.log('Upload success', snap.state);
@@ -65,7 +71,7 @@ function EditProfileScreen(props){
                 console.log('Error uploading pic', error);
                 alert(`Error Updating Picture : ${error.nativeErrorMessage}`);
               },
-            );
+            ).finally(() => setImageLoading(false));
           }
         })
     }
@@ -128,6 +134,9 @@ function EditProfileScreen(props){
     }
 
     const updateProfile = async () => {
+        if(dataLoading || imageLoading || profileUpdateLoading)
+            return;
+            
         console.log('UID:', auth().currentUser.uid)
         if(!storeName || storeName.length < 3){
             Alert.alert('Error', "Please enter a valid store name");
@@ -150,6 +159,7 @@ function EditProfileScreen(props){
         //     return;
         // }
 
+        setProfileUpdateLoading(true);
         if(props.route && props.route.params && props.route.params.forced){
             CreateProfile({
                 name: storeName,
@@ -166,7 +176,7 @@ function EditProfileScreen(props){
                 ]);
             }).catch(err => {
                 Alert.alert('Error', "Error updating profile");
-            })
+            }).finally(() => setProfileUpdateLoading(false))
         }else{
             UpdateProfile({
                 name: storeName,
@@ -183,20 +193,25 @@ function EditProfileScreen(props){
                 ]);
             }).catch(err => {
                 Alert.alert('Error', "Error updating profile");
-            })
+            }).finally(() => setProfileUpdateLoading(false))
         }
     }
+
+    if(dataLoading)
+        return <ActivityIndicator color={AppConfig.primaryColor} size="large" />;
 
     return(
         <ScrollView style={{backgroundColor: "#fff"}}>
             <ImageBackground imageStyle={{resizeMode: "stretch"}} source={require('../assets/bg_repeat.png')} style={Style.mainContainer}>
                 <View style={Style.ImageContainer}>
                     <Image style={Style.Image} source={{uri: banner ? banner : "https://media.istockphoto.com/photos/top-view-table-full-of-food-picture-id1220017909?b=1&k=6&m=1220017909&s=170667a&w=0&h=yqVHUpGRq-vldcbdMjSbaDV9j52Vq8AaGUNpYBGklXs="}} />
+                    {imageLoading ? <ActivityIndicator style={{position: "absolute", right: 10, bottom: 10}} size="small" color={AppConfig.primaryColor} />:
                     <TouchableOpacity style={Style.ChangeImage} activeOpacity={0.8} onPress={selectImage}>
                         <Text style={Style.ChangeImageLabel}>
                             Change
                         </Text>
                     </TouchableOpacity>
+                    }
                 </View>
 
                 <Text style={Style.Label}>Phone Number</Text>
@@ -230,11 +245,12 @@ function EditProfileScreen(props){
                     </TouchableOpacity>
                 </View>
 
+                {profileUpdateLoading ? <ActivityIndicator style={{alignSelf: "center"}} color={AppConfig.primaryColor} size="large" /> :
                 <TouchableOpacity activeOpacity={0.8} style={{width: "100%", marginTop: 20}} onPress={updateProfile}>
                     <Text style={Style.SaveBtn}>
                         SAVE
                     </Text>
-                </TouchableOpacity>
+                </TouchableOpacity>}
             </ImageBackground>
         </ScrollView>
     );

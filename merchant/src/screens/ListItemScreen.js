@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import AppConfig from '../../AppConfig.json';
@@ -24,6 +25,7 @@ function ListItemScreen(props) {
   const [expireDate, setExpireDate] = useState(null);
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
+  const [loading, setLoading] = useState(false);
 
   //Handle List item -----------------------------------------
   const handleListItem = () => {
@@ -77,6 +79,7 @@ function ListItemScreen(props) {
 
     console.log(data);
 
+    setLoading(true);
     ListItem(data).then(() => {
       Alert.alert('Success', 'Item listed successfully', [
         {
@@ -91,7 +94,7 @@ function ListItemScreen(props) {
           text: "Ok"
         }
       ]);
-    })
+    }).finally(() => setLoading(false));
     
   }
 
@@ -163,6 +166,7 @@ function ListItemScreen(props) {
           onCancel={() => hideDatePicker()}
         />
       </View>
+      {loading ? <ActivityIndicator color={AppConfig.primaryColor} size="large" /> : 
       <TouchableOpacity
         activeOpacity={0.6}
         onPress={addListing}
@@ -170,7 +174,8 @@ function ListItemScreen(props) {
         accessibilityLabel="List Item button"
         style={style.listItemButton}>
         <Text style={style.listItemButtonText}>List Item</Text>
-      </TouchableOpacity>
+      </TouchableOpacity>}
+
       <TouchableOpacity
         activeOpacity={0.6}
         onPress={handlecancel}

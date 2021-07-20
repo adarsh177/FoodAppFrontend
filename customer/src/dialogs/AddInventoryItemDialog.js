@@ -6,12 +6,100 @@ import {
   Text,
   TextInput,
   Modal,
+  Image,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AppConfig from '../../AppConfig.json';
+import {launchImageLibrary} from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
+import auth from '@react-native-firebase/auth';
+import { AddCommodity } from '../APIs/StoreManager';
 
 function AddInventoryItemDialog(props) {
-  const [text, onChangeText] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [imageUploadLoading, setImageUploadLoading] = useState(false);
+
+  const reference = storage().ref(`/CommodityImage/${auth().currentUser.uid}/${new Date().getTime()}`);
+
+  const close = () => {
+    setName('');
+    setDescription('');
+    setImageUrl(null);
+
+    props.close();
+  }
+
+  const addClicked = async () => {
+    if(loading || imageUploadLoading)
+      return;
+    
+    if(imageUrl == null){
+      alert('Please select an image');
+      return;
+    }
+    if(name.length == 0){
+      alert('Please enter item name');
+      return;
+    }
+    if(description.length == 0){
+      alert('Please enter item description');
+      return;
+    }
+
+    setLoading(true);
+    AddCommodity({
+      name: name,
+      description: description,
+      image: imageUrl
+    }).then(() => {
+      alert('Item added successfully');
+      close();
+    }).catch(err => {
+      console.log("Error adding item", err);
+      alert('Error adding item');
+    }).finally(() => setLoading(false))
+  }
+
+  const selectImage = () => {
+    if(imageUploadLoading)
+      return;
+
+    const options = {
+      maxWidth: 2000,
+      maxHeight: 2000,
+      mediaType: "photo"
+    };
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        Alert.alert('Error', 'No Image selected');
+      } else if (response.error) {
+        Alert.alert('Error', 'ImagePicker Error: ', response.error);
+      } else {
+        let source = response.assets[0].uri;
+
+        console.log(response.assets[0]);
+        
+        setImageUploadLoading(true);
+        setImageUrl(null);
+        reference.putFile(source).then(
+          async (snap) => {
+            console.log('Upload success', snap.state);
+            const url = await reference.getDownloadURL();
+            console.log('Downloadable url', url);
+            setImageUrl(url);
+          }, (error) => {
+            console.log('Error uploading pic', error);
+            alert(`Error Updating Picture : ${error.nativeErrorMessage}`);
+          },
+        ).finally(() => setImageUploadLoading(false));
+      }
+    })
+  }
 
   return (
     <Modal
@@ -19,18 +107,25 @@ function AddInventoryItemDialog(props) {
       transparent={true}
       visible={props.show}
       onRequestClose={() => {
-        props.close();
+        close();
       }}>
       <View style={style.mainContainer}>
         <View style={style.inventoryModalContainer}>
           <TouchableOpacity
             activeOpacity={0.6}
             style={style.getImageButton}
-            onPress={() => {}}>
-            <View style={style.addImageContainer}>
-              <Icon name="plus" size={24} color={AppConfig.primaryColor} />
-              <Text style={style.selectImageText}>Select Image</Text>
-            </View>
+            onPress={() => selectImage()}>
+            {imageUrl ? <Image source={{uri: imageUrl}} style={style.addImageContainer} /> : 
+              <View style={style.addImageContainer}>
+                {imageUploadLoading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} />
+                : 
+                <>
+                  <Icon name="plus" size={24} color={AppConfig.primaryColor} />
+                  <Text style={style.selectImageText}>Select Image</Text>
+                </>
+                }
+              </View>
+            }
           </TouchableOpacity>
 
           <View style={style.modalTextInputContainer}>
@@ -38,6 +133,8 @@ function AddInventoryItemDialog(props) {
               placeholder="Item Name (max 70 characters)"
               style={style.modalTextInput}
               maxLength={70}
+              value={name}
+              onChangeText={setName}
             />
             <TextInput
               placeholder="Enter description (max 120 characters)"
@@ -45,15 +142,18 @@ function AddInventoryItemDialog(props) {
               multiline
               numberOfLines={4}
               maxLength={120}
-              onChangeText={text => onChangeText(text)}
-              value={text}
+              onChangeText={setDescription}
+              value={description}
             />
           </View>
           <TouchableOpacity
             activeOpacity={0.6}
             style={style.addItem}
-            onPress={() => props.close()}>
-            <Text style={style.addItemButtonText}>Add Item</Text>
+            onPress={() => addClicked()}>
+              {loading ? <ActivityIndicator color="#FFF" size="large" /> : 
+              <Text style={style.addItemButtonText}>Add Item</Text>
+              }
+            
           </TouchableOpacity>
         </View>
       </View>

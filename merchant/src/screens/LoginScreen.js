@@ -8,6 +8,7 @@ import {
   Alert,
   TouchableOpacity,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 import OTPDialog from '../dialogs/OTPDialog';
@@ -25,17 +26,7 @@ function Login(props) {
   const [showCountryCodePicker, setCountryCodePickerVisibility] = useState(false);
   const [countryCode, setCountryCode] = useState("+1");
   const [sendResult, setSendResult] = useState(null);
-
-  //submit otp function--------------------------------------
-  const submitOtp = () => {
-    console.log(`${otp}`);
-    props.navigation.navigate('onboarding');
-  };
-
-  // resend otp function------------------------------------
-  const reSendOTP = () => {
-    Alert.alert('Innitiate resend OTP');
-  };
+  const [loading, setLoading] = useState(false);
 
   const sendOTP = async ()  => {
     if(phoneNumber.length < 10){
@@ -43,11 +34,14 @@ function Login(props) {
       return;
     }
     try{
+      setLoading(true);
       setSendResult(await auth().signInWithPhoneNumber(`${countryCode}${phoneNumber}`, true));
       setOTPDialogVisibility(true);
     }catch(ex){
       console.log('Error sending otp', ex);
       Alert.alert('Error', 'Error sending OTP : ' + ex);
+    }finally{
+      setLoading(false);
     }
   }
 
@@ -134,6 +128,7 @@ function Login(props) {
         </View>
         
 
+        {loading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} />:
         <TouchableOpacity
           activeOpacity={0.6}
           onPress={() => sendOTP()}
@@ -141,7 +136,7 @@ function Login(props) {
           accessibilityLabel="Get OTP button"
           style={style.getOtpButton}>
             <Text style={style.otpButtonText}>Get OTP</Text>
-        </TouchableOpacity>
+        </TouchableOpacity>}
       </View>
 
       <OTPDialog

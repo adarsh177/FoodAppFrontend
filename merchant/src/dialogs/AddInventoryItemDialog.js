@@ -8,6 +8,7 @@ import {
   Modal,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AppConfig from '../../AppConfig.json';
@@ -20,6 +21,8 @@ function AddInventoryItemDialog(props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [imageUploadLoading, setImageUploadLoading] = useState(false);
 
   const reference = storage().ref(`/CommodityImage/${auth().currentUser.uid}/${new Date().getTime()}`);
 
@@ -32,6 +35,9 @@ function AddInventoryItemDialog(props) {
   }
 
   const addClicked = async () => {
+    if(loading || imageUploadLoading)
+      return;
+    
     if(imageUrl == null){
       alert('Please select an image');
       return;
@@ -45,6 +51,7 @@ function AddInventoryItemDialog(props) {
       return;
     }
 
+    setLoading(true);
     AddCommodity({
       name: name,
       description: description,
@@ -55,10 +62,13 @@ function AddInventoryItemDialog(props) {
     }).catch(err => {
       console.log("Error adding item", err);
       alert('Error adding item');
-    })
+    }).finally(() => setLoading(false))
   }
 
   const selectImage = () => {
+    if(imageUploadLoading)
+      return;
+
     const options = {
       maxWidth: 2000,
       maxHeight: 2000,
@@ -74,6 +84,8 @@ function AddInventoryItemDialog(props) {
 
         console.log(response.assets[0]);
         
+        setImageUploadLoading(true);
+        setImageUrl(null);
         reference.putFile(source).then(
           async (snap) => {
             console.log('Upload success', snap.state);
@@ -84,7 +96,7 @@ function AddInventoryItemDialog(props) {
             console.log('Error uploading pic', error);
             alert(`Error Updating Picture : ${error.nativeErrorMessage}`);
           },
-        );
+        ).finally(() => setImageUploadLoading(false));
       }
     })
   }
@@ -105,8 +117,13 @@ function AddInventoryItemDialog(props) {
             onPress={() => selectImage()}>
             {imageUrl ? <Image source={{uri: imageUrl}} style={style.addImageContainer} /> : 
               <View style={style.addImageContainer}>
-                <Icon name="plus" size={24} color={AppConfig.primaryColor} />
-                <Text style={style.selectImageText}>Select Image</Text>
+                {imageUploadLoading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} />
+                : 
+                <>
+                  <Icon name="plus" size={24} color={AppConfig.primaryColor} />
+                  <Text style={style.selectImageText}>Select Image</Text>
+                </>
+                }
               </View>
             }
           </TouchableOpacity>
@@ -133,7 +150,10 @@ function AddInventoryItemDialog(props) {
             activeOpacity={0.6}
             style={style.addItem}
             onPress={() => addClicked()}>
-            <Text style={style.addItemButtonText}>Add Item</Text>
+              {loading ? <ActivityIndicator color="#FFF" size="large" /> : 
+              <Text style={style.addItemButtonText}>Add Item</Text>
+              }
+            
           </TouchableOpacity>
         </View>
       </View>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://8b7984068343.ngrok.io/merchant/"
+const BASE_URL = "https://bdec57b410a5.ngrok.io/merchant/"
 
 async function GetCommodities(){
     try{
