@@ -16,6 +16,7 @@ import AppConfig from '../../AppConfig.json';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { GetCommodities, ListItem } from '../APIs/StoreManager';
 import { GetProfile } from '../APIs/ProfileManager';
+import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
 
 function ListItemScreen(props) {
   // Handle Inventory selection ---------------------------------
@@ -42,7 +43,7 @@ function ListItemScreen(props) {
       GetProfile().then(profile => {
         const commodityIds = profile.listings ? profile.listings.map(val => val.commodityId) : [];
         setInventoryItems(commodities.filter(val => !commodityIds.includes(val.id)));
-      }).catch(err => {});
+      }).catch(err => {})
     }).catch(err => {});
   }
 
@@ -74,7 +75,8 @@ function ListItemScreen(props) {
       price: parseFloat(price),
       dateAdded: new Date().getTime(),
       expiresOn: expireDate.getTime(),
-      stock: parseInt(stock),
+      initialStockCount: parseInt(stock),
+      currentStockCount: parseInt(stock)
     }
 
     console.log(data);
@@ -141,7 +143,7 @@ function ListItemScreen(props) {
           })}
         </Picker>
       </View>
-      <Text style={style.inputLable}>Selling Price ({"₹"})</Text>
+      <Text style={style.inputLable}>Selling Price ({GetCurrencySymbol()})</Text>
       <View style={style.inputWrapper}>
         <TextInput keyboardType="decimal-pad" style={style.inputTextField} onChangeText={setPrice}/>
       </View>

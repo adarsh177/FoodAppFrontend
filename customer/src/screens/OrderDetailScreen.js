@@ -7,18 +7,17 @@ import {
   TextInput,
   Modal,
   ScrollView,
-  Linking,
 } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import AppConfig from '../../AppConfig.json';
-import { GetOrderDetails } from '../APIs/OrderManager';
-import { GetCustomerInfo, GetMerchantInfo } from '../APIs/StoreManager';
+import { GetMerchantInfo } from '../APIs/Merchant';
+import { GetOrderDetails } from '../APIs/ProfileManager';
 import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
 
 function OrderDetailScreen(props) {
   const [loading, setLoading] = useState(true)
   const [orderDetails, setOrderDetails] = useState({})
-  const [customerInfo, setCustomerInfo] = useState({})
+  const [merchantInfo, setMerchantInfo] = useState({})
 
   
   //handel chat and call button ---------------------
@@ -26,22 +25,18 @@ function OrderDetailScreen(props) {
     return null;
   };
   const handleCall = () => {
-    Linking.openURL(`tel:${customerInfo.phone}`)
+    return null;
   };
 
-  const loadCustomerInfo = (id) => {
-    GetCustomerInfo(id).then(info => {
-      setCustomerInfo(info)
-      console.log('customer Info', id, info)
-    })
+  const loadMercantInfo = (id) => {
+    GetMerchantInfo(id).then(info => setMerchantInfo(info))
   }
 
   useEffect(() => {
     GetOrderDetails(props.route.params.orderId)
       .then(details => {
-        console.log('Order', details)
         setOrderDetails(details)
-        loadCustomerInfo(details.customerId)
+        loadMercantInfo(details.merchantId)
       })
       .finally(() => setLoading(false))
   }, [])
@@ -60,10 +55,10 @@ function OrderDetailScreen(props) {
         <Text style={style.indicator}>{orderDetails.status}</Text>
       </View>
       <View style={style.generalContainer}>
-        <Text style={style.lightTitle}>Ordered by</Text>
+        <Text style={style.lightTitle}>Ordered From</Text>
         <View style={style.orderByContainer}>
-          <Text style={style.customerName}>{customerInfo.name}</Text>
-          <Text style={style.lightTitle}>{customerInfo.location?.label ?? ""}</Text>
+          <Text style={style.customerName}>{merchantInfo.name}</Text>
+          <Text style={style.lightTitle}>{merchantInfo.location?.label ?? ""}</Text>
           <View style={style.orderByButtonsContainer}>
             {/* <TouchableOpacity
               activeOpacity={0.6}

@@ -8,6 +8,8 @@ import {
   ScrollView,
   FlatList,
   ActivityIndicator,
+  Image,
+  RefreshControl,
 } from 'react-native';
 import {FAB} from 'react-native-paper';
 import AppConfig from '../../../../AppConfig.json';
@@ -27,7 +29,6 @@ function StoreTab(props) {
   const [listings, setListings] = useState([]);
   const [clickedItem, setClickedItem] = useState({});
   const [orderSummary, setOrderSummary] = useState({pendingOrders: 0, ongoingOrders: 0})
-  const [intervalHandle, setIntervalHandle] = useState();
   const [storeName, setStoreName] = useState('');
 
   const [switchLoading, setSwitchLoading] = useState(true);
@@ -64,6 +65,7 @@ function StoreTab(props) {
 
   function updatePage(){
     GetListings().then(listings => {
+      console.log('Listings', listings);
       setListings(listings ?? []);
       setListedLoading(false);
     }).catch(err => {
@@ -89,24 +91,18 @@ function StoreTab(props) {
   }
 
   useEffect(() => {
-    setIntervalHandle(setInterval(() => {
-      updatePage()
-    }, REFRESH_TIME))
-
     props.navigation.addListener('focus', () => {
-      console.log('Focus store tab');
-      clearInterval(intervalHandle)
-      setIntervalHandle(setInterval(() => {
-        updatePage()
-      }, REFRESH_TIME))
+      updatePage()
     });
-
-    props.navigation.addListener('blur', () => clearInterval(intervalHandle))
+    
+    updatePage()
   }, []);
 
   return (
     <View style={style.storeContainer}>
-      <ScrollView contentContainerStyle={style.scrollContainer}>
+      <ScrollView 
+        contentContainerStyle={style.scrollContainer}
+        refreshControl={<RefreshControl refreshing={listedLoading} onRefresh={updatePage} />}>
         <View style={style.headerContainer}>
           <View>
             <Text style={style.shopNameText}>{storeName}</Text>
@@ -188,6 +184,8 @@ function StoreTab(props) {
                   />;
           }}
           />
+          {(listings.length === 0 && !listedLoading) &&
+          <Image style={style.noResultImg} source={require('../../../assets/no_result.png')} />}
           {(listings.length === 0 && !listedLoading) && <Text style={style.noItem}>No item listed yet! Click on plus button to list item</Text>}
       </ScrollView>
       <FAB style={style.fab} icon="plus" onPress={addListItemButton} />
@@ -297,9 +295,18 @@ const style = StyleSheet.create({
     bottom: 0,
     backgroundColor: AppConfig.primaryColor,
   },
+  noResultImg: {
+    width: "100%",
+    padding: 20,
+    height: 150,
+    resizeMode: 'contain'
+  },
   noItem:{
     fontSize: 16,
-    marginTop: 10
+    fontWeight: 'bold',
+    marginTop: 10,
+    textAlign: 'center',
+    color: AppConfig.primaryColor
   },
   subhead: {
     fontSize: 16,

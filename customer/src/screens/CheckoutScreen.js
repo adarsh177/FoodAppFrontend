@@ -12,7 +12,9 @@ import {
 import AppConfig from '../../AppConfig.json';
 import IconMCI from 'react-native-vector-icons/MaterialCommunityIcons';
 import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
-import { CheckPromo, GetTaxes } from '../APIs/ProfileManager';
+import { CheckPromo, GetTaxes, GetWalletBalance, PostOrder } from '../APIs/ProfileManager';
+import auth from '@react-native-firebase/auth';
+import AddMoneyDialog from '../dialogs/AddMoneyDialog';
 
 function CheckoutScreen(props) {
   const [promoLoading, setPromoLoading] = useState(false)
@@ -23,6 +25,8 @@ function CheckoutScreen(props) {
   const [promoUsed, setPromoUsed] = useState(null)
   const [taxes, setTaxes] = useState([])
   const [promoText, setPromoText] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [showAddMoney, setShowAddMoney] = useState(false)
   
   console.log('Order Details', props.route.params);
 
@@ -31,9 +35,11 @@ function CheckoutScreen(props) {
     setPromoLoading(true)
     CheckPromo(promoText).then(promo => {
       if(promo){
+        const promoVal = parseFloat((calculateTotalBase() * (promo.offPercent / 100.0)).toFixed(2))
+        promo.value = Math.min(promoVal, promo.uptoValue)
         setPromoUsed(promo)
-        setPromoValue(parseFloat((calculateTotalBase() * (promo.offPercent / 100.0)).toFixed(2)))
-        Alert.alert('Success', `Promotional code applied successfully.\nPercentage off: ${promo.offPercent}%`)
+        setPromoValue(promo.value)
+        Alert.alert(`${promo.offPercent}% off upto ${GetCurrencySymbol()}${promo.uptoValue}`, `Promotional code applied successfully.\nWe have applied ${promo.offPercent}% off upto ${GetCurrencySymbol()}${promo.uptoValue}`)
       }else{
         Alert.alert('Invalid Code', 'Invalid promotional code entered.')
       }
@@ -41,10 +47,59 @@ function CheckoutScreen(props) {
     .finally(() => setPromoLoading(false))
   };
 
-  //handle payment ---------------------------------------
-  const handlePayment = () => {
-    props.navigation.push('chatScreen');
-  };
+  const SendOrder = () => {
+    const data = {
+      customerId: auth().currentUser.uid,
+      merchantId: props.route.params.merchantId,
+      timeOfOrder: new Date().getTime(),
+      items: props.route.params.items,
+      taxes: taxes,
+      promotion: promoUsed,
+      baseValue: totalBaseValue,
+      taxValue: totalTaxValue,
+      promoValue: promoValue,
+      finalValue: totalBaseValue + totalTaxValue - promoValue,
+      status: "PENDING"
+    }
+
+    PostOrder(data)
+      .then(id => {
+        props.navigation.pop()
+        props.navigation.push('orderDetail', {orderId: id})
+      }).catch(err => {
+        alert('Error placing order at the moment')
+      })
+      .finally(() => setLoading(false))
+
+    console.log('data', data)
+  }
+
+  const payClicked = () => {
+    setLoading(true)
+    GetWalletBalance().then(bal => {
+      if((totalBaseValue - promoValue + totalTaxValue) > bal){
+        Alert.alert('Insufficient Balance', 'You do not have sufficient wallet balance for this order, Please recharge your wallet', [
+          {
+            onPress: () => {
+              setShowAddMoney(true)
+              setLoading(false)
+            },
+            text: "Add Money",
+            style: "default"
+          },
+          {
+            text: "Cancel",
+            style: "cancel",
+            onPress: () => setLoading(false)
+          }
+        ])
+      }else{
+        SendOrder()
+      }
+    })
+  }
+
+  
 
   const calculateTotalBase = () => {
     let total = 0
@@ -151,14 +206,20 @@ function CheckoutScreen(props) {
         </View>
       </ScrollView>
       <View style={style.payContainer}>
-        <TouchableOpacity
-          style={style.payButton}
-          activeOpacity={0.6}
-          onPress={handlePayment}>
-          <Text style={style.payButtonText}>Pay {GetCurrencySymbol()} {(totalBaseValue - promoValue + totalTaxValue).toFixed(2)}</Text>
-          <Text style={style.payButtonTextArrow}>&#9654;</Text>
-        </TouchableOpacity>
+        {loading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} /> :
+          <TouchableOpacity
+            style={style.payButton}
+            activeOpacity={0.6}
+            onPress={payClicked}>
+            <Text style={style.payButtonText}>Pay {GetCurrencySymbol()} {(totalBaseValue - promoValue + totalTaxValue).toFixed(2)}</Text>
+            <Text style={style.payButtonTextArrow}>&#9654;</Text>
+          </TouchableOpacity>
+        }
       </View>
+
+      <AddMoneyDialog
+        show={showAddMoney}
+        close={() => setShowAddMoney(false)} />
     </View>
   );
 }

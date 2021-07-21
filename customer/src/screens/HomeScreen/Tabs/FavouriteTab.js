@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import RestaurantCard from '../../../components/RestaurantCard';
 import AppConfig from '../../../../AppConfig.json';
@@ -21,36 +22,50 @@ function FavouriteTab(props) {
   const handelCardPress = (id) => {
     props.navigation.push('restaurantMenu', {merchantId: id})
   };
-  
-  useEffect(() => {
+
+  const loadFavs = () => {
     GetFavourites().then(favs => {
       setData(favs)
     }).finally(() => setLoading(false))
+  }
+  
+  useEffect(() => {
+    props.navigation.addListener('focus', () => {
+      setData([])
+      setLoading(true)
+      loadFavs()
+    })
+
+    loadFavs()
   }, [])
 
   return (
     <View style={style.favoriteContainer}>
       <Text style={style.favoriteTitle}>Favorite</Text>
 
-      {loading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} /> :
-        <ScrollView>
-          {data.map(restro => {
-            return(
-              <RestaurantCard
-                name={restro.name}
-                distance={(restro.distanceInMeters / 1000).toFixed(2)}
-                rating={`${restro.rating ?? 0} (${restro.ratingCount ?? 0} ratings)`}
-                onPress={() => handelCardPress(restro.userId)}
-                storeOpen={restro.openTill > new Date().getTime()}
-              />
-            )
-          })}
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={loadFavs} tintColor={AppConfig.primaryColor}/>
+        }>
+        {data.map(restro => {
+          return(
+            <RestaurantCard
+              name={restro.name}
+              distance={(restro.distanceInMeters / 1000).toFixed(2)}
+              rating={`${restro.rating ?? 0} (${restro.ratingCount ?? 0} ratings)`}
+              onPress={() => handelCardPress(restro.userId)}
+              storeOpen={restro.openTill > new Date().getTime()}
+            />
+          )
+        })}
 
-          
-        {!loading && data.length === 0 && <Image style={style.noResult} source={NoResult} />}
-        {!loading && data.length === 0 && <Text style={style.noResultText}>You have not marked any restaurants as your favourite yet</Text>}
         
-        </ScrollView>}
+      {!loading && data.length === 0 && <Image style={style.noResult} source={NoResult} />}
+      {!loading && data.length === 0 && <Text style={style.noResultText}>You have not marked any restaurants as your favourite yet</Text>}
+      
+      </ScrollView>
+      {/* {loading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} /> :
+        } */}
     </View>
   );
 }

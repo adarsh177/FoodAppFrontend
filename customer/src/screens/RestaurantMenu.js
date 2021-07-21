@@ -58,6 +58,7 @@ function RestaurantMenu(props) {
 
   const handlePressOnCartValue = () => {
     props.navigation.navigate('checkoutScreen', {
+      merchantId: props.route.params.merchantId,
       merchantName: data.name,
       merchantAddress: data.location.label,
       items: Object.values(currentMenu)

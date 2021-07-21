@@ -1,25 +1,34 @@
-import React from 'react';
-import {Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {Text, View, Image, StyleSheet, TouchableOpacity, ScrollView, RefreshControl} from 'react-native';
 import AppConfig from '../../../../AppConfig.json';
+import { GetProfile } from '../../../APIs/ProfileManager';
 
-function EarningTab() {
-  //----------------------Details of earnings----------------------------
-
-  const totalBalanceInWallet = 10000;
-  const todayEarning = 1000;
-  const weekEarning = 5000;
-
-  //----------------------Handle withdraw button----------------------------
+function EarningTab(props) {
+  const [profile, setProfile] = useState({})
+  const [loading, setLoading] = useState(false)
 
   const handleWithdraw = () => {
     return null;
   };
 
+  const loadProfile = () => {
+    GetProfile().then(val => setProfile(val))
+  }
+
+  useEffect(() => {
+    props.navigation.addListener('focus', loadProfile)
+
+    loadProfile()
+  }, [])
+
   return (
-    <View style={style.earningContainer}>
+    <ScrollView 
+      style={style.earningContainer}
+      contentContainerStyle={{justifyContent: "flex-start",alignItems: 'center'}}
+      refreshControl={<RefreshControl refreshing={loading} onRefresh={loadProfile} />}>
       <View style={style.totalBalanceInWalletContainer}>
         <View style={style.moneyContainer}>
-          <Text style={style.currency}>{"₹"} {totalBalanceInWallet}</Text>
+          <Text style={style.currency}>{"₹"} {profile.totalEarnings ?? 0}</Text>
         </View>
         <View style={style.titleContainer}>
           <Text style={style.titleText}>Balance earned till date</Text>
@@ -28,7 +37,7 @@ function EarningTab() {
 
       <View style={style.totalBalanceInWalletContainer}>
         <View style={style.moneyContainer}>
-          <Text style={style.currency}>{"₹"} {totalBalanceInWallet}</Text>
+          <Text style={style.currency}>{"₹"} {profile.walletBalance ?? 0}</Text>
         </View>
         <View style={style.titleContainer}>
           <Text style={style.titleText}>Outstanding Balance</Text>
@@ -43,30 +52,7 @@ function EarningTab() {
       </TouchableOpacity>
 
       <View style={style.horizontalRule} />
-
-      {/* <Text style={style.summary}>Summary</Text>
-
-      <View style={{width: "100%", flexDirection: "row"}}>
-        <View style={{flex: 1}}>
-          <View style={style.cardContainer}>
-            <Text style={style.cardAmount}>₹ 5000</Text>
-            <Text style={style.cardTitle}>Today</Text>
-          </View>
-        </View>
-        <View style={{width: 20}}></View>
-        <View style={{flex: 1}}>
-          <View style={style.cardContainer}>
-            <Text style={style.cardAmount}>₹ 5000</Text>
-            <Text style={style.cardTitle}>This week</Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={style.cardContainer}>
-        <Text style={style.cardAmount}>₹ 5000</Text>
-        <Text style={style.cardTitle}>This month</Text>
-      </View> */}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -75,8 +61,6 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#fff',
-    justifyContent: "flex-start",
-    alignItems: 'center',
     padding: 10
   },
   totalBalanceInWalletContainer: {

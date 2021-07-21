@@ -7,7 +7,7 @@ import AppConfig from '../../../AppConfig.json';
 // All screens in proper order-----------------------------------
 
 import StoreTab from './Tabs/StoreTab';
-import OrderTab from './Tabs/OrderTab';
+import OrderTab from './Tabs/OrderTab/OrderTab';
 import ProfileTab from './Tabs/ProfileTab';
 import EarningTab from './Tabs/EarningTab';
 

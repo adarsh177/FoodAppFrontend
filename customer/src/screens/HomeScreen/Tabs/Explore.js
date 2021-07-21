@@ -11,6 +11,7 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native'
 import AppConfig from '../../../../AppConfig.json'
 import IconMI from 'react-native-vector-icons/MaterialIcons'
@@ -129,6 +130,10 @@ function Explore(props) {
       setLocationPoint(profile.locationPoint ?? {})
       loadSearchResults();
     }).finally(() => handleUserLocation())
+
+    props.navigation.addListener('focus', () => {
+      loadSearchResults()
+    })
   }, [])
 
   return (
@@ -167,7 +172,9 @@ function Explore(props) {
           s
         />
       </View> */}
-      <ScrollView contentContainerStyle={style.scrollContainer}>
+      <ScrollView 
+        contentContainerStyle={style.scrollContainer}
+        refreshControl={<RefreshControl refreshing={loadingResults} onRefresh={loadSearchResults} />}>
         {restros.map(restro => {
           return(
             <RestaurantCard
@@ -185,7 +192,7 @@ function Explore(props) {
 
         {loadingResults && <ActivityIndicator size="large" color={AppConfig.primaryColor} />}
 
-        {(!loadingResults && (restros.length % 10 === 0)) &&
+        {(!loadingResults && restros.length !== 0 && (restros.length % 10 === 0)) &&
         <TouchableOpacity activeOpacity={0.8} onPress={loadMoreResults}>
           <Text style={style.loadMore}>Load More</Text>
         </TouchableOpacity>}

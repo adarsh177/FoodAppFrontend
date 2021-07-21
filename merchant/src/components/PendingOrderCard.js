@@ -1,21 +1,43 @@
 import React from 'react';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import AppConfig from '../../AppConfig.json';
+import { RejectOrder } from '../APIs/OrderManager';
 
 function PendingOrderCard(props) {
   //handel card press-------------------------------
   const pendingCardPress = () => {
     return null;
   };
-  //handle action of reject and accept in card
+  
   const rejectOrder = () => {
-    return null;
+    Alert.alert('Reject order', 'are you sure?', [
+      {
+        onPress: () => props.reject(),
+        text: "Reject",
+        style: "default"
+      },
+      {
+        text: "Cancel",
+        style: "cancel"
+      }
+    ])
   };
+
   const acceptOrder = () => {
-    return null;
+    Alert.alert('Accept order', 'are you sure?', [
+      {
+        onPress: () => props.accept(),
+        text: "Accept",
+        style: "default"
+      },
+      {
+        text: "Cancel",
+        style: "cancel"
+      }
+    ])
   };
   return (
-    <TouchableOpacity activeOpacity={0.6} onPress={pendingCardPress}>
+    <TouchableOpacity activeOpacity={0.6} onPress={props.onCardPressed}>
       <View style={style.cardContainer}>
         <View style={style.orderIdandPriceContainer}>
           <Text style={style.orderId}>#{props.orderID}</Text>

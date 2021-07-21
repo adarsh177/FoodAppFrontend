@@ -107,7 +107,7 @@ function EditProfileScreen(props){
                 (position) => {
                   console.log(position);
                   setLocationPoint({
-                      type: "POINT",
+                      type: "Point",
                       coordinates: [position.coords.longitude, position.coords.latitude]
                   });
                   ReverseGeocode(position.coords.latitude, position.coords.longitude).then(location => {

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Text, View, Image, StyleSheet, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {Text, View, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Linking, ScrollView, Alert} from 'react-native';
 
 // External poackage for handeling star rating
 
@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import auth from '@react-native-firebase/auth';
 import { GetProfile } from '../../../APIs/ProfileManager';
 import AppConfig from '../../../../AppConfig.json';
+import FeedbackDialog from '../../../dialogs/FeedbackDialog';
 
 function ProfileTab(props) {
   // Details of restaurant --------------------------------------------------------
@@ -18,6 +19,7 @@ function ProfileTab(props) {
   const [location, setLocation] = useState('');
   const [phone, setPhone] = useState(auth().currentUser.phoneNumber);
   const [loading, setLoading] = useState(true);
+  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false)
 
   // handel Edit Profile button --------------------------------
 
@@ -28,10 +30,20 @@ function ProfileTab(props) {
   // handel Logout button --------------------------------
 
   const handleLogout = async () => {
-    await auth().signOut();
-    console.log("User signed out");
-    props.navigation.replace("splash")
-    return null;
+    Alert.alert('Log out', 'Are you sure, you want to logout?', [
+      {
+        text: "Cancel",
+        style: "cancel"
+      },
+      {
+        onPress: async () => {
+          await auth().signOut();
+          props.navigation.navigate('splash');
+        },
+        text: "Log out",
+        style: "default"
+      }
+    ])
   };
 
   useEffect(() => {
@@ -51,7 +63,7 @@ function ProfileTab(props) {
     return <ActivityIndicator color={AppConfig.primaryColor} size="large" />;
 
   return (
-    <View style={style.profileContainer}>
+    <ScrollView style={style.profileContainer}>
       <View style={style.resaurantImageContainer}>
         <Image
           style={style.resaurantImage}
@@ -61,72 +73,74 @@ function ProfileTab(props) {
       <View style={style.detailsContainer}>
         <Text style={style.boldDescriptionTitle}>{restaurantName}</Text>
         <Text style={style.smallDescriptionTitle}>{desc}</Text>
-        <View style={style.rowFlexContainer}>
-          <Rating
-            rating={rating}
-            max={5}
-            iconWidth={24}
-            iconHeight={24}
-            style={style.rightMargin}
-            editable={false}
-          />
-          <Text style={style.smallDescriptionTitle}>
-            {rating ?? 0} rating
-          </Text>
-        </View>
-        <View style={style.rowFlexContainer}>
+        <Text style={style.smallDescriptionTitle}>
+          {rating ?? 0} rating
+        </Text>
+
+        <TouchableOpacity onPress={handelEditProfile} style={[style.rowFlexContainer, {marginTop: 20}]} activeOpacity={0.8}>
           <Icon
             style={style.rightMargin}
-            name="map-marker"
-            size={28}
-            color="#00B875"
+            name="user"
+            size={24}
+            color={AppConfig.primaryColor}
           />
-          <Text style={style.smallDescriptionTitle}>
-            {location}
-          </Text>
-        </View>
+          <Text style={style.option}>Edit Profile</Text>
+        </TouchableOpacity>
 
-        <View style={style.rowFlexContainer}>
+        <TouchableOpacity onPress={() => setShowFeedbackDialog(true)} style={[style.rowFlexContainer]} activeOpacity={0.8}>
           <Icon
             style={style.rightMargin}
-            name="phone"
-            size={28}
-            color="#00B875"
+            name="comment"
+            size={24}
+            color={AppConfig.primaryColor}
           />
-          <Text style={style.smallDescriptionTitle}>
-            {phone}
-          </Text>
-        </View>
-        {/* <View style={style.rowFlexContainer}>
+          <Text style={style.option}>Give Feedback</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => alert("Not done yet")} style={[style.rowFlexContainer]} activeOpacity={0.8}>
           <Icon
             style={style.rightMargin}
-            name="address-card"
-            size={28}
-            color="#00B875"
+            name="share-alt"
+            size={24}
+            color={AppConfig.primaryColor}
           />
-          <Text style={style.smallDescriptionTitle}>
-            Lorem ipsum dolor sit amet, consectetur
-          </Text>
-        </View> */}
+          <Text style={style.option}>Share with</Text>
+        </TouchableOpacity>
 
-        {/*Button for Edit profile------------------------------------- */}
+        <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=privacy')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+          <Icon
+            style={style.rightMargin}
+            name="bullseye"
+            size={24}
+            color={AppConfig.primaryColor}
+          />
+          <Text style={style.option}>Privacy Policy</Text>
+        </TouchableOpacity>
 
-        <TouchableOpacity
-          activeOpacity={0.6}
-          style={style.editProfile}
-          onPress={handelEditProfile}>
-          <Text style={style.editProfileButtonText}>Edit Profile</Text>
+        <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=terms')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+          <Icon
+            style={style.rightMargin}
+            name="file"
+            size={24}
+            color={AppConfig.primaryColor}
+          />
+          <Text style={style.option}>Terms and Conditions</Text>
         </TouchableOpacity>
 
         {/*Button for Logout  -------------------------------------- */}
 
         <TouchableOpacity
           activeOpacity={0.6}
+          style={{marginBottom: 50, marginTop: 20}}
           onPress={handleLogout}>
           <Text style={style.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
       </View>
-    </View>
+
+      <FeedbackDialog
+        show={showFeedbackDialog}
+        close={() => setShowFeedbackDialog(false)} />
+    </ScrollView>
   );
 }
 
@@ -160,15 +174,24 @@ const style = StyleSheet.create({
   smallDescriptionTitle: {
     fontSize: 14,
     color: '#707070',
-    marginVertical: 10,
+    marginVertical: 5
+  },
+  starContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   rowFlexContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 3,
+    borderBottomColor: '#bababa',
+    borderBottomWidth: 1,
+    padding: 10,
+    borderRadius: 3,
+    marginTop: 10
   },
   rightMargin: {
-    marginRight: 15,
+    width: 40
   },
   editProfile: {
     width: 200,

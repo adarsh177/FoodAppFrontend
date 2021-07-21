@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://bdec57b410a5.ngrok.io/merchant/"
+const BASE_URL = "https://f13022f49868.ngrok.io/merchant/"
 
 async function GetProfile(){
     try{
@@ -57,8 +57,25 @@ async function CreateProfile(dataToUpdate){
     }
 }
 
+async function SendFeedback(feedback){
+    try{
+        const response = await axios.post(`${BASE_URL}feedback`, {feedback: feedback}, {
+            method: "POST",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            },
+        })
+        return Promise.resolve();
+    }catch(ex){
+        console.log("Error sending feedback", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
 export {
     GetProfile,
     UpdateProfile,
-    CreateProfile
+    CreateProfile,
+    SendFeedback
 }

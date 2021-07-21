@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -7,80 +7,113 @@ import {
   TextInput,
   Image,
   ScrollView,
+  Linking,
+  Alert,
 } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMIC from 'react-native-vector-icons/MaterialCommunityIcons';
 import auth from '@react-native-firebase/auth';
+import { GetProfile } from '../APIs/ProfileManager';
+import FeedbackDialog from '../dialogs/FeedbackDialog';
 
 function UserProfile(props) {
-  const customerName = 'Rajesh kumar';
-  const address = 'raipur';
-  const email = 'ramesh@gmail.com';
-  const phone = '915142514';
-
-  // handel Edit Profile button --------------------------------
-
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState(auth().currentUser.phoneNumber)
+  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false)
+  
   const handelEditProfile = () => {
     props.navigation.push('editProfile');
   };
-
-  // handel Logout button --------------------------------
-
-  const handleLogout = async () => {
-    await auth().signOut();
-    props.navigation.navigate('splash');
+  
+  const handleLogout = () => {
+    Alert.alert('Log out', 'Are you sure, you want to logout?', [
+      {
+        text: "Cancel",
+        style: "cancel"
+      },
+      {
+        onPress: async () => {
+          await auth().signOut();
+          props.navigation.navigate('splash');
+        },
+        text: "Log out",
+        style: "default"
+      }
+    ])
   };
+
+  useEffect(() => {
+    GetProfile().then(profile => {
+      setName(profile.name)
+    })
+  }, [])
+
   return (
-    <ScrollView style={style.profileContainer}>
-      <Image style={style.avtar} source={require('../assets/restaurant.jpg')} />
+    <ScrollView style={style.profileContainer} contentContainerStyle={{alignItems: "center"}}>
+      <Image style={style.avtar} source={require('../assets/logo.png')} />
       <View style={style.detailsContainer}>
-        <Text style={style.boldDescriptionTitle}>{customerName}</Text>
+        <Text style={style.boldDescriptionTitle}>{name}</Text>
+        <Text style={style.smallDescriptionTitle}>{phone}</Text>
 
-        <View style={style.rowFlexContainer}>
+        <TouchableOpacity onPress={handelEditProfile} style={[style.rowFlexContainer, {marginTop: 20}]} activeOpacity={0.8}>
           <Icon
             style={style.rightMargin}
-            name="map-marker"
-            size={28}
-            color="#00B875"
+            name="user"
+            size={24}
+            color={AppConfig.primaryColor}
           />
-          <Text style={style.smallDescriptionTitle}>{address}</Text>
-        </View>
-
-        <View style={style.rowFlexContainer}>
-          <IconMIC
-            style={style.rightMargin}
-            name="email"
-            size={28}
-            color="#00B875"
-          />
-          <Text style={style.smallDescriptionTitle}>{email}</Text>
-        </View>
-
-        <View style={style.rowFlexContainer}>
-          <Icon
-            style={style.rightMargin}
-            name="phone"
-            size={28}
-            color="#00B875"
-          />
-          <Text style={style.smallDescriptionTitle}>{phone}</Text>
-        </View>
-        {/*Button for Edit profile------------------------------------- */}
-
-        <TouchableOpacity
-          activeOpacity={0.6}
-          style={style.editProfile}
-          onPress={handelEditProfile}>
-          <Text style={style.editProfileButtonText}>Edit Profile</Text>
+          <Text style={style.option}>Edit Profile</Text>
         </TouchableOpacity>
 
-        {/*Button for Logout  -------------------------------------- */}
+        <TouchableOpacity onPress={() => setShowFeedbackDialog(true)} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+          <Icon
+            style={style.rightMargin}
+            name="comment"
+            size={24}
+            color={AppConfig.primaryColor}
+          />
+          <Text style={style.option}>Give Feedback</Text>
+        </TouchableOpacity>
 
-        <TouchableOpacity activeOpacity={0.6} onPress={handleLogout}>
+        <TouchableOpacity onPress={() => alert("Not done yet")} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+          <Icon
+            style={style.rightMargin}
+            name="share-alt"
+            size={24}
+            color={AppConfig.primaryColor}
+          />
+          <Text style={style.option}>Share with</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=privacy')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+          <Icon
+            style={style.rightMargin}
+            name="bullseye"
+            size={24}
+            color={AppConfig.primaryColor}
+          />
+          <Text style={style.option}>Privacy Policy</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=terms')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+          <Icon
+            style={style.rightMargin}
+            name="file"
+            size={24}
+            color={AppConfig.primaryColor}
+          />
+          <Text style={style.option}>Terms and Conditions</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={{marginTop: 40}} activeOpacity={0.6} onPress={handleLogout}>
           <Text style={style.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
       </View>
+
+      <FeedbackDialog
+        show={showFeedbackDialog}
+        close={() => setShowFeedbackDialog(false)}/>
     </ScrollView>
   );
 }
@@ -89,12 +122,12 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 20
   },
   avtar: {
-    width: '100%',
-    height: 150,
-    resizeMode: 'cover',
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
     alignSelf: 'center',
   },
   detailsContainer: {
@@ -106,19 +139,30 @@ const style = StyleSheet.create({
     color: '#000000',
     fontWeight: 'bold',
     marginTop: 20,
+    textAlign: 'center'
   },
   smallDescriptionTitle: {
     fontSize: 14,
     color: '#707070',
-    marginVertical: 10,
+    textAlign: 'center'
+  },
+  option: {
+    fontSize: 16,
+    color: "#696969",
+    textAlign: 'center'
   },
   rowFlexContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 3,
+    borderBottomColor: '#bababa',
+    borderBottomWidth: 1,
+    padding: 10,
+    borderRadius: 3,
+    marginTop: 10
   },
   rightMargin: {
-    marginRight: 15,
+    width: 40,
   },
   editProfile: {
     width: 200,
@@ -136,7 +180,6 @@ const style = StyleSheet.create({
     fontWeight: 'bold',
   },
   logoutButtonText: {
-    marginTop: 10,
     alignSelf: 'center',
     color: '#FF5353',
     fontSize: 16,
@@ -154,13 +197,6 @@ const style = StyleSheet.create({
   },
   editProfileButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  logoutButtonText: {
-    marginTop: 10,
-    alignSelf: 'center',
-    color: '#FF5353',
     fontSize: 16,
     fontWeight: 'bold',
   },

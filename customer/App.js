@@ -15,6 +15,7 @@ import EditProfileScreen from './src/screens/EditProfileScreen';
 import CheckoutScreen from './src/screens/CheckoutScreen';
 import ChatScreen from './src/screens/ChatScreen';
 import UserProfile from './src/screens/UserProfile';
+import OrderDetailScreen from './src/screens/OrderDetailScreen';
 
 const Stack = createStackNavigator();
 
@@ -95,6 +96,16 @@ function App() {
           }}
           name="userProfile"
           component={UserProfile}
+        />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: AppConfig.primaryColor,
+            headerTitleAlign: 'center',
+            title: 'Order Detail',
+          }}
+          name="orderDetail"
+          component={OrderDetailScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

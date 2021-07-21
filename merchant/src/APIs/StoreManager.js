@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://bdec57b410a5.ngrok.io/merchant/"
+const BASE_URL = "https://f13022f49868.ngrok.io/merchant/"
 
 async function GetCommodities(){
     try{
@@ -60,6 +60,7 @@ async function GetListings(){
                 "timestamp": new Date().getTime()
             }
         })
+        console.log('Listing data', response.data)
         return Promise.resolve(response.data);
     }catch(ex){
         console.log("Error ADDING listing", ex);
@@ -133,6 +134,24 @@ async function GetOrderSummary(){
     }
 }
 
+async function GetCustomerInfo(id){
+    console.log(`${BASE_URL}/customer/${id}`)
+    try{
+        const response = await axios.get(`${BASE_URL}customer/${id}`, {
+            method: "GET",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            }
+        })
+        console.log(response.data)
+        return Promise.resolve(response.data);
+    }catch(ex){
+        console.log("Error getting customer info", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
 export {
     GetCommodities,
     DeleteCommodity,
@@ -141,5 +160,6 @@ export {
     ListItem,
     UnlistItem,
     UpdateStoreStatus,
-    GetOrderSummary
+    GetOrderSummary,
+    GetCustomerInfo
 }

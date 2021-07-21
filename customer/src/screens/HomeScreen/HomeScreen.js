@@ -7,8 +7,8 @@ import AppConfig from '../../../AppConfig.json';
 // All screens in proper order-----------------------------------
 
 import Explore from './Tabs/Explore';
-import OrderTab from './Tabs/OrderTab';
 import FavouriteTab from './Tabs/FavouriteTab';
+import Wallet from './Tabs/Wallet';
 
 function HomeScreen() {
   const bottomTab = createBottomTabNavigator();
@@ -18,14 +18,12 @@ function HomeScreen() {
       screenOptions={({route}) => {
         return {
           tabBarIcon: ({focused, color, size}) => {
-            let iconName;
-
             if (route.name === 'explore') {
               return <IconMI name="explore" color={color} size={size} />;
             } else if (route.name === 'favorite') {
               return <IconMI name="favorite" color={color} size={size} />;
-            } else if (route.name === 'order') {
-              return <IconFA name="shopping-bag" color={color} size={size} />;
+            } else if (route.name === 'wallet') {
+              return <IconMI name="account-balance-wallet" color={color} size={size} />;
             }
           },
         };
@@ -34,9 +32,9 @@ function HomeScreen() {
         activeTintColor: AppConfig.primaryColor,
         inactiveTineColor: '#a4a4a4',
       }}>
-      <bottomTab.Screen name="explore" component={Explore} />
-      <bottomTab.Screen name="favorite" component={FavouriteTab} />
-      <bottomTab.Screen name="order" component={OrderTab} />
+      <bottomTab.Screen options={{title: "Explore"}} name="explore" component={Explore} />
+      <bottomTab.Screen options={{title: "Favourites"}} name="favorite" component={FavouriteTab} />
+      <bottomTab.Screen options={{title: "Wallet"}} name="wallet" component={Wallet} />
     </bottomTab.Navigator>
   );
 }

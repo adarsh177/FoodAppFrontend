@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://f75784ceb3d0.ngrok.io/customer/"
+const BASE_URL = "https://food.adarshshrivastava.in/customer/"
 
 async function GetProfile(){
     try{
@@ -89,10 +89,113 @@ async function CheckPromo(promoCode){
     }
 }
 
+async function SendFeedback(feedback){
+    try{
+        const response = await axios.post(`${BASE_URL}feedback`, {feedback: feedback}, {
+            method: "POST",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            }
+        })
+        return Promise.resolve();
+    }catch(ex){
+        console.log("Error adding feedback", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
+async function GetWalletBalance(){
+    try{
+        const response = await axios.get(`${BASE_URL}wallet`, {
+            method: "GET",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            }
+        })
+        return Promise.resolve(response.data.walletBalance);
+    }catch(ex){
+        console.log("Error getting wallet balance", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
+async function AddWalletBalance(amount){
+    try{
+        const response = await axios.post(`${BASE_URL}wallet`, {amount: amount}, {
+            method: "POST",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            }
+        })
+        return Promise.resolve(response.data.walletBalance);
+    }catch(ex){
+        console.log("Error ADDING wallet balance", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
+async function PostOrder(order){
+    try{
+        const response = await axios.post(`${BASE_URL}order`, order, {
+            method: "POST",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            }
+        })
+        return Promise.resolve(response.data.orderId);
+    }catch(ex){
+        console.log("Error posting order", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
+async function GetOrderDetails(id){
+    try{
+        const response = await axios.get(`${BASE_URL}order/detail/${id}`, {
+            method: "GET",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            }
+        })
+        return Promise.resolve(response.data.orderDetails);
+    }catch(ex){
+        console.log("Error getting order", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
+async function GetOrders(){
+    try{
+        const response = await axios.get(`${BASE_URL}order`, {
+            method: "GET",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            }
+        })
+        return Promise.resolve(response.data);
+    }catch(ex){
+        console.log("Error getting order list", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
+
 export {
     GetProfile,
     UpdateProfile,
     CreateProfile,
     GetTaxes,
-    CheckPromo
+    CheckPromo,
+    SendFeedback,
+    GetWalletBalance,
+    AddWalletBalance,
+    PostOrder,
+    GetOrderDetails,
+    GetOrders
 }
