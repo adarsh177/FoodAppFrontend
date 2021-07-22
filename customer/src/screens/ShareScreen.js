@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, TouchableOpacity, View, Text, Share } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View, Text, Share, ScrollView } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 
 function ShareScreen(props){
@@ -15,7 +15,7 @@ function ShareScreen(props){
     }
 
     return(
-        <View style={Style.mainContainer}>
+        <ScrollView style={Style.mainContainer}>
             <Image style={Style.shareImage} source={require('../assets/share.png')} />
             <Text style={Style.shareTxt}>
                 Around one third of all food produced in the world is <Text style={{color: 'red'}}>wasted</Text>.{"\n\n"}
@@ -25,7 +25,7 @@ function ShareScreen(props){
             <TouchableOpacity style={{marginTop: 20}} onPress={shareApp} activeOpacity={0.8}>
                 <Text style={Style.shareBtn}>SHARE</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     )
 }
 

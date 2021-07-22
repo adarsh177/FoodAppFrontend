@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://food.adarshshrivastava.in/customer/"
+const BASE_URL = "https://4ad85fc453a8.ngrok.io/customer/"
 
 async function GetProfile(){
     try{
@@ -185,6 +185,22 @@ async function GetOrders(){
     }
 }
 
+async function RateOrder(orderId, rating){
+    try{
+        const response = await axios.post(`${BASE_URL}order/rating/${orderId}`, {rating: rating}, {
+            method: "POST",
+            headers: {
+                "authorization": await GetAuthToken(),
+                "timestamp": new Date().getTime()
+            }
+        })
+        return Promise.resolve();
+    }catch(ex){
+        console.log("Error rating order", ex);
+        return Promise.reject("Server Error");
+    }
+}
+
 
 export {
     GetProfile,
@@ -197,5 +213,6 @@ export {
     AddWalletBalance,
     PostOrder,
     GetOrderDetails,
-    GetOrders
+    GetOrders,
+    RateOrder
 }

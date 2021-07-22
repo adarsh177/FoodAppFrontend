@@ -70,7 +70,7 @@ function Login(props) {
       }
     }catch(ex){
       console.log('Error verifying otp', ex);
-      Alert.alert('Verify OTP', 'Error verifying OTP. Please check the OTP and try again.');
+      Alert.alert('Verify OTP', `Error verifying OTP. Please check the OTP and try again.\n ${ex}`);
     }
   }
 

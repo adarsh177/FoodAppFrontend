@@ -180,7 +180,7 @@ function Explore(props) {
             <RestaurantCard
               name={restro.name}
               distance={(restro.distanceInMeters / 1000).toFixed(2)}
-              rating={`${restro.rating ?? 0} (${restro.ratingCount ?? 0} ratings)`}
+              rating={`${restro.rating ? restro.rating.toFixed(1) : 0} (${restro.ratingCount ?? 0} ratings)`}
               onPress={() => handelCardPress(restro.userId)}
             />
           )

@@ -219,7 +219,8 @@ const style = StyleSheet.create({
     borderColor: '#ddd',
     flexDirection: "row",
     justifyContent: "flex-start",
-    alignItems: "center"
+    alignItems: "center",
+    marginTop: 20,
   },
   PhoneFieldFocused: {
     borderColor: AppConfig.primaryColor,

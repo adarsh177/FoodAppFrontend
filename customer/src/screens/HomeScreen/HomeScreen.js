@@ -3,15 +3,21 @@ import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconMI from 'react-native-vector-icons/MaterialIcons';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AppConfig from '../../../AppConfig.json';
-
-// All screens in proper order-----------------------------------
-
 import Explore from './Tabs/Explore';
 import FavouriteTab from './Tabs/FavouriteTab';
 import Wallet from './Tabs/Wallet';
+import messaging from '@react-native-firebase/messaging';
+import { UpdateProfile } from '../../APIs/ProfileManager';
 
 function HomeScreen() {
   const bottomTab = createBottomTabNavigator();
+
+  useEffect(() => {
+    // saving fcm token in backend
+    messaging().getToken().then(token => {
+      UpdateProfile({fcmToken: token})
+    })
+  }, [])
 
   return (
     <bottomTab.Navigator

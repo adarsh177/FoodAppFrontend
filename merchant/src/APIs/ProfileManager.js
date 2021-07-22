@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://de16f8291be9.ngrok.io/merchant/"
+const BASE_URL = "https://food.adarshshrivastava.in/merchant/"
 
 async function GetProfile(){
     try{

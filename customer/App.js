@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import AppConfig from './AppConfig.json';
@@ -16,10 +16,22 @@ import CheckoutScreen from './src/screens/CheckoutScreen';
 import ChatScreen from './src/screens/ChatScreen';
 import UserProfile from './src/screens/UserProfile';
 import OrderDetailScreen from './src/screens/OrderDetailScreen';
+import messaging from '@react-native-firebase/messaging';
+import { Alert } from 'react-native';
+import ShareScreen from './src/screens/ShareScreen';
 
 const Stack = createStackNavigator();
 
 function App() {
+
+  useEffect(() => {
+    messaging().onMessage(msg => {
+      if(msg.notification){
+        Alert.alert(msg.notification.title, msg.notification.body)
+      }
+    })
+  }, [])
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -106,6 +118,17 @@ function App() {
           }}
           name="orderDetail"
           component={OrderDetailScreen}
+        />
+        
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: AppConfig.primaryColor,
+            headerTitleAlign: 'center',
+            title: 'Share App',
+          }}
+          name="shareScreen"
+          component={ShareScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

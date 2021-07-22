@@ -114,6 +114,7 @@ function RestaurantMenu(props) {
   }
 
   useEffect(() => {
+    props.navigation.addListener('focus', loadData)
     loadData()
   }, [])
 

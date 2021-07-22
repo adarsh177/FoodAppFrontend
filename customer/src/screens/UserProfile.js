@@ -76,7 +76,7 @@ function UserProfile(props) {
           <Text style={style.option}>Give Feedback</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => alert("Not done yet")} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+        <TouchableOpacity onPress={() => props.navigation.push('shareScreen')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
           <Icon
             style={style.rightMargin}
             name="share-alt"
