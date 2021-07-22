@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {Text, View, Image, StyleSheet, TouchableOpacity, ScrollView, RefreshControl} from 'react-native';
 import AppConfig from '../../../../AppConfig.json';
 import { GetProfile } from '../../../APIs/ProfileManager';
+import GetCurrencySymbol from '../../../CurrencyManager/CurrencyManager';
 
 function EarningTab(props) {
   const [profile, setProfile] = useState({})
@@ -28,7 +29,7 @@ function EarningTab(props) {
       refreshControl={<RefreshControl refreshing={loading} onRefresh={loadProfile} />}>
       <View style={style.totalBalanceInWalletContainer}>
         <View style={style.moneyContainer}>
-          <Text style={style.currency}>{"₹"} {profile.totalEarnings ?? 0}</Text>
+          <Text style={style.currency}>{GetCurrencySymbol()} {profile.totalEarnings ?? 0}</Text>
         </View>
         <View style={style.titleContainer}>
           <Text style={style.titleText}>Balance earned till date</Text>
@@ -37,7 +38,7 @@ function EarningTab(props) {
 
       <View style={style.totalBalanceInWalletContainer}>
         <View style={style.moneyContainer}>
-          <Text style={style.currency}>{"₹"} {profile.walletBalance ?? 0}</Text>
+          <Text style={style.currency}>{GetCurrencySymbol()} {profile.walletBalance ?? 0}</Text>
         </View>
         <View style={style.titleContainer}>
           <Text style={style.titleText}>Outstanding Balance</Text>

@@ -16,23 +16,30 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { UpdateStoreStatus } from '../APIs/StoreManager';
 
 function StartStoreDialog(props) {
-  const [date, setDate] = useState(null);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [storeCloseDate, setStoreCloseDate] = useState(null);
+  const [pickupDate, setPickupDate] = useState(null);
+  const [isStoreCloseDatePickerVisible, setStoreCloseDatePickerVisibility] = useState(false);
+  const [isPickupDatePickerVisible, setPickupDatePickerVisibility] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const close = () => {
-    setDate(null);
+    setStoreCloseDate(null);
+    setPickupDate(null)
     props.close();
   }
 
   const StartAccepting = () => {
-      if(!date){
-          alert("Please select closing time");
+      if(!storeCloseDate){
+          alert("Please select store closing time");
           return;
+      }
+      if(!pickupDate){
+        alert("Please select pickup closing time");
+        return;
       }
       
       setLoading(true);
-      UpdateStoreStatus(date.getTime()).then(() => {
+      UpdateStoreStatus(storeCloseDate.getTime(), pickupDate.getTime()).then(() => {
           close();
       }).catch(err => {
           console.log('Error startig store', err);
@@ -53,19 +60,34 @@ function StartStoreDialog(props) {
           <Text style={style.head}>Accept Order</Text>
           <Text style={style.subtext} >Select a time at which the store will automatically close.</Text>
 
-          <Text style={style.label}>Select Date Time</Text>
-          <TouchableOpacity onPress={0.8} onPress={() => setDatePickerVisibility(true)}>
-            <Text style={style.datetime}>{date ? `${date.toLocaleTimeString()} ${date.toLocaleDateString()}` : `Select date`}</Text>
+          <Text style={style.label}>Store closing time</Text>
+          <TouchableOpacity onPress={0.8} onPress={() => setStoreCloseDatePickerVisibility(true)}>
+            <Text style={style.datetime}>{storeCloseDate ? `${storeCloseDate.toLocaleTimeString()} ${storeCloseDate.toLocaleDateString()}` : `Select date time`}</Text>
           </TouchableOpacity>
           <DateTimePickerModal
-            isVisible={isDatePickerVisible}
+            isVisible={isStoreCloseDatePickerVisible}
             minimumDate={new Date()}
             mode="datetime"
             onConfirm={(date) => {
-                setDate(date);
-                setDatePickerVisibility(false)
+                setStoreCloseDate(date);
+                setStoreCloseDatePickerVisibility(false)
             }}
-            onCancel={() => setDatePickerVisibility(false)}
+            onCancel={() => setStoreCloseDatePickerVisibility(false)}
+            />
+
+          <Text style={style.label}>Pickup closing time</Text>
+          <TouchableOpacity onPress={0.8} onPress={() => setPickupDatePickerVisibility(true)}>
+            <Text style={style.datetime}>{pickupDate ? `${pickupDate.toLocaleTimeString()} ${pickupDate.toLocaleDateString()}` : `Select date time`}</Text>
+          </TouchableOpacity>
+          <DateTimePickerModal
+            isVisible={isPickupDatePickerVisible}
+            minimumDate={new Date()}
+            mode="datetime"
+            onConfirm={(date) => {
+                setPickupDate(date);
+                setPickupDatePickerVisibility(false)
+            }}
+            onCancel={() => setPickupDatePickerVisibility(false)}
             />
 
           {loading ? <ActivityIndicator color={AppConfig.primaryColor} size="large" /> :
@@ -114,7 +136,8 @@ const style = StyleSheet.create({
   },
   label: {
       fontSize: 14,
-      color: "black"
+      color: "black",
+      marginTop: 10
   },
   datetime: {
       padding: 10,

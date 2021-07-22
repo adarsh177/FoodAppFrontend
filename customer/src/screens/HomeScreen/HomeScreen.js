@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconMI from 'react-native-vector-icons/MaterialIcons';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -12,6 +12,7 @@ import Wallet from './Tabs/Wallet';
 
 function HomeScreen() {
   const bottomTab = createBottomTabNavigator();
+
   return (
     <bottomTab.Navigator
       initialRouteName="store"

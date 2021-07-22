@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import AppConfig from './AppConfig.json';
@@ -14,10 +14,20 @@ import InventoryScreen from './src/screens/InventoryScreen';
 import ListItemScreen from './src/screens/ListItemScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 import OrderDetailScreen from './src/screens/OrderDetailScreen';
+import ShareScreen from './src/screens/ShareScreen';
+import messaging from '@react-native-firebase/messaging'
+import { Alert } from 'react-native';
 
 const Stack = createStackNavigator();
 
 function App() {
+  useEffect(() => {
+    messaging().onMessage((msg) => {
+        console.log('Notification', msg.notification)
+        Alert.alert(msg.notification.title, msg.notification.body)
+    })
+    messaging().subscribeToTopic('merchant')
+  }, [])
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -81,6 +91,17 @@ function App() {
           name="orderDetail"
           component={OrderDetailScreen}
         />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: AppConfig.primaryColor,
+            headerTitleAlign: 'center',
+            title: "Share App"
+          }}
+          name="shareApp"
+          component={ShareScreen}
+        />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

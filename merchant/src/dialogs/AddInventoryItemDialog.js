@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -9,6 +9,8 @@ import {
   Image,
   Alert,
   ActivityIndicator,
+  FlatList,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AppConfig from '../../AppConfig.json';
@@ -16,6 +18,8 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 import { AddCommodity } from '../APIs/StoreManager';
+import SelectMultiple from 'react-native-select-multiple';
+import { GetIngredientsAndTags } from '../APIs/IngredientsManager';
 
 function AddInventoryItemDialog(props) {
   const [name, setName] = useState('');
@@ -23,6 +27,11 @@ function AddInventoryItemDialog(props) {
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageUploadLoading, setImageUploadLoading] = useState(false);
+  const [ingredients, setIngredients] = useState([])
+  const [selectedIngredients, setSelectedIngredients] = useState([])
+  const [tags, setTags] = useState([])
+  const [selectedTags, setSelectedTags] = useState([])
+  
 
   const reference = storage().ref(`/CommodityImage/${auth().currentUser.uid}/${new Date().getTime()}`);
 
@@ -55,7 +64,9 @@ function AddInventoryItemDialog(props) {
     AddCommodity({
       name: name,
       description: description,
-      image: imageUrl
+      image: imageUrl,
+      tags: selectedTags.map(val => val.value),
+      ingredients: selectedIngredients.map(val => val.value)
     }).then(() => {
       alert('Item added successfully');
       close();
@@ -101,6 +112,16 @@ function AddInventoryItemDialog(props) {
     })
   }
 
+  useEffect(() => {
+    GetIngredientsAndTags().then(val => {
+      console.log('int', val)
+      setIngredients(val.ingredients)
+      setTags(val.tags)
+    }).catch(err => {
+      console.log('err in ingredients', err)
+    })
+  }, [])
+
   return (
     <Modal
       animationType="fade"
@@ -110,42 +131,66 @@ function AddInventoryItemDialog(props) {
         close();
       }}>
       <View style={style.mainContainer}>
-        <View style={style.inventoryModalContainer}>
-          <TouchableOpacity
-            activeOpacity={0.6}
-            style={style.getImageButton}
-            onPress={() => selectImage()}>
-            {imageUrl ? <Image source={{uri: imageUrl}} style={style.addImageContainer} /> : 
-              <View style={style.addImageContainer}>
-                {imageUploadLoading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} />
-                : 
-                <>
-                  <Icon name="plus" size={24} color={AppConfig.primaryColor} />
-                  <Text style={style.selectImageText}>Select Image</Text>
-                </>
-                }
-              </View>
-            }
-          </TouchableOpacity>
+        <ScrollView style={style.inventoryModalContainer} contentContainerStyle={{justifyContent: 'flex-start'}}>
+          <Text style={[style.headingText, {marginTop: 0, marginBottom: 10}]}>Item Information</Text>
+          <View style={style.horizontalContainer}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              style={style.getImageButton}
+              onPress={() => selectImage()}>
+              {imageUrl ? <Image source={{uri: imageUrl}} style={style.addImageContainer} /> : 
+                <View style={style.addImageContainer}>
+                  {imageUploadLoading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} />
+                  : 
+                  <>
+                    <Icon name="plus" size={24} color={AppConfig.primaryColor} />
+                    <Text style={style.selectImageText}>Select Image</Text>
+                  </>
+                  }
+                </View>
+              }
+            </TouchableOpacity>
 
-          <View style={style.modalTextInputContainer}>
-            <TextInput
-              placeholder="Item Name (max 70 characters)"
-              style={style.modalTextInput}
-              maxLength={70}
-              value={name}
-              onChangeText={setName}
-            />
-            <TextInput
-              placeholder="Enter description (max 120 characters)"
-              style={style.modalTextInput}
-              multiline
-              numberOfLines={4}
-              maxLength={120}
-              onChangeText={setDescription}
-              value={description}
-            />
+            <View style={style.modalTextInputContainer}>
+              <TextInput
+                placeholder="Item Name (max 70 characters)"
+                style={style.modalTextInput}
+                maxLength={70}
+                value={name}
+                onChangeText={setName}
+              />
+              <TextInput
+                placeholder="Enter description (max 120 characters)"
+                style={style.modalTextInput}
+                multiline
+                numberOfLines={4}
+                maxLength={120}
+                onChangeText={setDescription}
+                value={description}
+              />
+            </View>
           </View>
+
+          <Text style={style.headingText}>Select Ingredients (Optional)</Text>
+          <SelectMultiple
+            items={ingredients}
+            renderLabel={(label, style) => <Text style={style}>{label}</Text>}
+            selectedItems={selectedIngredients}
+            flatListProps={{
+              numColumns: 3
+            }}
+            onSelectionsChange={setSelectedIngredients} />
+          
+          <Text style={style.headingText}>Tags (Optional)</Text>
+          <SelectMultiple
+            items={tags}
+            renderLabel={(label, style) => <Text style={style}>{label}</Text>}
+            selectedItems={selectedTags}
+            flatListProps={{
+              numColumns: 3,
+            }}
+            onSelectionsChange={setSelectedTags} />
+
           <TouchableOpacity
             activeOpacity={0.6}
             style={style.addItem}
@@ -153,9 +198,14 @@ function AddInventoryItemDialog(props) {
               {loading ? <ActivityIndicator color="#FFF" size="large" /> : 
               <Text style={style.addItemButtonText}>Add Item</Text>
               }
-            
           </TouchableOpacity>
-        </View>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            style={[style.addItem, {backgroundColor: null, borderColor: 'red', borderWidth: 1, marginTop: 10, marginBottom: 50,}]}
+            onPress={() => close()}>
+              <Text style={[style.addItemButtonText, {color: 'red', fontWeight: 'normal'}]}>Cancel</Text>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
     </Modal>
   );
@@ -170,9 +220,8 @@ const style = StyleSheet.create({
   },
   //Modal styling ------------------------------
   inventoryModalContainer: {
-    height: 250,
-    width: '90%',
-    flexDirection: 'row',
+    height: "100%",
+    width: '100%',
     backgroundColor: '#fff',
     borderRadius: 6,
     borderWidth: 0.5,
@@ -185,7 +234,10 @@ const style = StyleSheet.create({
     shadowRadius: 5,
     elevation: 50,
     padding: 20,
-    justifyContent: 'space-between',
+  },
+  horizontalContainer: {
+    marginRight: 20,
+    flexDirection: "row"
   },
   addImageContainer: {
     height: 80,
@@ -202,29 +254,37 @@ const style = StyleSheet.create({
     color: '#a4a4a4',
   },
   modalTextInputContainer: {
-    width: '73%',
+    width: '100%',
   },
   modalTextInput: {
+    width: "75%",
     borderColor: '#ddd',
     borderWidth: 1,
-    marginHorizontal: 5,
-    marginBottom: 20,
+    marginHorizontal: 10,
+    marginBottom: 10,
     padding: 5,
   },
   addItem: {
-    position: 'absolute',
-    width: '112.3%',
+    width: '100%',
     height: 50,
-    bottom: 0,
     backgroundColor: AppConfig.primaryColor,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 3,
+    marginTop: 40
   },
   addItemButtonText: {
     color: '#fff',
     fontSize: 20,
     fontWeight: 'bold',
   },
+  headingText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: AppConfig.primaryColor,
+    marginTop: 20,
+    marginBottom: 5
+  }
 });
 
 export default AddInventoryItemDialog;

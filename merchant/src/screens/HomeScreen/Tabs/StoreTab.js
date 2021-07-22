@@ -134,17 +134,6 @@ function StoreTab(props) {
         <Text style={style.subhead}>
           Selling food is very simple! Just add items in your inventory and then list them for sale
         </Text>
-        {/* <View style={style.overviewContainer}>
-          <View style={style.overviewInnerContainer}>
-            <Text style={style.overviewNumber}>{orderSummary.ongoingOrders}</Text>
-            <Text style={style.overviewText}>Ongoing Orders</Text>
-          </View>
-          <View style={style.verticalLine}></View>
-          <View style={style.overviewInnerContainer}>
-            <Text style={style.overviewNumber}>{orderSummary.pendingOrders}</Text>
-            <Text style={style.overviewText}>Pending Orders</Text>
-          </View>
-        </View> */}
         <View style={style.manageInventoryButtonContainer}>
           <TouchableOpacity
             activeOpacity={0.6}

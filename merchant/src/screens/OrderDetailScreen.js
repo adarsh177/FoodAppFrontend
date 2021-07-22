@@ -89,7 +89,7 @@ function OrderDetailScreen(props) {
         <View style={style.summaryContainer}>
           {orderDetails.items.map(item => {
             return(
-              <View style={style.itemContainer}>
+              <View key={item.name} style={style.itemContainer}>
                 <Text style={style.itemTitle}>{item.name}</Text>
                 <Text style={style.summaryPrice}>{GetCurrencySymbol()} {item.price}</Text>
               </View>
@@ -108,7 +108,7 @@ function OrderDetailScreen(props) {
             <View style={style.taxInnerContainer}>
               {orderDetails.taxes.map(item => {
                 return(
-                <View style={style.taxInnerInnerContainer}>
+                <View key={item.name} style={style.taxInnerInnerContainer}>
                   <Text style={style.itemTitle}>{item.name} ({item.percent})</Text>
                   <Text style={style.summaryPrice}>{GetCurrencySymbol()} {item.value}</Text>
                 </View>

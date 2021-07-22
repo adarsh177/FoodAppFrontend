@@ -56,6 +56,7 @@ function Login(props) {
       let result = await sendResult.confirm(code);
       if(result !== null){
         setOTPDialogVisibility(false);
+        setLoading(true)
         GetProfile().then(profile => {
           if(profile !== null){
             props.navigation.replace("home");
@@ -65,11 +66,11 @@ function Login(props) {
         }).catch(err => {
             console.log("ERROR GETTING PROFILE", err);
             props.navigation.replace("editProfile", {forced: true});
-        })
+        }).finally(() => setLoading(false))
       }
     }catch(ex){
       console.log('Error verifying otp', ex);
-      Alert.alert('Error', 'Error verifying OTP : ' + ex);
+      Alert.alert('Verify OTP', 'Error verifying OTP. Please check the OTP and try again.');
     }
   }
 
@@ -100,9 +101,7 @@ function Login(props) {
       </View>
 
       <View style={style.innerLoginContainer}>
-        <View style={style.screenDescriptionContainer}>
-          <Text style={style.boldDescriptionTitle}>Let’s get started</Text>
-        </View>
+        <Text style={style.boldDescriptionTitle}>Let’s get started</Text>
 
         <View
           style={Focus ? style.PhoneFieldFocused : style.PhoneField}>
@@ -128,7 +127,7 @@ function Login(props) {
         </View>
         
 
-        {loading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} />:
+        {loading ? <ActivityIndicator style={{marginTop: 20}} size="large" color={AppConfig.primaryColor} />:
         <TouchableOpacity
           activeOpacity={0.6}
           onPress={() => sendOTP()}
@@ -176,7 +175,7 @@ const style = StyleSheet.create({
   innerLoginContainer: {
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '100%',
+    width: '100%'
   },
   brandingImg: {
     width: '100%',
@@ -205,6 +204,7 @@ const style = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#656565',
+    alignSelf: 'flex-start'
   },
   textFieldOtp: {
     flex: 1,
@@ -217,7 +217,8 @@ const style = StyleSheet.create({
     borderColor: '#ddd',
     flexDirection: "row",
     justifyContent: "flex-start",
-    alignItems: "center"
+    alignItems: "center",
+    marginTop: 20,
   },
   PhoneFieldFocused: {
     borderColor: AppConfig.primaryColor,

@@ -11,6 +11,14 @@ function InventoryCard(props) {
       <View style={style.cardDetailsContainer}>
         <Text style={style.itemName}>{props.itemName}</Text>
         <Text style={style.itemDescription}>{props.description}</Text>
+        <Text style={style.itemDescription}>
+          <Text style={{fontWeight: 'bold', color: 'black'}}>Ingredients: </Text>
+           {props.ingredients ? props.ingredients.join(', ') : "None"}
+        </Text>
+        <Text style={style.itemDescription}>
+          <Text style={{fontWeight: 'bold', color: 'black'}}>Tags: </Text>
+          {props.tags ? props.tags.join(', ') : "None"}
+        </Text>
         <TouchableOpacity activeOpacity={0.6} onPress={props.handelDelete}>
           <Text style={style.deleteItem}>Delete Item</Text>
         </TouchableOpacity>
@@ -22,7 +30,6 @@ function InventoryCard(props) {
 const style = StyleSheet.create({
   InventoryCardInnerContainer: {
     width: '100%',
-    height: 110,
     borderRadius: 3,
     borderWidth: 0.5,
     borderEndWidth: 2,
@@ -37,8 +44,8 @@ const style = StyleSheet.create({
     marginVertical: 5,
   },
   InventoryCardImage: {
-    width: 105,
-    height: 106,
+    width: 120,
+    height: "100%",
     resizeMode: 'cover',
     borderRadius: 3,
   },
@@ -46,16 +53,17 @@ const style = StyleSheet.create({
     padding: 10,
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     width: '100%',
     height: '100%',
   },
   itemName: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
+    marginBottom: 5
   },
   itemDescription: {
-    fontSize: 11,
+    fontSize: 14,
     color: '#707070',
     marginBottom: 5,
   },
@@ -63,6 +71,7 @@ const style = StyleSheet.create({
     color: '#FF5353',
     fontSize: 13,
     fontWeight: '700',
+    alignSelf: 'flex-end'
   },
 });
 export default InventoryCard;

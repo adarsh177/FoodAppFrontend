@@ -23,6 +23,7 @@ function PendingOrders(props) {
             console.log('Error rejecting', err)
             alert('Error rejecting order')
         }).finally(() => {
+            setPendingOrders([])
             loadPendingOrders()
         })
     }
@@ -54,6 +55,7 @@ function PendingOrders(props) {
               items = items.substr(0, items.length - 2)
               return(
                 <PendingOrderCard
+                    key={order._id}
                     orderID={order._id}
                     price={order.finalValue}
                     date={`${new Date(order.timeOfOrder).toLocaleTimeString()}, ${new Date(order.timeOfOrder).toLocaleDateString()}`}

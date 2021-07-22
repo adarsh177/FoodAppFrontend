@@ -1,17 +1,20 @@
 import React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import AppConfig from '../../AppConfig.json';
+import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
 
 function HistoryOrderCard(props) {
   return (
-    <View style={style.cardContainer}>
-      <View style={style.orderIdandPriceContainer}>
-        <Text style={style.orderId}>#{props.orderID}</Text>
-        <Text style={style.price}>₹ {props.price}</Text>
+    <TouchableOpacity onPress={props.onClick} activeOpacity={0.8}>
+      <View style={style.cardContainer}>
+        <View style={style.orderIdandPriceContainer}>
+          <Text style={style.orderId}>#{props.orderID}</Text>
+          <Text style={style.price}>{GetCurrencySymbol()} {props.price}</Text>
+        </View>
+        <Text style={style.date}>Date: {props.date}</Text>
+        <Text style={style.items}>{props.items}</Text>
       </View>
-      <Text style={style.date}>Date: {props.date}</Text>
-      <Text style={style.items}>{props.items}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 

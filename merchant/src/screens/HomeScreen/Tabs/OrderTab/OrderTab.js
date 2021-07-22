@@ -18,8 +18,8 @@ function OrderTab(props) {
         },
         indicatorStyle: {backgroundColor: AppConfig.primaryColor},
       }}>
-      <TopTab.Screen name="Pending" component={PendingOrders} initialParams={{baseNavigation: props.navigation}} />
-      <TopTab.Screen name="History" component={CompleteOrders} initialParams={{baseNavigation: props.navigation}} />
+      <TopTab.Screen name="Pending" component={PendingOrders} />
+      <TopTab.Screen name="History" component={CompleteOrders} />
     </TopTab.Navigator>
   );
 }

@@ -51,14 +51,17 @@ function ListingInfoDialog(props){
                             {props.data.currentStockCount}
                         </Text>
                     </View>
-
-                    {loading ? <ActivityIndicator color={AppConfig.primaryColor} size="large" /> :
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={() => unlistItem()}>
-                        <Text style={style.unlistBtn}>Unlist Item</Text>
-                    </TouchableOpacity>
-                    }
+                    
+                    {!props.hideUnlist && 
+                    <>
+                        {loading ? <ActivityIndicator color={AppConfig.primaryColor} size="large" /> :
+                        <TouchableOpacity
+                            activeOpacity={0.8}
+                            onPress={() => unlistItem()}>
+                            <Text style={style.unlistBtn}>Unlist Item</Text>
+                        </TouchableOpacity>
+                        }
+                    </>}
                     
                 </View>
             </View>

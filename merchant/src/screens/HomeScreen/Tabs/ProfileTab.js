@@ -1,9 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Linking, ScrollView, Alert} from 'react-native';
 
-// External poackage for handeling star rating
-
-import Rating from 'react-native-easy-rating';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import auth from '@react-native-firebase/auth';
 import { GetProfile } from '../../../APIs/ProfileManager';
@@ -16,6 +13,7 @@ function ProfileTab(props) {
   const [desc, setDesc] = useState(null);
   const [banner, setBanner] = useState(null);
   const [rating, setRating] = useState(0);
+  const [ratingCount, setRatingCount] = useState(0);
   const [location, setLocation] = useState('');
   const [phone, setPhone] = useState(auth().currentUser.phoneNumber);
   const [loading, setLoading] = useState(true);
@@ -55,6 +53,7 @@ function ProfileTab(props) {
         setBanner(profile.bannerImage);
         setLocation(profile.location && profile.location.label ? profile.location.label : "Location not found");
         setRating(profile.rating);
+        setRatingCount(profile.ratingCount);
       })
     })
   }, []);
@@ -74,7 +73,7 @@ function ProfileTab(props) {
         <Text style={style.boldDescriptionTitle}>{restaurantName}</Text>
         <Text style={style.smallDescriptionTitle}>{desc}</Text>
         <Text style={style.smallDescriptionTitle}>
-          {rating ?? 0} rating
+          {rating ?? 0} rating ({ratingCount ?? 0})
         </Text>
 
         <TouchableOpacity onPress={handelEditProfile} style={[style.rowFlexContainer, {marginTop: 20}]} activeOpacity={0.8}>
@@ -97,14 +96,14 @@ function ProfileTab(props) {
           <Text style={style.option}>Give Feedback</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => alert("Not done yet")} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+        <TouchableOpacity onPress={() => props.navigation.push('shareApp')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
           <Icon
             style={style.rightMargin}
             name="share-alt"
             size={24}
             color={AppConfig.primaryColor}
           />
-          <Text style={style.option}>Share with</Text>
+          <Text style={style.option}>Share with friends</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=privacy')} style={[style.rowFlexContainer]} activeOpacity={0.8}>

@@ -27,6 +27,7 @@ function ListItemScreen(props) {
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingInventory, setLoadingInventory] = useState(true)
 
   //Handle List item -----------------------------------------
   const handleListItem = () => {
@@ -39,12 +40,14 @@ function ListItemScreen(props) {
   };
 
   const loadInventory = () => {
+    setLoadingInventory(true)
     GetCommodities().then(commodities => {
       GetProfile().then(profile => {
         const commodityIds = profile.listings ? profile.listings.map(val => val.commodityId) : [];
         setInventoryItems(commodities.filter(val => !commodityIds.includes(val.id)));
       }).catch(err => {})
-    }).catch(err => {});
+    }).catch(err => {})
+    .finally(() => setLoadingInventory(false));
   }
 
   const addListing = async () => {
@@ -136,7 +139,7 @@ function ListItemScreen(props) {
             }
             setselectInventory(itemValue)
           }}>
-          <Picker.Item label="Select Item from Inventory" value="select" />
+          <Picker.Item label={loadingInventory ? "Loading Inventory..." : "Select Item from Inventory"} value="select" />
           <Picker.Item label="Create New Item" value="new" />
           {inventoryItems.map(item => {
             return <Picker.Item label={item.name} value={item.id} />;

@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import AppConfig from '../../AppConfig.json';
+import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
 
 function ItemCard(props) {
   return (
@@ -14,7 +15,7 @@ function ItemCard(props) {
       />
       <View style={style.cardTitleAndPriceContainer}>
         <Text style={style.cardTitle}>{props.title}</Text>
-        <Text style={style.cardPrice}>₹ {props.price}</Text>
+        <Text style={style.cardPrice}>{GetCurrencySymbol()} {props.price}</Text>
       </View>
       <View style={style.cardDetailContainer}>
         <Text style={style.cardDetailTitle}>Expires in: </Text>

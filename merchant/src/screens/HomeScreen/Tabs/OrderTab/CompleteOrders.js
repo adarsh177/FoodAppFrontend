@@ -37,10 +37,12 @@ function CompleteOrders(props) {
             items = items.substr(0, items.length - 2)
             return(
               <HistoryOrderCard
+                  key={order._id}
                   orderID={order._id}
                   price={order.finalValue}
                   date={`${new Date(order.timeOfOrder).toLocaleTimeString()}, ${new Date(order.timeOfOrder).toLocaleDateString()}`}
                   items={items}
+                  onClick={() => props.navigation.navigate('orderDetail', {orderId: order._id})}
                   />
             )
         })}

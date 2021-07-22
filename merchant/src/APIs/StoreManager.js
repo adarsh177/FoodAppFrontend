@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://f13022f49868.ngrok.io/merchant/"
+const BASE_URL = "https://de16f8291be9.ngrok.io/merchant/"
 
 async function GetCommodities(){
     try{
@@ -100,10 +100,11 @@ async function UnlistItem(commodityId){
     }
 }
 
-async function UpdateStoreStatus(time){
+async function UpdateStoreStatus(closeTime, pickupTime){
     try{
         const response = await axios.put(`${BASE_URL}status`, {
-            openTill: time
+            openTill: closeTime,
+            pickupTill: pickupTime
         }, {
             method: "PUT",
             headers: {
