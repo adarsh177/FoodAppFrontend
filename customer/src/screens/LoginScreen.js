@@ -37,7 +37,7 @@ function Login(props) {
     Alert.alert('Innitiate resend OTP');
   };
 
-  const sendOTP = async ()  => {
+  const sendOTP = async (isResend = false)  => {
     if(phoneNumber.length < 10){
       Alert.alert('Error', 'Invalid phone number entered');
       return;
@@ -45,6 +45,9 @@ function Login(props) {
     try{
       setSendResult(await auth().signInWithPhoneNumber(`${countryCode}${phoneNumber}`, true));
       setOTPDialogVisibility(true);
+
+      if(isResend)
+        alert('OTP has been sent again.')
     }catch(ex){
       console.log('Error sending otp', ex);
       Alert.alert('Error', 'Error sending OTP : ' + ex);
@@ -63,8 +66,13 @@ function Login(props) {
       if(result !== null){
         setOTPDialogVisibility(false);
         GetProfile().then(profile => {
-          if(profile)
-            props.navigation.replace('home')
+          if(profile){
+            if(profile.blocked){
+              props.navigation.replace('blockedScreen')
+            }else{
+              props.navigation.replace('home')
+            }
+          }
           else
             props.navigation.replace('editProfile', {forced: true})
         })
@@ -149,6 +157,9 @@ function Login(props) {
         }}
         submit={code => {
           VerifyOTP(code);
+        }}
+        reSendOTP={() => {
+          sendOTP(true)
         }}
       />
 

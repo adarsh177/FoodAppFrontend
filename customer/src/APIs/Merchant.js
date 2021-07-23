@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://4ad85fc453a8.ngrok.io/customer/"
+const BASE_URL = "https://404f1c2c6b61.ngrok.io/customer/"
 
 export async function GetMerchantInfo(id){
     try{

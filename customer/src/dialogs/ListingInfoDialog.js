@@ -1,27 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Modal, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Modal, Image, ActivityIndicator, ScrollView } from 'react-native';
 import AppConfig from '../../AppConfig.json';
-import { UnlistItem } from '../APIs/StoreManager';
-import { GetTimeInWords } from '../Utils';
+import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
 
 function ListingInfoDialog(props){
-
-    const [loading, setLoading] = useState(false);
-
-    const unlistItem = () => {
-        if(loading)
-            return;
-        
-        setLoading(true);
-        UnlistItem(props.data.id).then(() => {
-            alert('Item unlisted');
-            props.close();
-        }).catch(err => {
-            console.log('Error unlisting item', err);
-            alert('Error unlisting item');
-        }).finally(() => setLoading(false));
-    }
-
     return(
         <Modal
         animationType="fade"
@@ -34,32 +16,29 @@ function ListingInfoDialog(props){
                 <View style={style.dialog}>
                     <Text style={style.itemName}>{props.data.name}</Text>
                     <Image style={style.image} source={{uri: props.data.image}}  />
-                    <Text style={style.price}>Rs {props.data.price}</Text>
+                    <Text style={style.price}>{GetCurrencySymbol()} {props.data.price}</Text>
 
-                    <Text style={style.detail}>
-                        <Text style={{fontWeight: "bold"}}>Expires in: </Text>
-                        {GetTimeInWords(props.data.expiresOn - new Date().getTime())}
-                    </Text>
+                    <Text style={style.detailHead}>Stock Left</Text>
+                    <Text style={style.detail}>{props.data.currentStockCount} Units</Text>
 
-                    <View style={style.stockDetailsContainer}>
-                        <Text style={[style.detail, style.stockDetail]}>
-                            <Text style={{fontWeight: "bold"}}>Stock Listed: </Text>
-                            {props.data.initialStockCount}
-                        </Text>
-                        <Text style={[style.detail, style.stockDetail]}>
-                            <Text style={{fontWeight: "bold"}}>Stock Left: </Text>
-                            {props.data.currentStockCount}
-                        </Text>
-                    </View>
+                    <Text style={style.detailHead}>Description</Text>
+                    <Text style={style.detail}>{props.data.description}</Text>
 
-                    {loading ? <ActivityIndicator color={AppConfig.primaryColor} size="large" /> :
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={() => unlistItem()}>
-                        <Text style={style.unlistBtn}>Unlist Item</Text>
+                    {props.data.ingredients !== undefined && props.data.ingredients !== null && props.data.ingredients.length > 0 &&
+                    <>
+                        <Text style={style.detailHead}>Contains</Text>
+                        <Text style={style.detail}>{props.data.ingredients.join(', ')}</Text>
+                    </>}
+
+                    {props.data.tags !== undefined && props.data.tags !== null  && props.data.tags.length > 0 &&
+                    <>
+                        <Text style={style.detailHead}>Tags</Text>
+                        <Text style={style.detail}>{props.data.tags.join(', ')}</Text>
+                    </>}
+
+                    <TouchableOpacity onPress={props.close} activeOpacity={0.8}>
+                        <Text style={style.close}>Close</Text>
                     </TouchableOpacity>
-                    }
-                    
                 </View>
             </View>
       </Modal>
@@ -75,7 +54,7 @@ const style = StyleSheet.create({
   },
   dialog: {
       width: "90%",
-      minHeight: 200,
+      maxHeight: "80%",
       padding: 10,
       backgroundColor: "#FFF",
       borderColor: "#efef",
@@ -84,7 +63,8 @@ const style = StyleSheet.create({
   },
   itemName: {
       color: "#000",
-      fontSize: 18
+      fontSize: 24,
+      fontWeight: 'bold'
   },
   image: {
       width: "100%",
@@ -103,7 +83,13 @@ const style = StyleSheet.create({
     color: "#000",
     marginTop: 5,
   },
-  unlistBtn: {
+  detailHead: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: "#000",
+    marginTop: 10,
+  },
+  close: {
       width: "100%",
       paddingVertical: 10,
       textAlign: 'center',

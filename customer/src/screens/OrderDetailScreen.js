@@ -29,7 +29,7 @@ function OrderDetailScreen(props) {
   };
 
   const handleCall = () => {
-    return null;
+    Linking.openURL(`tel:${merchantInfo.phone}`)
   };
 
   const loadMercantInfo = (id) => {
@@ -43,10 +43,10 @@ function OrderDetailScreen(props) {
         loadMercantInfo(details.merchantId)
 
         // checking if order is rated
-        if(!details.rating){
+        if(!details.rating && details.status === "CONFIRM"){
           setShowRatingDialog(true)
         }
-      })
+      }).catch(err => console.log('Error getting order info', err))
       .finally(() => setLoading(false))
   }
 
@@ -68,7 +68,7 @@ function OrderDetailScreen(props) {
         <Text style={style.indicator}>{orderDetails.status}</Text>
       </View>
 
-      {orderDetails.rating && 
+      {orderDetails.rating !== undefined && orderDetails.rating !== "" && orderDetails.rating !== null && 
       <View style={style.generalContainer}>
         <Text style={style.lightTitle}>Rating</Text>
         <Text style={style.indicator}>{orderDetails.rating} Stars</Text>
@@ -95,10 +95,6 @@ function OrderDetailScreen(props) {
           </View>
         </View>
       </View>
-      {/* <View style={style.generalContainer}>
-        <Text style={style.lightTitle}>Delivery Mode:</Text>
-        <Text style={style.indicator}>{deliveryMode}</Text>
-      </View> */}
       <View style={style.generalContainer}>
         <Text style={style.lightTitle}>Order</Text>
         <View style={style.summaryContainer}>

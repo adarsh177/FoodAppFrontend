@@ -10,6 +10,7 @@ import {
   FlatList,
   ActivityIndicator,
   Image,
+  RefreshControl,
 } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 import MenuCard from '../components/MenuCard';
@@ -19,6 +20,8 @@ import IconMCI from 'react-native-vector-icons/MaterialCommunityIcons';
 import { GetMerchantInfo, SetFavourite, UnsetFavourite } from '../APIs/Merchant';
 import ANT from 'react-native-vector-icons/AntDesign';
 import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
+import ListingInfoDialog from '../dialogs/ListingInfoDialog';
+import { GetTimeInWords } from '../Utils';
 
 //Component for bottom cart Indicator ------------------------------
 
@@ -50,11 +53,13 @@ const ItemAdded = props => {
 
 function RestaurantMenu(props) {
   const [data, setData] = useState({})
-  const [loading, setLoading] = useState({})
+  const [loading, setLoading] = useState(false)
   const [isFav, setFav] = useState(true)
   const [listings, setListings] = useState([])
   const [currentMenu, setCurrentMenu] = useState({})
   const [cartTotal, setCartTotal] = useState(0)
+  const [showInfoDialog, setShowInfoDialog] = useState(false)
+  const [infoItem, setInfoItem] = useState(false)
 
   const handlePressOnCartValue = () => {
     props.navigation.navigate('checkoutScreen', {
@@ -85,7 +90,22 @@ function RestaurantMenu(props) {
       // setting listings
       const menu = merch.listings ?? []
       const currTime = new Date().getTime()
-      setListings(menu.filter(val => val.expiresOn > currTime))
+      const liveMenu = menu.filter(val => val.expiresOn > currTime)
+      setListings(liveMenu)
+
+      // checking if any item should be opened
+      console.log('ITEM SELECTED', props.route.params.showItem)
+      if(props.route.params.showItem){
+        
+        const item = liveMenu.filter(val => val.id == props.route.params.showItem)[0]
+        const finalList = liveMenu.filter(item => item.id !== props.route.params.showItem)
+        finalList.splice(0, 0, item)
+        setListings(finalList)
+        // if(item){
+        //   setInfoItem(item)
+        //   setShowInfoDialog(true)
+        // }
+      }
     }).catch(err => {
       console.log('Error getting merchant info', err)
       alert('Error getting info at the moment')
@@ -118,31 +138,32 @@ function RestaurantMenu(props) {
     loadData()
   }, [])
 
-  if(loading)
-    return <ActivityIndicator size="large" color={AppConfig.primaryColor} />;
-
   return (
     <View style={style.inventoryContainer}>
-      <ScrollView>
+      <ScrollView 
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={loadData} />}
+        >
         <View style={style.bannerContainer}>
           <Image style={style.bannerImage} source={{uri: data.bannerImage}} />
           <TouchableOpacity 
-            style={[style.favWrapper]} 
+            style={[style.favWrapper, isFav ? {backgroundColor: "#d42522"}: {}]} 
             activeOpacity={0.8} 
             onPress={() => {UpdateFavourite(!isFav)}}>
             <ANT
-              name={isFav ? "star" : "staro"}
-              size={30}
-              color={AppConfig.primaryColor}
+              name="heart"
+              size={16}
+              color={isFav ? "#fff" : "#d42522"}
             />
           </TouchableOpacity>
         </View>
 
         <Text style={style.location}>
-          {data.location.label}
+          {data.location?.label}
         </Text>
         
         <View style={style.menuContainer}>
+          {!loading && listings.length === 0 &&
+          <Text style={{fontSize: 24, alignSelf: 'center', margin: 20}}>No Items listed</Text>}
           {listings.map((item, index) => {
             return(
               <MenuCard
@@ -150,9 +171,14 @@ function RestaurantMenu(props) {
                   id={item.id}
                   itemName={item.name}
                   price={item.price}
+                  image={item.image}
                   description={item.description}
                   max={item.currentStockCount}
                   onValueChanged={ItemValChange}
+                  onClick={() => {
+                    setInfoItem(item)
+                    setShowInfoDialog(true)
+                  }}
                 />
             )
           })}
@@ -170,8 +196,12 @@ function RestaurantMenu(props) {
           </View>)
       }
       
-      {/* ###################### Render one of the below component according to condition ############################# */}
-      
+      <ListingInfoDialog
+        show={showInfoDialog}
+        data={infoItem}
+        close={() => {
+          setShowInfoDialog(false)
+        }} />
     </View>
   );
 }
@@ -213,7 +243,10 @@ const style = StyleSheet.create({
     top: 10,
     end: 10,
     borderRadius: 3,
-    padding: 5
+    padding: 10,
+    borderColor: '#d42522',
+    borderRadius: 500,
+    borderWidth: 2
   },
   location: {
     fontSize: 16,

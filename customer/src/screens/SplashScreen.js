@@ -12,7 +12,12 @@ function SplashScreen(props) {
           // user logged in
           GetProfile().then(profile => {
             if(profile){
-              props.navigation.replace('home');
+              if(profile.blocked){
+                props.navigation.replace('blockedScreen');
+              }else{
+                props.navigation.replace('home');
+              }
+              
             }else{
               props.navigation.replace('editProfile', {forced: true});
             }

@@ -27,36 +27,38 @@ function InventoryCard(props) {
   }
 
   return (
-    <View style={style.InventoryCardInnerContainer}>
-      <Image style={style.InventoryCardImage} source={require(imageSource)} />
-      <View style={style.cardDetailsContainer}>
-        <View style={style.cardTitleAndPriceContaienr}>
-          <Text style={style.itemName}>{props.itemName}</Text>
-          <Text style={style.price}>{GetCurrencySymbol()} {props.price}</Text>
-        </View>
-        <Text style={style.itemDescription}>{props.description}</Text>
-        <View style={style.numericInputContainer}>
-          <NumericInput
-            value={quantity}
-            onChange={OnValueChanged}
-            minValue={0}
-            maxValue={props.max}
-            // onLimitReached={(isMax, msg) => alert(`Currently only ${props.max} of this item are available`)}
-            totalWidth={100}
-            totalHeight={25}
-            iconSize={12}
-            step={1}
-            valueType="real"
-            rounded
-            textColor={AppConfig.primaryColor}
-            iconStyle={{color: 'white'}}
-            rightButtonBackgroundColor={AppConfig.primaryColor}
-            leftButtonBackgroundColor="#B80000"
-            borderColor="#f4f4f4"
-          />
+    <TouchableOpacity activeOpacity={0.8} onPress={props.onClick}>
+      <View style={style.InventoryCardInnerContainer}>
+        <Image style={style.InventoryCardImage} source={{uri: props.image}} />
+        <View style={style.cardDetailsContainer}>
+          <View style={style.cardTitleAndPriceContaienr}>
+            <Text style={style.itemName}>{props.itemName}</Text>
+            <Text style={style.price}>{GetCurrencySymbol()} {props.price}</Text>
+          </View>
+          <Text style={style.itemDescription}>{props.description}</Text>
+          <View style={style.numericInputContainer}>
+            <NumericInput
+              value={quantity}
+              onChange={OnValueChanged}
+              minValue={0}
+              maxValue={props.max}
+              // onLimitReached={(isMax, msg) => alert(`Currently only ${props.max} of this item are available`)}
+              totalWidth={100}
+              totalHeight={25}
+              iconSize={12}
+              step={1}
+              valueType="real"
+              rounded
+              textColor={AppConfig.primaryColor}
+              iconStyle={{color: 'white'}}
+              rightButtonBackgroundColor={AppConfig.primaryColor}
+              leftButtonBackgroundColor="#B80000"
+              borderColor="#f4f4f4"
+            />
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -101,11 +103,11 @@ const style = StyleSheet.create({
     color: AppConfig.primaryColor,
   },
   itemName: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
   },
   itemDescription: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#707070',
     marginBottom: 5,
   },

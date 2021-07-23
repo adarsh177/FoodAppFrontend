@@ -19,8 +19,8 @@ function FavouriteTab(props) {
   const [data, setData] = useState([])
 
   //handle card press ---------------------
-  const handelCardPress = (id) => {
-    props.navigation.push('restaurantMenu', {merchantId: id})
+  const handelCardPress = (id, itemId) => {
+    props.navigation.push('restaurantMenu', {merchantId: id, showItem: itemId})
   };
 
   const loadFavs = () => {
@@ -50,10 +50,13 @@ function FavouriteTab(props) {
         {data.map(restro => {
           return(
             <RestaurantCard
+              key={restro.userId}
+              merchantId={restro.userId}
               name={restro.name}
               distance={(restro.distanceInMeters / 1000).toFixed(2)}
               rating={`${restro.rating ? restro.rating.toFixed(1) : 0} (${restro.ratingCount ?? 0} ratings)`}
-              onPress={() => handelCardPress(restro.userId)}
+              onPress={() => handelCardPress(restro.userId, false)}
+              onItemPressed={id => handelCardPress(restro.userId, id)}
               storeOpen={restro.openTill > new Date().getTime()}
             />
           )
@@ -80,7 +83,7 @@ const style = StyleSheet.create({
     marginBottom: 20,
     fontSize: 24,
     fontWeight: '700',
-    color: AppConfig.primaryColor,
+    color: '#000',
   },
   noResult: {
     width: "100%",

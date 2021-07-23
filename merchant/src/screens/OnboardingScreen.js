@@ -6,7 +6,7 @@ import AppConfig from '../../AppConfig.json';
 function OnboardingScreen(props) {
   //navigate to login screen for test
   var finishOnboard = () => {
-    props.navigation.navigate('login');
+    props.navigation.replace('login');
   };
 
   // Custom dot component for the bottom bar of the onBoarding---------------------

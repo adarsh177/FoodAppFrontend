@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {
   Switch,
   Text,
@@ -22,6 +22,7 @@ import ReverseGeocode from '../../../APIs/ReverseGeocoding'
 import { GetProfile, UpdateProfile } from '../../../APIs/ProfileManager'
 import { SearchNearMe } from '../../../APIs/SearchManager'
 import NoResult from '../../../assets/no_restro.png'
+import { GetIngredientsAndTags } from '../../../APIs/IngredientsManager'
 
 function Explore(props) {
   const [location, setLocation] = useState({})
@@ -29,9 +30,14 @@ function Explore(props) {
   const [restros, setRestros] = useState([])
   const [loadingResults, setLoadingResults] = useState(true)
   const [currentPage, setCurrentPage] = useState(0)
+  const [filterTags, setFilterTags] = useState([])
+  const [seletedFilterTags, setSelectedFilterTags] = useState([])
+  const [searchText, setSearchText] = useState('')
+  
+  let searchTime = 0;
 
-  const handelCardPress = (restroId) => {
-    props.navigation.push('restaurantMenu', {merchantId: restroId})
+  const handelCardPress = (restroId, itemId) => {
+    props.navigation.push('restaurantMenu', {merchantId: restroId, showItem: itemId})
   }
 
   const handleProfile = () => {
@@ -39,12 +45,13 @@ function Explore(props) {
   }
 
   const GetTrimmedLocation = (locationText) => {
-    return locationText ? locationText.split(',')[0] : 'Fetching Location';
+    return locationText ? locationText : 'Fetching Location';
   }
 
   const loadSearchResults = () => {
     setLoadingResults(true)
-    SearchNearMe(0).then(val => {
+    setRestros([])
+    SearchNearMe(searchText, seletedFilterTags.join(','), 0).then(val => {
       console.log('SEARCH', val);
       setRestros(val.data)
       setCurrentPage(parseInt(val.page))
@@ -102,7 +109,7 @@ function Explore(props) {
                 };
                 // updating state
                 setLocationPoint(point)
-                loadSearchResults()
+                setTimeout(loadSearchResults, 1500)
                 // getting address out of coords
                 ReverseGeocode(position.coords.latitude, position.coords.longitude).then(location => {
                     // saving it on server
@@ -124,16 +131,70 @@ function Explore(props) {
       })
   }
 
-  useState(() => {
+  const toggleTag = (tag) => {
+    if(seletedFilterTags.includes(tag)){
+      const newList = seletedFilterTags.filter(val => val !== tag)
+      setSelectedFilterTags(newList)
+    }else{
+      setSelectedFilterTags([tag, ...seletedFilterTags])
+    }
+  }
+
+  // loading when tags toggled
+  useEffect(() => {
+    loadSearchResults()
+  }, [seletedFilterTags])
+
+  useEffect(() => {
+    const currTime = new Date().getTime()
+    if(searchTime == 0 || searchTime < currTime){
+      console.log('Performing search')
+      setTimeout(loadSearchResults, 1500)
+      searchTime = currTime + 1500
+    }
+  }, [searchText])
+
+  // onetime useEffect
+  useEffect(() => {
+    // loading profile
     GetProfile().then(profile => {
       setLocation(profile.location ?? {})
       setLocationPoint(profile.locationPoint ?? {})
-      loadSearchResults();
-    }).finally(() => handleUserLocation())
-
-    props.navigation.addListener('focus', () => {
-      loadSearchResults()
+      
+      // checking if location already exists else insisting for new
+      if(profile.locationPoint && profile.locationPoint.coordinates && profile.locationPoint.coordinates.length === 2){
+        // location already exists hence a general check
+        Alert.alert('Location', 'Update your location to get best deals near you', [
+          {
+            text: 'Update Location',
+            onPress: handleUserLocation,
+            style: "default"
+          },
+          {
+            text: 'No Thanks',
+            onPress: loadSearchResults,
+            style: "cancel"
+          }
+        ])
+      }else{
+        Alert.alert('Location Needed', 'We need your location to show offers near you', [
+          {
+            text: 'Update Location',
+            onPress: handleUserLocation,
+            style: "default"
+          }
+        ], {
+          cancelable: false
+        })
+      }
     })
+
+    // loading tags
+    GetIngredientsAndTags()
+      .then(response => {
+        setFilterTags(response.tags)
+      })
+      .catch(err => alert(err))
   }, [])
 
   return (
@@ -145,10 +206,10 @@ function Explore(props) {
           style={style.locationInnerContainer}>
           <IconMI
             name="location-pin"
-            size={20}
+            size={25}
             color={AppConfig.primaryColor}
           />
-          <Text style={style.locationText}>{GetTrimmedLocation(location.label)}</Text>
+          <Text numberOfLines={1} style={style.locationText}>{GetTrimmedLocation(location.label)}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.6}
@@ -160,37 +221,69 @@ function Explore(props) {
           />
         </TouchableOpacity>
       </View>
-      {/* <View style={style.textInputContainer}>
+
+      {/* Search Container */}
+      <View style={style.textInputContainer}>
         <IconMI
             name="search"
             size={25}
             color="#8c8c8c"
           />
         <TextInput
+          value={searchText}
+          onChangeText={setSearchText}
           style={style.textInput}
           placeholder="Search here"
-          s
         />
-      </View> */}
+        {searchText.length > 0 &&
+        <TouchableOpacity onPress={() => setSearchText('')} activeOpacity={0.8} style={style.searchClose}>
+          <IconMI
+              name="close"
+              size={15}
+              color="#fff"
+            />
+        </TouchableOpacity>}
+      </View>
+
+      {/* Filter container */}
+      {filterTags.length > 0 && 
+      <View style={{width: '100%', height: 60}}>
+        <ScrollView style={{paddingVertical: 0, width: "100%"}} horizontal contentContainerStyle={style.filterCapsuleContainer}>
+          
+          {seletedFilterTags.length > 0 &&
+          <TouchableOpacity onPress={() => setSelectedFilterTags([])} style={{marginRight: 10}} key={"clear"}>
+            <Text style={[style.capsule, {color: '#d42522', borderColor: '#d42522'}]}>Clear</Text>
+          </TouchableOpacity>}
+
+          {filterTags.map(tag => {
+            return(
+              <TouchableOpacity onPress={() => toggleTag(tag)} activeOpacity={0.8} style={{marginRight: 10}} key={tag}>
+                <Text style={[style.capsule, seletedFilterTags.includes(tag) ? style.selectedCapsule : {}]}>{tag}</Text>
+              </TouchableOpacity>
+            )
+          })}
+        </ScrollView>
+      </View>}
+
       <ScrollView 
-        contentContainerStyle={style.scrollContainer}
+        contentContainerStyle={{marginTop: 10}}
         refreshControl={<RefreshControl refreshing={loadingResults} onRefresh={loadSearchResults} />}>
         {restros.map(restro => {
           return(
             <RestaurantCard
+              merchantId={restro.userId}
               name={restro.name}
               distance={(restro.distanceInMeters / 1000).toFixed(2)}
-              rating={`${restro.rating ? restro.rating.toFixed(1) : 0} (${restro.ratingCount ?? 0} ratings)`}
-              onPress={() => handelCardPress(restro.userId)}
+              rating={`${restro.rating ? restro.rating.toFixed(1) : 0} Stars (${restro.ratingCount ?? 0})`}
+              image={restro.bannerImage}
+              onPress={() => handelCardPress(restro.userId, false)}
+              onItemPressed={id => handelCardPress(restro.userId, id)}
             />
           )
         })}
 
         {!loadingResults && restros.length === 0 && <Image style={style.noResult} source={NoResult} />}
         {!loadingResults && restros.length === 0 && <Text style={style.noResultText}>No Restaurants are open near you at the moment</Text>}
-        
-
-        {loadingResults && <ActivityIndicator size="large" color={AppConfig.primaryColor} />}
 
         {(!loadingResults && restros.length !== 0 && (restros.length % 10 === 0)) &&
         <TouchableOpacity activeOpacity={0.8} onPress={loadMoreResults}>
@@ -220,10 +313,14 @@ const style = StyleSheet.create({
   },
   locationText: {
     marginHorizontal: 10,
-    textDecorationLine: 'underline',
+    borderBottomColor: AppConfig.primaryColor,
+    borderBottomWidth: 2,
+    paddingRight: 5,
+    maxWidth: 150,
     color: AppConfig.primaryColor,
     textDecorationColor: AppConfig.primaryColor,
     fontWeight: '700',
+    fontSize: 16
   },
   profileImageContainer: {
     width: 35,
@@ -236,17 +333,50 @@ const style = StyleSheet.create({
   },
   textInputContainer: {
     width: '100%',
-    marginBottom: 20,
     alignItems: 'center',
     flexDirection: "row",
     borderWidth: 1,
-    borderColor: '#C1C1C1',
-    borderRadius: 3,
+    borderColor: '#696969',
+    borderRadius: 30,
     paddingHorizontal: 10
   },
   textInput: {
     height: "100%",
-    flex: 1
+    flex: 1,
+    fontSize: 16,
+    color: '#4a4a4a'
+  },
+  filterCapsuleContainer: {
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    padding: 0
+  },
+  capsule: {
+    borderRadius: 100,
+    borderColor: AppConfig.primaryColor,
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    color: AppConfig.primaryColor,
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    maxWidth: 150,
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
+  selectedCapsule: {
+    color: '#fff',
+    backgroundColor: AppConfig.primaryColor
+  },
+  searchClose: {
+    position: 'absolute',
+    right: 10,
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 100,
+    backgroundColor: '#d42522'
   },
   loadMore: {
     alignSelf: "center",

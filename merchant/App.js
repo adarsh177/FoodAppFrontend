@@ -17,6 +17,7 @@ import OrderDetailScreen from './src/screens/OrderDetailScreen';
 import ShareScreen from './src/screens/ShareScreen';
 import messaging from '@react-native-firebase/messaging'
 import { Alert } from 'react-native';
+import BlockedScreen from './src/screens/BlockedScreen';
 
 const Stack = createStackNavigator();
 
@@ -100,6 +101,17 @@ function App() {
           }}
           name="shareApp"
           component={ShareScreen}
+        />
+        
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: AppConfig.primaryColor,
+            headerTitleAlign: 'center',
+            title: 'Account Disabled',
+          }}
+          name="blockedScreen"
+          component={BlockedScreen}
         />
         
       </Stack.Navigator>

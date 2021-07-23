@@ -5,13 +5,21 @@ import { GetOrders, GetWalletBalance } from '../../../APIs/ProfileManager';
 import OrderCard from '../../../components/OrderCard';
 import GetCurrencySymbol from '../../../CurrencyManager/CurrencyManager';
 import AddMoneyDialog from '../../../dialogs/AddMoneyDialog';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 function Wallet(props) {
   const [showAddMoney, setShowAddMoney] = useState(false)
   const [walletBalance, setWalletBalance] = useState(0)
   const [loading, setLoading] = useState(true)
   const [orders, setOrders] = useState([])
-
+  const [orderFilter, setOrderFilter] = useState(null)
+  const [orderTypePickerOpen, setOrderTypePickerOpen] = useState(false)
+  const [orderTypeItems, setOrderTypeItems] = useState([
+    {label: "All", value: "ALL"},
+    {label: "Pending", value: "PENDING"},
+    {label: "Confirm", value: "CONFIRM"},
+    {label: "Rejected", value: "REJECTED"},
+  ])
 
   const loadWalletBalance = () => {
     GetWalletBalance().then(bal => setWalletBalance(bal ?? 0))
@@ -52,6 +60,7 @@ function Wallet(props) {
       <View style={style.horizontalLine} />
 
       <Text style={style.ordersTitle}>My Orders</Text>
+
       <ScrollView
         refreshControl={<RefreshControl refreshing={loading} onRefresh={() => {
           loadOrders()
@@ -62,9 +71,6 @@ function Wallet(props) {
       {!loading && orders.length === 0 && 
       <Text style={style.noResultText}>You have not placed any order yet!</Text>}
       
-
-      {loading && <ActivityIndicator size="large" color={AppConfig.primaryColor} />}
-
       {!loading && orders.map(item => {
           let itemsText = ''
           item.items.forEach(element => {
@@ -142,11 +148,26 @@ const style = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 20,
   },
+  horizontalBar:{
+    width: "100%",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingHorizontal: 10,
+  },
+  orderTypePicker: {
+    borderWidth: 1,
+    borderColor: AppConfig.primaryColor,
+    borderRadius: 3,
+    flex: 1,
+  },
   ordersTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: "#919191",
-    marginBottom: 20
+    color: "#000",
+    marginBottom: 20,
+    marginHorizontal: 10
   },
   noOrders: {
     width: "100%",

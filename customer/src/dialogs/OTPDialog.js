@@ -49,7 +49,7 @@ function OTPDialog(props) {
             }}>
             <Text style={style.otpButtonText}>Submit</Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.6} onPress={() => Resend()}>
+          <TouchableOpacity activeOpacity={0.6} onPress={props.resendOTP}>
             <Text style={style.numberAndResendOtp}>Resend OTP</Text>
           </TouchableOpacity>
         </View>

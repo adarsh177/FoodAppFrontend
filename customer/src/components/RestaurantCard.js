@@ -1,5 +1,5 @@
 import {useLinkProps} from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   Text,
@@ -7,104 +7,134 @@ import {
   StyleSheet,
   TouchableOpacity,
   Button,
+  FlatList,
+  ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import IconMI from 'react-native-vector-icons/MaterialIcons';
 import AppConfig from '../../AppConfig.json';
+import { GetMerchantInfo } from '../APIs/Merchant';
+import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
 
 function RestaurantCard(props) {
+  
+  const [listings, setListings] = useState([])
+  const [loading , setLoading] = useState(true)
+
+  useEffect(() => {
+    GetMerchantInfo(props.merchantId).then(info => {
+      if(info.openTill >= new Date().getTime()){
+        const finalListings  = info.listings ? info.listings.filter(item => item.expiresOn >= new Date().getTime()) : []
+        setListings(finalListings)
+      }
+      
+    }).finally(() => setLoading(false))
+  }, [])
+
+  if(!loading && listings.length === 0 && props.storeOpen === undefined ){
+    return <View style={{height: 0, width: 0}}></View>
+  }
+
   return (
-    <View>
-      <TouchableOpacity
-        activeOpacity={0.6}
-        onPress={props.onPress}
-        style={style.restaurantCardContainer}>
-        <View style={style.restaurantCardImageContainer}>
-          <Image
-            style={style.restrauntImage}
-            source={require('../assets/restaurant.jpg')}
-          />
-        </View>
-        <View style={style.cardDetailContainer}>
-          <View style={style.cardDetailInnerContainer}>
-            <Text style={style.retaurantName}>{props.name}</Text>
-            {!isNaN(props.distance) && 
-            <Text style={style.retaurantDistance}>
-              {props.distance} Km away
-            </Text>}
-          </View>
-          <View style={style.cardDetailInnerContainer}>
-            <View style={style.starAndRating}>
-              <IconMI name="star" size={20} color={AppConfig.primaryColor} />
-              <Text style={style.ratingText}>{props.rating}</Text>
-            </View>
-            {props.storeOpen !== undefined && <Text style={props.storeOpen === true ? style.openText : style.closedText}>{props.storeOpen ? "Open now" : "Closed"}</Text>}
-          </View>
-        </View>
+    <View style={style.restaurantCardContainer}>
+      <TouchableOpacity activeOpacity={0.8} onPress={props.onPress}>
+        <Text style={style.restroName}>{props.name}</Text>
+        {props.storeOpen !== undefined ? 
+          <Text style={style.subText}><Text style={{fontWeight: 'bold'}}>{props.storeOpen ? "Store Open" : "Store Closed"}</Text> • {props.rating}</Text>
+          :
+          <Text style={style.subText}>{props.distance} Km • {props.rating}</Text>
+        }
       </TouchableOpacity>
+
+      {/* Loading spinner */}
+      {loading && 
+      <ActivityIndicator style={{alignSelf: 'flex-start'}} size="large" color={AppConfig.primaryColor} />}
+
+      {/* No item found  */}
+      {!loading && listings.length === 0 && 
+      <Text style={style.noListings}>No Item Listed</Text>}
+
+      <FlatList
+        data={listings}
+        style={style.listStyle}
+        horizontal
+        renderItem={({item, index}) => {
+          // return(
+          //   <TouchableOpacity activeOpacity={0.8}>
+          //     <View style={style.listElement}>
+          //       <Text style={[style.seeMore, {height: '100%', textAlignVertical: 'center'}]}>See More</Text>
+          //     </View>
+          //   </TouchableOpacity>
+          // )
+
+          console.log(item)
+          
+          return(
+           <TouchableOpacity onPress={() => props.onItemPressed(item.id)} activeOpacity={0.8}>
+              <ImageBackground source={{uri: item.image}} style={style.listElement}>
+                <Text style={style.stockLeft}>{item.currentStockCount} Left</Text>
+                <Text numberOfLines={1} style={style.itemText}>{item.name}</Text>
+                <Text numberOfLines={1} style={[style.itemText, {paddingTop: 0, fontSize: 14,}]}>{GetCurrencySymbol()} {item.price}</Text>
+              </ImageBackground>
+           </TouchableOpacity>
+          )
+        }}
+       />
     </View>
   );
 }
 const style = StyleSheet.create({
   restaurantCardContainer: {
     width: '100%',
-    borderColor: '#A8A8A8',
-    borderWidth: 1,
-    marginBottom: 10,
-    borderRadius: 3
+    marginBottom: 10
   },
-  restaurantCardImageContainer: {
-    width: '100%',
-    height: 150,
-    borderRadius: 3
-  },
-  restrauntImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-    borderRadius: 3
-  },
-  cardDetailContainer: {
-    margin: 10,
-    marginTop: 5
-  },
-  retaurantName: {
-    color: '#3C3C3C',
-    fontSize: 16,
-    fontWeight: "bold"
-  },
-  cardDetailInnerContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 2,
-  },
-  retaurantDistance: {
-    color: '#737373',
-  },
-  starAndRating: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  ratingText: {
-    marginLeft: 5,
-    color: '#818181',
-  },
-  closedText: {
-    color: '#B70000',
-    fontWeight: '700',
-  },
-  openText: {
+  restroName:{
     color: AppConfig.primaryColor,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: 'bold'
   },
-  RestaurantProfileButtonContainer: {
+  subText: {
+    color: "#000"
+  },
+  listStyle: {
+    marginVertical: 10
+  },
+  listElement: {
+    width: 160,
+    height: 160,
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  stockLeft: {
     position: 'absolute',
-    width: 80,
-    top: 5,
-    right: 5,
-    zIndex: 1,
+    right: 0,
+    top: 0,
+    backgroundColor: AppConfig.primaryColor,
+    fontWeight: 'bold',
+    color: '#fff',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    fontSize: 12
   },
+  seeMore: {
+    fontSize: 20,
+    color: 'gray',
+    fontWeight: 'bold'
+  },
+  itemText: {
+    width: "100%",
+    padding: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+  noListings: {
+    fontSize: 18,
+    color: '#696969',
+    margin: 10
+  }
 });
 
 export default RestaurantCard;
