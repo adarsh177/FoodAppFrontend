@@ -49,15 +49,15 @@
    margin: 15px auto;
 }
 .navigation .nav-logo img {
-   width: 90%;
+   width: 100%;
 }
 .navigation .nav-links {
-   padding-left: 15px;
    margin: 15px 0;
    width: 100%;
    display: flex;
-   align-items: center;
+   align-self: center;
    text-decoration: none;
+   justify-content: center;
 }
 .navigation .nav-links:hover i,
 .navigation .nav-links:hover .nav-link-item {
@@ -144,7 +144,8 @@
    }
 }
 .activenav {
-   background-color: #7e7eac;
+   background-color: #003000;
+   width: 100%;
 }
 .mobile-nav-icon {
    padding: 8px;

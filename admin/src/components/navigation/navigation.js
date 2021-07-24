@@ -17,7 +17,7 @@ export const Navigation = (props) => {
    };
 
    return (
-      <div>
+      <React.Fragment>
          <div className={`navigation ${slide}-navigation`}>
             <div
                className={`nav-hamburger ${slide}-hide-burger`}
@@ -34,11 +34,7 @@ export const Navigation = (props) => {
             <div className={`nav-logo ${slide}-nav-logo`}>
                <img src={logo} alt="Logo" />
             </div>
-            <NavLink
-               className="nav-links"
-               activeClassName="activenav"
-               to="/dashboard"
-            >
+            <NavLink className="nav-links" activeClassName="activenav" to="/">
                <div className="nav-icon">
                   <i class="fas fa-chart-line"></i>
                </div>
@@ -49,7 +45,7 @@ export const Navigation = (props) => {
             <NavLink
                className="nav-links"
                activeClassName="activenav"
-               to="/history"
+               to="/tax"
             >
                <div className="nav-icon">
                   <i class="fas fa-clipboard-list"></i>
@@ -61,25 +57,37 @@ export const Navigation = (props) => {
             <NavLink
                className="nav-links"
                activeClassName="activenav"
-               to="/campaign"
+               to="/users"
             >
                <div className="nav-icon">
-                  <i class="fas fa-rocket"></i>
+                  <i class="fas fa-user-cog"></i>
                </div>
                <div className={`nav-link-item ${slide}-nav-link-item `}>
-                  Campaigns
+                  User Management
                </div>
             </NavLink>
             <NavLink
                className="nav-links"
                activeClassName="activenav"
-               to="/contacts"
+               to="/config"
             >
                <div className="nav-icon">
-                  <i class="fas fa-user"></i>
+                  <i class="fas fa-cogs"></i>
                </div>
                <div className={`nav-link-item ${slide}-nav-link-item `}>
-                  Contacts
+                  Configuration
+               </div>
+            </NavLink>
+            <NavLink
+               className="nav-links"
+               activeClassName="activenav"
+               to="/feedback"
+            >
+               <div className="nav-icon">
+                  <i class="fas fa-comment-dots"></i>
+               </div>
+               <div className={`nav-link-item ${slide}-nav-link-item `}>
+                  Feedback
                </div>
             </NavLink>
             <div className="nav-logout" onClick={logoutUser}>
@@ -91,13 +99,13 @@ export const Navigation = (props) => {
                </div>
             </div>
          </div>
-      </div>
+      </React.Fragment>
    );
 };
 
 export const MobileNavigationTop = () => {
    return (
-      <div>
+      <React.Fragment>
          <div className="mobile-navigation">
             <div className="top">
                <div className="mobile-logo">
@@ -108,13 +116,13 @@ export const MobileNavigationTop = () => {
                </div>
             </div>
          </div>
-      </div>
+      </React.Fragment>
    );
 };
 
 export const MobileNavigationBottom = () => {
    return (
-      <div>
+      <React.Fragment>
          <div className="mobile-navigation">
             <div className="bottom">
                <div className="mobile-nav-links">
@@ -137,18 +145,25 @@ export const MobileNavigationBottom = () => {
                      className="mobile-nav-icon"
                      to="/campaign"
                   >
-                     <i class="fas fa-rocket"></i>
+                     <i class="fas fa-user-cog"></i>
                   </NavLink>
                   <NavLink
                      activeClassName="activenav"
                      className="mobile-nav-icon"
                      to="/contacts"
                   >
-                     <i class="fas fa-user"></i>
+                     <i class="fas fa-cogs"></i>
+                  </NavLink>
+                  <NavLink
+                     activeClassName="activenav"
+                     className="mobile-nav-icon"
+                     to="/contacts"
+                  >
+                     <i class="fas fa-comment-dots"></i>
                   </NavLink>
                </div>
             </div>
          </div>
-      </div>
+      </React.Fragment>
    );
 };
