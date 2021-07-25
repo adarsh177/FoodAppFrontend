@@ -50,7 +50,6 @@ function Explore(props) {
 
   const loadSearchResults = () => {
     setLoadingResults(true)
-    setRestros([])
     SearchNearMe(searchText, seletedFilterTags.join(','), 0).then(val => {
       console.log('SEARCH', val);
       setRestros(val.data)
@@ -149,8 +148,8 @@ function Explore(props) {
     const currTime = new Date().getTime()
     if(searchTime == 0 || searchTime < currTime){
       console.log('Performing search')
-      setTimeout(loadSearchResults, 1500)
-      searchTime = currTime + 1500
+      setTimeout(loadSearchResults, 1000)
+      searchTime = currTime + 1000
     }
   }, [searchText])
 

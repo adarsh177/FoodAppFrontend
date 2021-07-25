@@ -57,20 +57,6 @@ function Login(props) {
       if(result !== null){
         setOTPDialogVisibility(false);
         setLoading(true)
-        GetProfile().then(profile => {
-          if(profile !== null){
-            if(profile.blocked){
-              props.navigation.replace("blockedScreen");
-            }else{
-              props.navigation.replace("home");
-            }
-          }else{
-            props.navigation.replace("editProfile", {forced: true});
-          }
-        }).catch(err => {
-            console.log("ERROR GETTING PROFILE", err);
-            props.navigation.replace("editProfile", {forced: true});
-        }).finally(() => setLoading(false))
       }
     }catch(ex){
       console.log('Error verifying otp', ex);
@@ -88,6 +74,29 @@ function Login(props) {
         setCountryCode(val.dial_code);
       }
     });
+
+    // adding listener
+    const unsubscribe = auth().onAuthStateChanged((user) => {
+      if(user){
+        // logged in
+        GetProfile().then(profile => {
+          if(profile !== null){
+            if(profile.blocked){
+              props.navigation.replace("blockedScreen");
+            }else{
+              props.navigation.replace("home");
+            }
+          }else{
+            props.navigation.replace("editProfile", {forced: true});
+          }
+        }).catch(err => {
+            props.navigation.replace("editProfile", {forced: true});
+        }).finally(() => setLoading(false))
+      }
+    })
+
+    // returning for cleanup
+    return unsubscribe
   }, []);
 
   return (

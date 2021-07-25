@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "781117811423-4q41l3cgk19lhbgkm3cl85kap9kpqlkc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.goodforlowprice.customer",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
           "client_id": "781117811423-hnjgtr1tlvdrl7srkal6o3dd44fleo22.apps.googleusercontent.com",
           "client_type": 3
         }

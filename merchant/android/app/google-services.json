@@ -7,6 +7,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:781117811423:android:14a7d5ec7dbfcbe3bc976a",
+        "android_client_info": {
+          "package_name": "com.goodforlowprice.customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781117811423-4q41l3cgk19lhbgkm3cl85kap9kpqlkc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.goodforlowprice.customer",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "781117811423-hnjgtr1tlvdrl7srkal6o3dd44fleo22.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBYTeI2awQx_Tzxx8sCX-qWs9vFLmowDM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781117811423-hnjgtr1tlvdrl7srkal6o3dd44fleo22.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:781117811423:android:111cad4436540dddbc976a",
         "android_client_info": {
           "package_name": "com.goodforlowprice.merchant"

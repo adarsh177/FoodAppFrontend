@@ -8,6 +8,7 @@ import {
   Alert,
   TouchableOpacity,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 import OTPDialog from '../dialogs/OTPDialog';
@@ -25,32 +26,22 @@ function Login(props) {
   const [showCountryCodePicker, setCountryCodePickerVisibility] = useState(false);
   const [countryCode, setCountryCode] = useState("+1");
   const [sendResult, setSendResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  //submit otp function--------------------------------------
-  const submitOtp = () => {
-    console.log(`${otp}`);
-    props.navigation.navigate('onboarding');
-  };
-
-  // resend otp function------------------------------------
-  const reSendOTP = () => {
-    Alert.alert('Innitiate resend OTP');
-  };
-
-  const sendOTP = async (isResend = false)  => {
+  const sendOTP = async ()  => {
     if(phoneNumber.length < 10){
       Alert.alert('Error', 'Invalid phone number entered');
       return;
     }
     try{
+      setLoading(true);
       setSendResult(await auth().signInWithPhoneNumber(`${countryCode}${phoneNumber}`, true));
       setOTPDialogVisibility(true);
-
-      if(isResend)
-        alert('OTP has been sent again.')
     }catch(ex){
       console.log('Error sending otp', ex);
       Alert.alert('Error', 'Error sending OTP : ' + ex);
+    }finally{
+      setLoading(false);
     }
   }
 
@@ -65,21 +56,11 @@ function Login(props) {
       let result = await sendResult.confirm(code);
       if(result !== null){
         setOTPDialogVisibility(false);
-        GetProfile().then(profile => {
-          if(profile){
-            if(profile.blocked){
-              props.navigation.replace('blockedScreen')
-            }else{
-              props.navigation.replace('home')
-            }
-          }
-          else
-            props.navigation.replace('editProfile', {forced: true})
-        })
+        setLoading(true)
       }
     }catch(ex){
       console.log('Error verifying otp', ex);
-      Alert.alert('Error', 'Error verifying OTP : ' + ex);
+      Alert.alert('Verify OTP', `Error verifying OTP. Please check the OTP and try again.\n ${ex}`);
     }
   }
 
@@ -91,9 +72,31 @@ function Login(props) {
     countryCodes.forEach(val => {
       if(val.code == country){
         setCountryCode(val.dial_code);
-        console.log('Country Data', val);
       }
     });
+
+    // adding listener
+    const unsubscribe = auth().onAuthStateChanged((user) => {
+      if(user){
+        // logged in
+        GetProfile().then(profile => {
+          if(profile !== null){
+            if(profile.blocked){
+              props.navigation.replace("blockedScreen");
+            }else{
+              props.navigation.replace("home");
+            }
+          }else{
+            props.navigation.replace("editProfile", {forced: true});
+          }
+        }).catch(err => {
+            props.navigation.replace("editProfile", {forced: true});
+        }).finally(() => setLoading(false))
+      }
+    })
+
+    // returning for cleanup
+    return unsubscribe
   }, []);
 
   return (
@@ -111,9 +114,7 @@ function Login(props) {
       </View>
 
       <View style={style.innerLoginContainer}>
-        <View style={style.screenDescriptionContainer}>
-          <Text style={style.boldDescriptionTitle}>Let’s get started</Text>
-        </View>
+        <Text style={style.boldDescriptionTitle}>Let’s get started</Text>
 
         <View
           style={Focus ? style.PhoneFieldFocused : style.PhoneField}>
@@ -139,6 +140,7 @@ function Login(props) {
         </View>
         
 
+        {loading ? <ActivityIndicator style={{marginTop: 20}} size="large" color={AppConfig.primaryColor} />:
         <TouchableOpacity
           activeOpacity={0.6}
           onPress={() => sendOTP()}
@@ -146,7 +148,7 @@ function Login(props) {
           accessibilityLabel="Get OTP button"
           style={style.getOtpButton}>
             <Text style={style.otpButtonText}>Get OTP</Text>
-        </TouchableOpacity>
+        </TouchableOpacity>}
       </View>
 
       <OTPDialog
@@ -157,9 +159,6 @@ function Login(props) {
         }}
         submit={code => {
           VerifyOTP(code);
-        }}
-        reSendOTP={() => {
-          sendOTP(true)
         }}
       />
 
@@ -189,7 +188,7 @@ const style = StyleSheet.create({
   innerLoginContainer: {
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '100%',
+    width: '100%'
   },
   brandingImg: {
     width: '100%',
@@ -218,6 +217,7 @@ const style = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#656565',
+    alignSelf: 'flex-start'
   },
   textFieldOtp: {
     flex: 1,
