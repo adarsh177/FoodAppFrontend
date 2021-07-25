@@ -30,7 +30,7 @@ const Stats = () => {
          <Divider />
          <MenuItem key="2">This week</MenuItem>
          <Divider />
-         <MenuItem key="3">This Monthk</MenuItem>
+         <MenuItem key="3">This Month</MenuItem>
          <Divider />
          <MenuItem key="4">This year</MenuItem>
          <Divider />
