@@ -34,7 +34,11 @@ export const Navigation = (props) => {
             <div className={`nav-logo ${slide}-nav-logo`}>
                <img src={logo} alt="Logo" />
             </div>
-            <NavLink className="nav-links" activeClassName="activenav" to="/">
+            <NavLink
+               className="nav-links"
+               activeClassName="activenav"
+               to="/stats"
+            >
                <div className="nav-icon">
                   <i class="fas fa-chart-line"></i>
                </div>
@@ -129,35 +133,35 @@ export const MobileNavigationBottom = () => {
                   <NavLink
                      activeClassName="activenav"
                      className="mobile-nav-icon"
-                     to="/dashboard"
+                     to="/stats"
                   >
                      <i class="fas fa-chart-line"></i>
                   </NavLink>
                   <NavLink
                      activeClassName="activenav"
                      className="mobile-nav-icon"
-                     to="/history"
+                     to="/tax"
                   >
                      <i class="fas fa-clipboard-list"></i>
                   </NavLink>
                   <NavLink
                      activeClassName="activenav"
                      className="mobile-nav-icon"
-                     to="/campaign"
+                     to="/users"
                   >
                      <i class="fas fa-user-cog"></i>
                   </NavLink>
                   <NavLink
                      activeClassName="activenav"
                      className="mobile-nav-icon"
-                     to="/contacts"
+                     to="/config"
                   >
                      <i class="fas fa-cogs"></i>
                   </NavLink>
                   <NavLink
                      activeClassName="activenav"
                      className="mobile-nav-icon"
-                     to="/contacts"
+                     to="/feedback"
                   >
                      <i class="fas fa-comment-dots"></i>
                   </NavLink>

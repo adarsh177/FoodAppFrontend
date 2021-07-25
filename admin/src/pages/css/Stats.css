@@ -1,0 +1,23 @@
+.header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+.detailsContainer {
+   display: flex;
+   align-items: center;
+}
+
+.detailTitle {
+   color: #00b875;
+   margin: 0 10px;
+}
+
+.details {
+   font-weight: 600;
+}
+.detailOuterContainer {
+   margin-top: 30px;
+}
+@media all and (max-width: 500px) {
+}
