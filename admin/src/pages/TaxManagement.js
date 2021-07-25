@@ -13,6 +13,7 @@ const TaxManagement = () => {
          <MobileNavigationTop />
          <div className="main">
             <h1>Tax Management</h1>
+            <div></div>
          </div>
          <div className="footer">
             <MobileNavigationBottom />

@@ -21,19 +21,19 @@ const Feedback = () => {
             <h1>Feedbacks</h1>
             <div class="feedbackContainer">
                <div className="flex-row">
-                  <b>Name :</b>
+                  <b>Name:</b>
                   <p className="lessHight">{name}</p>
                </div>
                <div className="flex-row">
-                  <b>Phone :</b>
+                  <b>Phone:</b>
                   <p className="lessHight">{phone}</p>
                </div>
                <div className="flex-row">
-                  <b>Date :</b>
+                  <b>Date:</b>
                   <p className="lessHight">{date}</p>
                </div>
                <div className="flex-row">
-                  <b>Feedback :</b>
+                  <b>Feedback:</b>
                   <p className="lessHight">{feedback}</p>
                </div>
             </div>
