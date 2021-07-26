@@ -1,0 +1,40 @@
+.tagsOuterContainer {
+   display: flex;
+   justify-content: space-evenly;
+   flex-wrap: wrap;
+}
+.tagsContainer {
+   margin: 10px;
+   padding: 0 20px;
+   border: 1px solid grey;
+}
+.deleteTabButton {
+   background-color: #fff;
+   border: 2px solid red;
+   font-size: 20px;
+   width: 2rem;
+   color: red;
+   margin: 0 10px;
+}
+.buttonContainer {
+   width: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   margin: 50px 0;
+}
+.savebutton {
+   width: 150px;
+   height: 3rem;
+   background-color: #00b875;
+   color: #fff;
+   border: none;
+   cursor: pointer;
+}
+
+@media screen and (max-width: 500px) {
+   .tagsContainer {
+      margin: 5px;
+      padding: 0 5px;
+   }
+}
