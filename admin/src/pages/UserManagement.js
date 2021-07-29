@@ -9,185 +9,54 @@ import "./css/UserManagement.css";
 // external package ---------------------------------------------
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
+import { GetCustomerDetails, GetMerchantDetails, ToggleBlockCustomer, ToggleBlockMerchant } from "../APIs/AdminManager";
 
 const UserManagement = () => {
-   // user details  (users) ------------------------------------------------
+   const [userSearchBox, setUserSearchBox] = useState();
+   const [merchantSearchBox, setMerchantSearchBox] = useState();
+   const [userData, setUserData] = useState(null)
+   const [merchantData, setMerchantData] = useState(null)
+   const [loading, setLoading] = useState(false)
 
-   //user serach input ----------------------------
+   const SearchUser = () => {
+      setLoading(true)
+      setUserData(null)
 
-   const [userSearch, setUserSearch] = useState();
-
-   // submit user search ---------------------------
-
-   const submitUserSearch = () => {
-      alert("search value " + userSearch);
-   };
-
-   const user = {
-      key: 1,
-      name: "username",
-      email: "useremail@gmail.com",
-      phone: "+9198454554514",
-      location: "user location",
-      block: false,
-   };
-
-   const orders = [
-      {
-         id: 1,
-         restaurant: "amarpali",
-         price: 500,
-         time: "date here",
-      },
-      {
-         id: 2,
-         restaurant: "amarpali",
-         price: 500,
-         time: "date here",
-      },
-      {
-         id: 3,
-         restaurant: "amarpali",
-         price: 500,
-         time: "date here",
-      },
-      {
-         id: 4,
-         restaurant: "amarpali",
-         price: 500,
-         time: "date here",
-      },
-   ];
-
-   // block button logic --------------------------------------------
-   let blockText;
-   if (user.block === false) {
-      blockText = "block";
-   } else {
-      blockText = "unblock";
+      GetCustomerDetails(userSearchBox).then(data => {
+         setUserData(data)
+      }).catch(() => alert('Customer not found'))
+      .finally(() => setLoading(false))
    }
 
-   const [blockUser, setblockUser] = useState(blockText);
+   const SearchMerchant = () => {
+      setLoading(true)
+      setMerchantData(null)
 
-   const userblock = function () {
-      if (user.block === false) {
-         user.block = true;
-         setblockUser("unblock");
-      } else {
-         user.block = false;
-         setblockUser("block");
-      }
-      return blockUser;
-   };
-
-   const oderComponent = (orderDetails) => {
-      return (
-         <div key={orderDetails.id} className="userDetailContainer">
-            <div className="userOrderDetails">
-               <b>Restaurant : </b>
-               <p>{orderDetails.restaurant}</p>
-            </div>
-
-            <div className="userOrderDetails">
-               <b>Price : </b>
-               <p>{orderDetails.price}</p>
-            </div>
-            <div className="userOrderDetails">
-               <b>Time : </b>
-               <p>{orderDetails.time}</p>
-            </div>
-         </div>
-      );
-   };
-
-   // merchant details -------------------------------------------------------------
-
-   //user serach input ----------------------------
-
-   const [merchantSearch, setMerchantSearch] = useState();
-
-   // submit user search ---------------------------
-
-   const submitMerchantSearch = () => {
-      alert("search value " + merchantSearch);
-   };
-
-   const merchant = {
-      key: 1,
-      name: "username",
-      email: "useremail@gmail.com",
-      phone: "+9198454554514",
-      location: "user location",
-      block: false,
-   };
-
-   const merchantOrders = [
-      {
-         id: 1,
-         restaurant: "amarpddfali",
-         price: 504650,
-         time: "date here",
-      },
-      {
-         id: 2,
-         restaurant: "amarpali",
-         price: 543500,
-         time: "date here",
-      },
-      {
-         id: 3,
-         restaurant: "amarpgyhfali",
-         price: 50450,
-         time: "date here",
-      },
-      {
-         id: 4,
-         restaurant: "amasdsdrpali",
-         price: 504550,
-         time: "date here",
-      },
-   ];
-
-   // block button logic (merchant) --------------------------------------------
-   let blockMerchantText;
-   if (merchant.block === false) {
-      blockMerchantText = "block";
-   } else {
-      blockMerchantText = "unblock";
+      GetMerchantDetails(merchantSearchBox).then(data => {
+         setMerchantData(data)
+      }).catch((err) => alert('Merchant not found' + err))
+      .finally(() => setLoading(false))
    }
 
-   const [blockMerchant, setblockMerchant] = useState(blockMerchantText);
+   const ToggleBlockCustomerClicked = () => {
+      setLoading(true)
+      ToggleBlockCustomer(userData.userId)
+      .catch(err => alert(err))
+      .finally(() => {
+         setLoading(false)
+         SearchUser()
+      })
+   }
 
-   const Merchantblock = function () {
-      if (merchant.block === false) {
-         merchant.block = true;
-         setblockMerchant("unblock");
-      } else {
-         merchant.block = false;
-         setblockMerchant("block");
-      }
-      return blockMerchant;
-   };
-
-   const MerchantoderComponetn = (merchantorderDetails) => {
-      return (
-         <div key={merchantorderDetails.id} className="userDetailContainer">
-            <div className="userOrderDetails">
-               <b>Restaurant : </b>
-               <p>{merchantorderDetails.restaurant}</p>
-            </div>
-
-            <div className="userOrderDetails">
-               <b>Price : </b>
-               <p>{merchantorderDetails.price}</p>
-            </div>
-            <div className="userOrderDetails">
-               <b>Time : </b>
-               <p>{merchantorderDetails.time}</p>
-            </div>
-         </div>
-      );
-   };
+   const ToggleBlockMerchantClicked = () => {
+      setLoading(true)
+      ToggleBlockMerchant(merchantData.userId)
+      .catch(err => alert(err))
+      .finally(() => {
+         setLoading(false)
+         SearchMerchant()
+      })
+   }
 
    return (
       <div className="nav-container">
@@ -208,45 +77,54 @@ const UserManagement = () => {
                            type="text"
                            placeholder="Search user by phone number"
                            name="serach user"
-                           value={userSearch}
+                           value={userSearchBox}
                            onChange={(e) => {
-                              setUserSearch(e.target.value);
-                              console.log(userSearch);
+                              setUserSearchBox(e.target.value);
                            }}
                         />
                         <button
                            className="searchButton"
                            type="submit"
-                           onClick={submitUserSearch}
+                           onClick={SearchUser}
                         >
                            Search
                         </button>
                      </div>
                      <div className="userDetailContainer">
-                        <div>
-                           <div>
-                              <b>Name : </b>
-                              <span>{user.name}</span>
-                           </div>
-                           <div>
-                              <b>Email : </b>
-                              <span>{user.email}</span>
-                           </div>
-                           <div>
-                              <b>Phone number : </b>
-                              <span>{user.phone}</span>
-                           </div>
-                           <div>
-                              <b>Location : </b>
-                              <span>{user.location}</span>
-                           </div>
-                           <div>
-                              <button onClick={userblock}>{blockUser}</button>
-                           </div>
-                        </div>
-                        <div>
-                           <div>{orders.map(oderComponent)}</div>
-                        </div>
+                        {loading ? <p>Loading...</p> : 
+                           (
+                              userData !== null &&
+                                 <div>
+                                    <div>
+                                       <b>UserId : </b>
+                                       <span>{userData.userId}</span>
+                                    </div>
+                                    <div>
+                                       <b>Name : </b>
+                                       <span>{userData.name}</span>
+                                    </div>
+                                    <div>
+                                       <b>Phone number : </b>
+                                       <span>{userData.phone}</span>
+                                    </div>
+                                    <div>
+                                       <b>Wallet Balance : </b>
+                                       <span>{userData.walletBalance}</span>
+                                    </div>
+                                    <div>
+                                       <b>Location : </b>
+                                       <span>{userData.location.label}</span>
+                                    </div>
+                                    <div>
+                                       <b>Joined On : </b>
+                                       <span>{new Date(userData.joinDate).toISOString()}</span>
+                                    </div>
+                                    <div>
+                                       <button onClick={ToggleBlockCustomerClicked}>{userData.blocked ? "Unblock" : "Block"}</button>
+                                    </div>
+                                 </div>
+                           )
+                        }
                      </div>
                   </div>
                </TabPanel>
@@ -261,49 +139,54 @@ const UserManagement = () => {
                            type="text"
                            placeholder="Search merchant by phone number"
                            name="serach merchant"
-                           value={merchantSearch}
+                           value={merchantSearchBox}
                            onChange={(e) => {
-                              setMerchantSearch(e.target.value);
+                              setMerchantSearchBox(e.target.value);
                            }}
                         />
                         <button
                            className="searchButton"
                            type="submit"
-                           onClick={submitMerchantSearch}
+                           onClick={SearchMerchant}
                         >
                            Search
                         </button>
                      </div>
-                     <div className="userDetailContainer">
-                        <div>
+                     {loading ? <p>Loading...</p> : 
+                     (merchantData !== null && 
+                        <div className="userDetailContainer">
                            <div>
-                              <b>Name : </b>
-                              <span>{merchant.name}</span>
-                           </div>
                            <div>
-                              <b>Email : </b>
-                              <span>{merchant.email}</span>
+                              <b>UserId : </b>
+                                 <span>{merchantData.userId}</span>
+                              </div>
+                              <div>
+                                 <b>Name : </b>
+                                 <span>{merchantData.name}</span>
+                              </div>
+                              <div>
+                                 <b>Phone number : </b>
+                                 <span>{merchantData.phone}</span>
+                              </div>
+                              <div>
+                                 <b>Total Earnings : </b>
+                                 <span>{merchantData.totalEarnings}</span>
+                              </div>
+                              <div>
+                                 <b>Location : </b>
+                                 <span>{merchantData.location.label}</span>
+                              </div>
+                              <div>
+                                 <b>Joined On : </b>
+                                 <span>{new Date(merchantData.joinDate).toISOString()}</span>
+                              </div>
+                              <div>
+                                 <button onClick={ToggleBlockMerchantClicked}>
+                                    {merchantData.blocked ? "Unblock": "Block"}
+                                 </button>
+                              </div>
                            </div>
-                           <div>
-                              <b>Phone number : </b>
-                              <span>{merchant.phone}</span>
-                           </div>
-                           <div>
-                              <b>Location : </b>
-                              <span>{merchant.location}</span>
-                           </div>
-                           <div>
-                              <button onClick={Merchantblock}>
-                                 {blockMerchant}
-                              </button>
-                           </div>
-                        </div>
-                        <div>
-                           <div>
-                              {merchantOrders.map(MerchantoderComponetn)}
-                           </div>
-                        </div>
-                     </div>
+                        </div>)}
                   </div>
                </TabPanel>
             </Tabs>

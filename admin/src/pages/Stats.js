@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
    Navigation,
    MobileNavigationTop,
@@ -11,78 +11,57 @@ import "./css/Stats.css";
 import Dropdown from "rc-dropdown";
 import Menu, { Item as MenuItem, Divider } from "rc-menu";
 import "rc-dropdown/assets/index.css";
+import { GetStats } from "../APIs/AdminManager";
+import FirebaseUtil from "../Utils/FirebaseUtil";
+import { withRouter } from "react-router-dom";
 
-const Stats = () => {
-   // functions for drop down --------------------------------------------
-   function onSelect({ key }) {
-      console.log(`${key} selected`);
+const Stats = (props) => {
+   const [data, setData] = useState({})
+   const [loading, setLoading] = useState(true)
+
+   const FirebaseApp = new FirebaseUtil().app()
+
+   const loadData = () => {
+      setLoading(true)
+      GetStats().then(stats => {
+         setData(stats)
+      }).catch(async err => {
+         alert('Unauthorized: ' + err)
+         if(err === "UNAUTH"){
+            // logout and take outside
+            await FirebaseApp.auth().signOut()
+            props.history.push('./')
+         }
+      }).finally(() => setLoading(false))
    }
 
-   function onVisibleChange(visible) {
-      console.log(visible);
-   }
-   // menu from rc-menu ---------------------------------------------------
-   const menu = (
-      <Menu onSelect={onSelect}>
-         <MenuItem key="1" defaultVisible="true">
-            Today
-         </MenuItem>
-         <Divider />
-         <MenuItem key="2">This week</MenuItem>
-         <Divider />
-         <MenuItem key="3">This Month</MenuItem>
-         <Divider />
-         <MenuItem key="4">This year</MenuItem>
-         <Divider />
-         <MenuItem key="5">Lifetime</MenuItem>
-      </Menu>
-   );
-
-   //  values of details -------------------------------------
-
-   const totalOrder = 45441;
-   const totalCustomer = 5525;
-   const totalMerchant = 4242;
-   const totalRevenue = 2544655;
+   useEffect(() => {
+      loadData()
+   }, [])
 
    return (
       <div className="nav-container">
          <Navigation />
          <MobileNavigationTop />
          <div className="main">
-            <div className="header">
-               <h1>Stats</h1>
-
-               <Dropdown
-                  trigger={["click"]}
-                  overlay={menu}
-                  animation="slide-up"
-                  onVisibleChange={onVisibleChange}
-               >
-                  <button style={{ width: 120, height: "2.5rem" }}>
-                     Select duration
-                  </button>
-               </Dropdown>
-            </div>
             <div>
+
+               {loading ? <p>Loading...</p> : 
                <div className="detailOuterContainer">
                   <div className="detailsContainer">
                      <h3 className="detailTitle">Total Orders : </h3>
-                     <p className="details">{totalOrder}</p>
+                     <p className="details">{data.orderCount}</p>
                   </div>
                   <div className="detailsContainer">
                      <h3 className="detailTitle">Total customer : </h3>
-                     <p className="details">{totalCustomer}</p>
+                     <p className="details">{data.customerCount}</p>
                   </div>
                   <div className="detailsContainer">
                      <h3 className="detailTitle">Total Merchant : </h3>
-                     <p className="details">{totalMerchant}</p>
+                     <p className="details">{data.merchantCount}</p>
                   </div>
-                  <div className="detailsContainer">
-                     <h3 className="detailTitle">Total Revenue : </h3>
-                     <p className="details">$ {totalRevenue}</p>
-                  </div>
-               </div>
+               </div>}
+               
             </div>
          </div>
          <div className="footer">
@@ -92,4 +71,4 @@ const Stats = () => {
    );
 };
 
-export default Stats;
+export default withRouter(Stats);

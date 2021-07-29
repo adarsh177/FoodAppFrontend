@@ -9,13 +9,9 @@ import "./css/TaxManagement.css";
 // external package -----------------------------------------------
 
 import Select from "react-select";
-import countryList from "react-select-country-list";
-
-// country name selector ----------------------------------------
 
 const TaxManagement = () => {
    const [value, setValue] = useState("");
-   const options = useMemo(() => countryList().getData(), []);
 
    const changeHandler = (value) => {
       setValue(value);
@@ -46,11 +42,7 @@ const TaxManagement = () => {
          <div className="main">
             <h1>Tax Management</h1>
             <div>
-               <Select
-                  options={options}
-                  value={value}
-                  onChange={changeHandler}
-               />
+               
             </div>
             <div>
                <h3>Current Tax</h3>

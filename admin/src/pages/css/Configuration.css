@@ -1,20 +1,32 @@
 .tagsOuterContainer {
    display: flex;
-   justify-content: space-evenly;
+   justify-content: flex-start;
    flex-wrap: wrap;
 }
 .tagsContainer {
    margin: 10px;
-   padding: 0 20px;
+   padding: 10px 20px;
    border: 1px solid grey;
+   border-radius: 50px;
+   display: flex;
+   align-items: center;
+}
+.tagsContainer p{
+   color: #000;
+   font-weight: bold;
+   margin: 0;
+   padding: 0;
 }
 .deleteTabButton {
    background-color: #fff;
-   border: 2px solid red;
-   font-size: 20px;
+   border: none;
+   font-size: 0.8em;
    width: 2rem;
    color: red;
    margin: 0 10px;
+}
+.deleteTabButton:hover{
+   cursor: pointer;
 }
 .buttonContainer {
    width: 100%;

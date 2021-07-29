@@ -1,20 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../../assets/logo.png";
 import "./navigation.css";
 import { NavLink } from "react-router-dom";
-
-const logoutUser = () => {
-   return null;
-};
+import FirebaseUtil from "../../Utils/FirebaseUtil";
+import { CheckAdmin } from "../../APIs/AdminManager";
 
 export const Navigation = (props) => {
    const [slide, setSlide] = useState("burger");
+   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+   const FirebaseApp = new FirebaseUtil().app()
+
    const showSlide = () => {
       setSlide("cross");
    };
    const hideSlide = () => {
       setSlide("burger");
    };
+
+   const logoutUser = async () => {
+      await FirebaseApp.auth().signOut();
+      window.location = "./"
+   };
+
+   useEffect(() => {
+      CheckAdmin().then(data => {
+         console.log('Admin', data)
+         setIsSuperAdmin(data.superAdmin)
+      })
+   }, [])
 
    return (
       <React.Fragment>
@@ -34,6 +47,10 @@ export const Navigation = (props) => {
             <div className={`nav-logo ${slide}-nav-logo`}>
                <img src={logo} alt="Logo" />
             </div>
+
+            {slide === "cross" && 
+            <p style={{alignSelf: "center", fontWeight: "bold", color: "#fff"}}>{FirebaseApp.auth().currentUser.phoneNumber}</p>}
+
             <NavLink
                className="nav-links"
                activeClassName="activenav"
@@ -46,7 +63,7 @@ export const Navigation = (props) => {
                   Stats
                </div>
             </NavLink>
-            <NavLink
+            {/* <NavLink
                className="nav-links"
                activeClassName="activenav"
                to="/tax"
@@ -57,7 +74,9 @@ export const Navigation = (props) => {
                <div className={`nav-link-item ${slide}-nav-link-item `}>
                   Tax management
                </div>
-            </NavLink>
+            </NavLink> */}
+
+            {isSuperAdmin && 
             <NavLink
                className="nav-links"
                activeClassName="activenav"
@@ -69,7 +88,8 @@ export const Navigation = (props) => {
                <div className={`nav-link-item ${slide}-nav-link-item `}>
                   User Management
                </div>
-            </NavLink>
+            </NavLink>}
+
             <NavLink
                className="nav-links"
                activeClassName="activenav"
@@ -137,13 +157,13 @@ export const MobileNavigationBottom = () => {
                   >
                      <i class="fas fa-chart-line"></i>
                   </NavLink>
-                  <NavLink
+                  {/* <NavLink
                      activeClassName="activenav"
                      className="mobile-nav-icon"
                      to="/tax"
                   >
                      <i class="fas fa-clipboard-list"></i>
-                  </NavLink>
+                  </NavLink> */}
                   <NavLink
                      activeClassName="activenav"
                      className="mobile-nav-icon"

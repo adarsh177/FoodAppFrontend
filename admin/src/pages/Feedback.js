@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { withRouter } from "react-router-dom";
+import { GetFeedbacks } from "../APIs/AdminManager";
 import {
    Navigation,
    MobileNavigationTop,
@@ -6,12 +8,29 @@ import {
 } from "../components/navigation/navigation";
 import "./css/Feedback.css";
 
-const Feedback = () => {
-   const name = "karan";
-   const phone = "+919455656532";
-   const date = "date";
-   const feedback =
-      "dkf hk s dfgjd fjg jk hsj dgf b df s huudhf d f dfg tdfg dsb fjsd hfsdf huh df";
+const Feedback = (props) => {
+   const [feedbacks, setFeedbacks] = useState([])
+   const [loading, setLoading] = useState(true)
+   const [page, setPage] = useState(0)
+
+   const loadFeedback = () => {
+      setLoading(true)
+
+      GetFeedbacks(page).then(response => {
+         console.log([...feedbacks, ...response.feedbacks])
+         setFeedbacks([...feedbacks, ...response.feedbacks])
+         setPage(parseInt(response.page) + 1)
+      }).catch(err => {
+         alert('Unauthorized')
+         if(err === "UNAUTH"){
+            props.history.push("./")
+         }
+      }).finally(() => setLoading(false))
+   }
+
+   useEffect(() => {
+      loadFeedback()
+   }, [])
 
    return (
       <div className="nav-container">
@@ -19,24 +38,32 @@ const Feedback = () => {
          <MobileNavigationTop />
          <div className="main">
             <h1>Feedbacks</h1>
-            <div class="feedbackContainer">
-               <div className="flex-row">
-                  <b>Name:</b>
-                  <p className="lessHight">{name}</p>
-               </div>
-               <div className="flex-row">
-                  <b>Phone:</b>
-                  <p className="lessHight">{phone}</p>
-               </div>
-               <div className="flex-row">
-                  <b>Date:</b>
-                  <p className="lessHight">{date}</p>
-               </div>
-               <div className="flex-row">
-                  <b>Feedback:</b>
-                  <p className="lessHight">{feedback}</p>
-               </div>
-            </div>
+            {feedbacks.map(item => {
+               return(
+                  <div class="feedbackContainer" key={item.id}>
+                     <div className="flex-row">
+                        <b>UserId:</b>
+                        <p className="lessHight">{item.userId}</p>
+                     </div>
+                     <div className="flex-row">
+                        <b>From App:</b>
+                        <p className="lessHight">{item.app}</p>
+                     </div>
+                     <div className="flex-row">
+                        <b>Date:</b>
+                        <p className="lessHight">{new Date(parseInt(item.date)).toLocaleTimeString()}, {new Date(parseInt(item.date)).toLocaleDateString()}</p>
+                     </div>
+                     <div className="flex-row">
+                        <b>Feedback:</b>
+                        <p className="lessHight">{item.feedback}</p>
+                     </div>
+                  </div>
+               )
+            })}
+
+            {loading && <p style={{marginBottom: "5em"}}>Loading...</p>}
+            {!loading && feedbacks.length % 10 === 0 &&
+            <button style={{marginBottom: "5em"}} onClick={loadFeedback}>Load more</button>}
          </div>
          <div className="footer">
             <MobileNavigationBottom />
@@ -45,4 +72,4 @@ const Feedback = () => {
    );
 };
 
-export default Feedback;
+export default withRouter(Feedback);

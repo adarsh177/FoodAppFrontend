@@ -93,6 +93,9 @@
    font-size: 32px;
    margin-right: 20px;
 }
+.nav-icon{
+   width: 1.5em;
+}
 .burger-navigation {
    width: 70px;
 }
