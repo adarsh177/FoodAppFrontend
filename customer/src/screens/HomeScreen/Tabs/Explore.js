@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {
   Switch,
   Text,
@@ -23,6 +23,8 @@ import { GetProfile, UpdateProfile } from '../../../APIs/ProfileManager'
 import { SearchNearMe } from '../../../APIs/SearchManager'
 import NoResult from '../../../assets/no_restro.png'
 import { GetIngredientsAndTags } from '../../../APIs/IngredientsManager'
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps'
+import MapStyle from '../../../MapStyle.json'
 
 function Explore(props) {
   const [location, setLocation] = useState({})
@@ -33,6 +35,13 @@ function Explore(props) {
   const [filterTags, setFilterTags] = useState([])
   const [seletedFilterTags, setSelectedFilterTags] = useState([])
   const [searchText, setSearchText] = useState('')
+  const mapRef = useRef(new MapView())
+  const [sliderYAxis, setSliderYAxis] = useState('70%')
+  // sliding related stuff
+  let SLIDER_TOUCH_DOWN = useRef(false)
+  let SLIDER_CURR_Y_AXIS = useRef(0)
+  let SLIDER_INITIAL_Y_AXIS = useRef(0) // initial y of slider bar
+  let TOP_BAR_Y_OCCUPANCY = useRef(0) // y occupied by top bar containing location and profile
   
   let searchTime = 0;
 
@@ -51,9 +60,15 @@ function Explore(props) {
   const loadSearchResults = () => {
     setLoadingResults(true)
     SearchNearMe(searchText, seletedFilterTags.join(','), 0).then(val => {
-      console.log('SEARCH', val);
       setRestros(val.data)
       setCurrentPage(parseInt(val.page))
+      // setting location to user's location
+      mapRef.current.animateCamera({
+        center: {
+          latitude: locationPoint.coordinates[1],
+          longitude: locationPoint.coordinates[0],
+        },
+      })
     })
     .catch(err => console.log('error searching', err))
     .finally(() => setLoadingResults(false))
@@ -108,6 +123,13 @@ function Explore(props) {
                 };
                 // updating state
                 setLocationPoint(point)
+                // setting map focus here
+                mapRef.current.animateCamera({
+                  center: {
+                    latitude: point.coordinates[1],
+                    longitude: point.coordinates[0],
+                  },
+                })
                 setTimeout(loadSearchResults, 1500)
                 // getting address out of coords
                 ReverseGeocode(position.coords.latitude, position.coords.longitude).then(location => {
@@ -159,6 +181,13 @@ function Explore(props) {
     GetProfile().then(profile => {
       setLocation(profile.location ?? {})
       setLocationPoint(profile.locationPoint ?? {})
+
+      mapRef.current.animateCamera({
+        center: {
+          latitude: profile.locationPoint.coordinates[1],
+          longitude: profile.locationPoint.coordinates[0],
+        },
+      })
       
       // checking if location already exists else insisting for new
       if(profile.locationPoint && profile.locationPoint.coordinates && profile.locationPoint.coordinates.length === 2){
@@ -198,98 +227,178 @@ function Explore(props) {
 
   return (
     <View style={style.storeContainer}>
-      <View style={style.locationContainer}>
-        <TouchableOpacity
-          activeOpacity={0.6}
-          onPress={handleUserLocation}
-          style={style.locationInnerContainer}>
-          <IconMI
-            name="location-pin"
-            size={25}
-            color={AppConfig.primaryColor}
-          />
-          <Text numberOfLines={1} style={style.locationText}>{GetTrimmedLocation(location.label)}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.6}
-          onPress={handleProfile}
-          style={style.profileImageContainer}>
-          <Image
-            style={style.profileImage}
-            source={require('../../../assets/logo.png')}
-          />
-        </TouchableOpacity>
-      </View>
+      <MapView
+        ref={mapRef}
+        style={style.mapStyle}
+        provider={PROVIDER_GOOGLE}
+        initialRegion={{
+          latitude: 37.78825,
+          longitude: -122.4324,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421}}
+        customMapStyle={MapStyle}
+          >
+            {restros.map(item => {
+              return(
+                <Marker
+                  coordinate={{
+                    latitude: item.locationPoint.coordinates[1],
+                    longitude: item.locationPoint.coordinates[0],
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421
+                  }}
+                  title={item.name}
+                  description={item.description}
+                  pinColor={AppConfig.primaryColor}
+                  onCalloutPress={() => handelCardPress(item.userId, false)}
+                  />
+              ) 
+            })}
+          </MapView>
 
-      {/* Search Container */}
-      <View style={style.textInputContainer}>
-        <IconMI
-            name="search"
-            size={25}
-            color="#8c8c8c"
-          />
-        <TextInput
-          value={searchText}
-          onChangeText={setSearchText}
-          style={style.textInput}
-          placeholder="Search here"
-        />
-        {searchText.length > 0 &&
-        <TouchableOpacity onPress={() => setSearchText('')} activeOpacity={0.8} style={style.searchClose}>
-          <IconMI
-              name="close"
-              size={15}
-              color="#fff"
-            />
-        </TouchableOpacity>}
-      </View>
+          <View 
+            onTouchStart={ev => {
+              if(ev.nativeEvent.locationY < 40){
+                SLIDER_TOUCH_DOWN.current = true
+                SLIDER_CURR_Y_AXIS.current = ev.nativeEvent.locationY
+              }
+            }}
+            onTouchMove={ev => {
+              if(SLIDER_TOUCH_DOWN.current){
+                let newPos = ev.nativeEvent.pageY - SLIDER_CURR_Y_AXIS.current
+                if (newPos < TOP_BAR_Y_OCCUPANCY.current){
+                  setSliderYAxis(TOP_BAR_Y_OCCUPANCY.current)
+                } else if (newPos > SLIDER_INITIAL_Y_AXIS.current){
+                  setSliderYAxis(SLIDER_INITIAL_Y_AXIS.current)
+                } else {
+                  setSliderYAxis(newPos)
+                }
+              }
+            }}
+            onTouchEnd={ev => {
+              SLIDER_TOUCH_DOWN.current = false
+              SLIDER_CURR_Y_AXIS.current = ev.nativeEvent.pageY
+            }}
+            onLayout={ev => {
+              if(SLIDER_INITIAL_Y_AXIS.current === 0){
+                SLIDER_INITIAL_Y_AXIS.current = ev.nativeEvent.layout.y
+              }
+            }}
+            style={[style.sliderStyle, {top: sliderYAxis}]}>
+              
+              <View style={style.holderBar}>
 
-      {/* Filter container */}
-      {filterTags.length > 0 && 
-      <View style={{width: '100%', height: 60}}>
-        <ScrollView style={{paddingVertical: 0, width: "100%"}} horizontal contentContainerStyle={style.filterCapsuleContainer}>
-          
-          {seletedFilterTags.length > 0 &&
-          <TouchableOpacity onPress={() => setSelectedFilterTags([])} style={{marginRight: 10}} key={"clear"}>
-            <Text style={[style.capsule, {color: '#d42522', borderColor: '#d42522'}]}>Clear</Text>
-          </TouchableOpacity>}
+              </View>
 
-          {filterTags.map(tag => {
-            return(
-              <TouchableOpacity onPress={() => toggleTag(tag)} activeOpacity={0.8} style={{marginRight: 10}} key={tag}>
-                <Text style={[style.capsule, seletedFilterTags.includes(tag) ? style.selectedCapsule : {}]}>{tag}</Text>
-              </TouchableOpacity>
-            )
-          })}
-        </ScrollView>
-      </View>}
+              {/* Search Container */}
+              <View style={style.textInputContainer}>
+                <IconMI
+                    name="search"
+                    size={25}
+                    color="#8c8c8c"
+                  />
+                <TextInput
+                  value={searchText}
+                  onChangeText={setSearchText}
+                  style={style.textInput}
+                  onTouchStart={() => {
+                    if(SLIDER_CURR_Y_AXIS.current !== TOP_BAR_Y_OCCUPANCY.current){
+                      setSliderYAxis(TOP_BAR_Y_OCCUPANCY.current)
+                    }
+                  }}
+                  placeholder="Search here"
+                />
+                {searchText.length > 0 &&
+                <TouchableOpacity onPress={() => setSearchText('')} activeOpacity={0.8} style={style.searchClose}>
+                  <IconMI
+                      name="close"
+                      size={15}
+                      color="#fff"
+                    />
+                </TouchableOpacity>}
+              </View>
 
-      <ScrollView 
-        contentContainerStyle={{marginTop: 10}}
-        refreshControl={<RefreshControl refreshing={loadingResults} onRefresh={loadSearchResults} />}>
-        {restros.map(restro => {
-          return(
-            <RestaurantCard
-              merchantId={restro.userId}
-              name={restro.name}
-              distance={(restro.distanceInMeters / 1000).toFixed(2)}
-              rating={`${restro.rating ? restro.rating.toFixed(1) : 0} Stars (${restro.ratingCount ?? 0})`}
-              image={restro.bannerImage}
-              onPress={() => handelCardPress(restro.userId, false)}
-              onItemPressed={id => handelCardPress(restro.userId, id)}
-            />
-          )
-        })}
+              {/* Filter container */}
+              {filterTags.length > 0 && 
+              <View style={{width: '100%', height: 60}}>
+                <ScrollView style={{paddingVertical: 0, width: "100%"}} horizontal contentContainerStyle={style.filterCapsuleContainer}>
+                  
+                  {seletedFilterTags.length > 0 &&
+                  <TouchableOpacity onPress={() => setSelectedFilterTags([])} style={{marginRight: 10}} key={"clear"}>
+                    <Text style={[style.capsule, {color: '#d42522', borderColor: '#d42522'}]}>Clear</Text>
+                  </TouchableOpacity>}
 
-        {!loadingResults && restros.length === 0 && <Image style={style.noResult} source={NoResult} />}
-        {!loadingResults && restros.length === 0 && <Text style={style.noResultText}>No Restaurants are open near you at the moment</Text>}
+                  {filterTags.map(tag => {
+                    return(
+                      <TouchableOpacity onPress={() => toggleTag(tag)} activeOpacity={0.8} style={{marginRight: 10}} key={tag}>
+                        <Text style={[style.capsule, seletedFilterTags.includes(tag) ? style.selectedCapsule : {}]}>{tag}</Text>
+                      </TouchableOpacity>
+                    )
+                  })}
+                </ScrollView>
+              </View>}
 
-        {(!loadingResults && restros.length !== 0 && (restros.length % 10 === 0)) &&
-        <TouchableOpacity activeOpacity={0.8} onPress={loadMoreResults}>
-          <Text style={style.loadMore}>Load More</Text>
-        </TouchableOpacity>}
+              <ScrollView 
+                contentContainerStyle={{marginTop: 10}}
+                refreshControl={<RefreshControl refreshing={loadingResults} onRefresh={loadSearchResults} />}>
+                {restros.map(restro => {
+                  return(
+                    <RestaurantCard
+                      merchantId={restro.userId}
+                      name={restro.name}
+                      distance={(restro.distanceInMeters / 1000).toFixed(2)}
+                      rating={`${restro.rating ? restro.rating.toFixed(1) : 0} Stars (${restro.ratingCount ?? 0})`}
+                      image={restro.bannerImage}
+                      onPress={() => handelCardPress(restro.userId, false)}
+                      onItemPressed={id => handelCardPress(restro.userId, id)}
+                    />
+                  )
+                })}
 
-      </ScrollView>
+                {!loadingResults && restros.length === 0 && <Image style={style.noResult} source={NoResult} />}
+                {!loadingResults && restros.length === 0 && <Text style={style.noResultText}>No Restaurants are open near you at the moment</Text>}
+
+                {(!loadingResults && restros.length !== 0 && (restros.length % 10 === 0)) &&
+                <TouchableOpacity activeOpacity={0.8} onPress={loadMoreResults}>
+                  <Text style={style.loadMore}>Load More</Text>
+                </TouchableOpacity>}
+
+              </ScrollView>
+          </View>
+
+          {!loadingResults && restros.length === 0 && 
+          <Text style={style.NoRestauraunt}>
+            No Restauraunts in this area.{'\n'}Try clearing all filters or come after sometime
+          </Text>}
+
+          <View 
+            onLayout={ev => {
+              if(TOP_BAR_Y_OCCUPANCY.current === 0){
+                TOP_BAR_Y_OCCUPANCY.current = ev.nativeEvent.layout.y + ev.nativeEvent.layout.height + 10
+              }
+            }}
+            style={style.locationContainer}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={handleUserLocation}
+              style={style.locationInnerContainer}>
+              <IconMI
+                name="location-pin"
+                size={25}
+                color={AppConfig.primaryColor}
+              />
+              <Text numberOfLines={1} style={style.locationText}>{GetTrimmedLocation(location.label)}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={handleProfile}
+              style={style.profileImageContainer}>
+              <Image
+                style={style.profileImage}
+                source={require('../../../assets/logo.png')}
+              />
+            </TouchableOpacity>
+          </View>
     </View>
   )
 }
@@ -298,14 +407,65 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#fff',
+    // padding: 10,
+  },
+  mapStyle: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1
+  },
+  sliderStyle: {
+    position: 'absolute',
+    width: "100%",
+    height: "100%",
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     padding: 10,
+    zIndex: 5,
+    elevation: 2,
+    borderColor: '#d4d4d4',
+    borderWidth: 2,
+  },
+  holderBar: {
+    width: 70,
+    height: 8,
+    borderBottomColor: '#bdbdbd',
+    borderTopColor: '#bdbdbd',
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    alignSelf: 'center',
+    marginTop: 10,
+    marginBottom: 20
   },
   locationContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    left: 10,
+    zIndex: 10,
+    elevation: 3,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    width: '100%',
     justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 10,
+  },
+  NoRestauraunt:{
+    position: 'absolute',
+    left: 10,
+    right: 10,
+    top: 100,
+    zIndex: 4,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    textAlign: 'center',
+    borderColor: '#ad1f15',
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: 'rgba(184, 31, 0, 0.56)',
+    color: '#fff',
+    fontWeight: 'bold'
   },
   locationInnerContainer: {
     flexDirection: 'row',
@@ -337,7 +497,8 @@ const style = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#696969',
     borderRadius: 30,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    marginTop: 10
   },
   textInput: {
     height: "100%",
