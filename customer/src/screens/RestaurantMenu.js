@@ -19,9 +19,10 @@ import MenuCard from '../components/MenuCard';
 import IconMCI from 'react-native-vector-icons/MaterialCommunityIcons';
 import { GetMerchantInfo, SetFavourite, UnsetFavourite } from '../APIs/Merchant';
 import ANT from 'react-native-vector-icons/AntDesign';
-import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
+import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
 import ListingInfoDialog from '../dialogs/ListingInfoDialog';
 import { GetTimeInWords } from '../Utils';
+import Dinero from 'dinero.js'
 
 //Component for bottom cart Indicator ------------------------------
 
@@ -42,7 +43,7 @@ const ItemAdded = props => {
       onPress={props.onPress}>
       <View style={style.iconAndValueContainer}>
         <IconMCI name="cart-outline" size={30} color="#fff" />
-        <Text style={style.flagText}>Cart value : {GetCurrencySymbol()} {props.cartValue}</Text>
+        <Text style={style.flagText}>Cart value : {GetCurrencySymbolFromId(props.cartValue.currency)} {Dinero(props.cartValue).toUnit()}</Text>
       </View>
       <View>
         <Text style={style.flagText}>Checkout &#9654;</Text>
@@ -57,7 +58,7 @@ function RestaurantMenu(props) {
   const [isFav, setFav] = useState(true)
   const [listings, setListings] = useState([])
   const [currentMenu, setCurrentMenu] = useState({})
-  const [cartTotal, setCartTotal] = useState(0)
+  const [cartTotal, setCartTotal] = useState({})
   const [showInfoDialog, setShowInfoDialog] = useState(false)
   const [infoItem, setInfoItem] = useState(false)
 
@@ -125,12 +126,17 @@ function RestaurantMenu(props) {
   const GetTotalCartValue = (menuData) => {
     if(Object.keys(menuData).length === 0 ) return 0
 
-    let total = 0
+    let total = null
     Object.values(menuData).forEach(val => {
-      total += val.price
+      if(total !== null){
+        total = total.add(Dinero(val.price))
+      }else{
+        total = Dinero(val.price)
+      }
     })
+    // console.log()
     
-    setCartTotal(total)
+    setCartTotal(total.toJSON())
   }
 
   useEffect(() => {
@@ -190,7 +196,7 @@ function RestaurantMenu(props) {
           <Text style={style.closed}>Store is closed at the moment</Text>
         </View>
         :
-        (cartTotal > 0 && 
+        (cartTotal.amount > 0 && 
           <View style={style.flagMessageContainer}>
             <ItemAdded onPress={handlePressOnCartValue} cartValue={cartTotal}/>
           </View>)

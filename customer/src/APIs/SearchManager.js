@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://food.adarshshrivastava.in/customer/"
+const BASE_URL = "https://41068315aa37.ngrok.io/customer/"
 
 export async function SearchNearMe(query, tags, page = 0){
     console.log('Token', await GetAuthToken());

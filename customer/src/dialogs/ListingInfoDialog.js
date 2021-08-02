@@ -1,9 +1,13 @@
+import Dinero from 'dinero.js';
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text, Modal, Image, ActivityIndicator, ScrollView } from 'react-native';
 import AppConfig from '../../AppConfig.json';
-import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
+import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
 
 function ListingInfoDialog(props){
+    if(!props.show)
+        return null
+
     return(
         <Modal
         animationType="fade"
@@ -16,7 +20,7 @@ function ListingInfoDialog(props){
                 <View style={style.dialog}>
                     <Text style={style.itemName}>{props.data.name}</Text>
                     <Image style={style.image} source={{uri: props.data.image}}  />
-                    <Text style={style.price}>{GetCurrencySymbol()} {props.data.price}</Text>
+                    <Text style={style.price}>{GetCurrencySymbolFromId(props.data.price.currency)} {Dinero(props.data.price).toUnit()}</Text>
 
                     <Text style={style.detailHead}>Stock Left</Text>
                     <Text style={style.detail}>{props.data.currentStockCount} Units</Text>

@@ -11,17 +11,18 @@ import {
 } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 import IconMCI from 'react-native-vector-icons/MaterialCommunityIcons';
-import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
+import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
 import { CheckPromo, GetTaxes, GetWalletBalance, PostOrder } from '../APIs/ProfileManager';
 import auth from '@react-native-firebase/auth';
 import AddMoneyDialog from '../dialogs/AddMoneyDialog';
+import Dinero from 'dinero.js';
 
 function CheckoutScreen(props) {
   const [promoLoading, setPromoLoading] = useState(false)
   const [items, setItems] = useState([])
-  const [totalBaseValue, setTotalBaseValue] = useState(0)
-  const [promoValue, setPromoValue] = useState(0)
-  const [totalTaxValue, setTotalTaxValue] = useState(0)
+  const [totalBaseValue, setTotalBaseValue] = useState(null)
+  const [promoValue, setPromoValue] = useState(null)
+  const [totalTaxValue, setTotalTaxValue] = useState(null)
   const [promoUsed, setPromoUsed] = useState(null)
   const [taxes, setTaxes] = useState([])
   const [promoText, setPromoText] = useState('')
@@ -35,17 +36,25 @@ function CheckoutScreen(props) {
     setPromoLoading(true)
     CheckPromo(promoText).then(promo => {
       if(promo){
-        const promoVal = parseFloat((calculateTotalBase() * (promo.offPercent / 100.0)).toFixed(2))
-        promo.value = Math.min(promoVal, promo.uptoValue)
+        let promoVal = Dinero(calculateTotalBase()).percentage(promo.offPercent)
+        promoVal = Dinero({currency: promoVal.getCurrency(), amount: Math.min(promoVal.getAmount(), promo.uptoValue * 100)})
+        promo.value = promoVal.toJSON()
         setPromoUsed(promo)
-        setPromoValue(promo.value)
-        Alert.alert(`${promo.offPercent}% off upto ${GetCurrencySymbol()}${promo.uptoValue}`, `Promotional code applied successfully.\nWe have applied ${promo.offPercent}% off upto ${GetCurrencySymbol()}${promo.uptoValue}`)
+        setPromoValue(promoVal.toJSON())
+        Alert.alert(`${promo.offPercent}% off upto ${GetCurrencySymbolFromId(promoVal.getCurrency())}${promo.uptoValue}`, `Promotional code applied successfully.\nWe have applied ${promo.offPercent}% off upto ${GetCurrencySymbolFromId(promoVal.getCurrency())}${promo.uptoValue}`)
       }else{
         Alert.alert('Invalid Code', 'Invalid promotional code entered.')
       }
-    }).catch(err => alert('Error applying promo code'))
+    }).catch(err => alert('Error applying promo code: ' + err))
     .finally(() => setPromoLoading(false))
   };
+
+  const GetGrandTotal = () => {
+    if(totalBaseValue)
+      return Dinero(totalBaseValue).add(Dinero(totalTaxValue ?? {amount: 0, currency: totalBaseValue.currency})).subtract(Dinero(promoValue ?? {amount: 0, currency: totalBaseValue.currency}))
+
+    return Dinero()
+  }
 
   const SendOrder = () => {
     const data = {
@@ -56,9 +65,9 @@ function CheckoutScreen(props) {
       taxes: taxes,
       promotion: promoUsed,
       baseValue: totalBaseValue,
-      taxValue: totalTaxValue,
-      promoValue: promoValue,
-      finalValue: totalBaseValue + totalTaxValue - promoValue,
+      taxValue: totalTaxValue ?? Dinero({amount: 0, currency: totalBaseValue.currency}).toJSON(),
+      promoValue: promoValue ?? Dinero({amount: 0, currency: totalBaseValue.currency}).toJSON(),
+      finalValue: GetGrandTotal().toJSON(),
       status: "PENDING"
     }
 
@@ -77,7 +86,9 @@ function CheckoutScreen(props) {
   const payClicked = () => {
     setLoading(true)
     GetWalletBalance().then(bal => {
-      if((totalBaseValue - promoValue + totalTaxValue) > bal){
+      const grandTotal = GetGrandTotal()
+      const walletBal = Dinero(bal ?? Dinero({amount: 0, currency: totalBaseValue.currency}))
+      if(grandTotal.greaterThan(walletBal)){
         Alert.alert('Insufficient Balance', 'You do not have sufficient wallet balance for this order, Please recharge your wallet', [
           {
             onPress: () => {
@@ -102,18 +113,22 @@ function CheckoutScreen(props) {
   
 
   const calculateTotalBase = () => {
-    let total = 0
+    let total = null
     props.route?.params?.items.forEach(val => {
-      total += val.price
+      if(total == null){
+        total = Dinero(val.price)
+      }else{
+        total = total.add(Dinero(val.price))
+      }
     })
 
-    return total
+    return total.toJSON()
   }
 
   useEffect(() => {
-    const base = calculateTotalBase()
+    const base = Dinero(calculateTotalBase())
     setItems(props.route?.params?.items ?? [])
-    setTotalBaseValue(parseFloat(base.toFixed(2)))
+    setTotalBaseValue(base.toJSON())
 
     GetTaxes().then(val => {
       console.log('Taxes', val)
@@ -121,7 +136,7 @@ function CheckoutScreen(props) {
       setTaxes(val.map(item => {
         return {
           ...item,
-          value: base * (item.percent / 100.0)
+          value: base.percentage(item.percent).toJSON()
         }
       }))
       
@@ -130,10 +145,10 @@ function CheckoutScreen(props) {
         totalTaxPercent += item.percent
       })
 
-      const totalTax = base * (totalTaxPercent / 100.0)
+      const totalTax = base.percentage(totalTaxPercent).toJSON()
       console.log('Total tax', totalTax)
 
-      setTotalTaxValue(parseFloat(totalTax.toFixed(2)))
+      setTotalTaxValue(totalTax)
     })
   }, [])
 
@@ -168,15 +183,15 @@ function CheckoutScreen(props) {
               return(
                 <View style={style.itemContainer}>
                   <Text style={style.itemTitle}>{`${item.count} x ${item.name}`}</Text>
-                  <Text style={style.summaryPrice}>{GetCurrencySymbol()} {item.price}</Text>
+                  <Text style={style.summaryPrice}>{GetCurrencySymbolFromId(item.price.currency)} {Dinero(item.price).toUnit()}</Text>
                 </View>
               )
             })}
 
-            {promoUsed && 
+            {promoUsed !== null &&
             <View style={style.itemContainer}>
               <Text style={style.itemTitle}>{`PROMO: ${promoUsed.code.toUpperCase()}`}</Text>
-              <Text style={style.promoPrice}>- {GetCurrencySymbol()} {promoValue}</Text>
+              <Text style={style.promoPrice}>- {GetCurrencySymbolFromId(promoUsed.value.currency)} {Dinero(promoUsed.value).toUnit()}</Text>
             </View>}
 
             <View style={style.horizontalLine}></View>
@@ -189,7 +204,7 @@ function CheckoutScreen(props) {
                   return(
                     <View style={style.taxInnerInnerContainer}>
                       <Text style={style.itemTitle}>{tax.name} ({tax.percent}%)</Text>
-                      <Text style={style.summaryPrice}>{GetCurrencySymbol()} {tax.value}</Text>
+                      <Text style={style.summaryPrice}>{GetCurrencySymbolFromId(tax.value.currency)} {Dinero(tax.value).toUnit()}</Text>
                     </View>
                   )
                 })}
@@ -199,7 +214,7 @@ function CheckoutScreen(props) {
             <View style={style.summaryTotalContainer}>
               <Text style={style.summaryTotalText}>Total</Text>
               <Text style={style.summaryPriceWithWhiteColor}>
-                {GetCurrencySymbol()} {(totalBaseValue - promoValue + totalTaxValue).toFixed(2)}
+                {GetCurrencySymbolFromId(GetGrandTotal().getCurrency())} {GetGrandTotal().toUnit()}
               </Text>
             </View>
           </View>
@@ -211,7 +226,7 @@ function CheckoutScreen(props) {
             style={style.payButton}
             activeOpacity={0.6}
             onPress={payClicked}>
-            <Text style={style.payButtonText}>Pay {GetCurrencySymbol()} {(totalBaseValue - promoValue + totalTaxValue).toFixed(2)}</Text>
+            <Text style={style.payButtonText}>Pay {GetCurrencySymbolFromId(GetGrandTotal().getCurrency())} {GetGrandTotal().toUnit()}</Text>
             <Text style={style.payButtonTextArrow}>&#9654;</Text>
           </TouchableOpacity>
         }

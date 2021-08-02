@@ -1,3 +1,4 @@
+import Dinero from 'dinero.js';
 import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
@@ -13,7 +14,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import AppConfig from '../../AppConfig.json';
 import { GetMerchantInfo } from '../APIs/Merchant';
 import { GetOrderDetails } from '../APIs/ProfileManager';
-import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
+import {GetCurrencySymbolFromId} from '../CurrencyManager/CurrencyManager';
 import RateOrderDialog from '../dialogs/RateOrderDialog';
 
 function OrderDetailScreen(props) {
@@ -102,7 +103,7 @@ function OrderDetailScreen(props) {
             return(
               <View style={style.itemContainer}>
                 <Text style={style.itemTitle}>{item.name}</Text>
-                <Text style={style.summaryPrice}>{GetCurrencySymbol()} {item.price}</Text>
+                <Text style={style.summaryPrice}>{GetCurrencySymbolFromId(item.price.currency)} {Dinero(item.price).toUnit()}</Text>
               </View>
             )
           })}
@@ -110,7 +111,7 @@ function OrderDetailScreen(props) {
           {orderDetails.promotion && 
           <View style={style.itemContainer}>
             <Text style={style.itemTitle}>PROMO: {orderDetails.promotion.code}</Text>
-            <Text style={[style.summaryPrice, {color: "#a61900"}]}>- {GetCurrencySymbol()}{orderDetails.promoValue}</Text>
+            <Text style={[style.summaryPrice, {color: "#a61900"}]}>- {GetCurrencySymbolFromId(orderDetails.promoValue.currency)}{Dinero(orderDetails.promoValue).toUnit()}</Text>
           </View>}
 
           <View style={style.horizontalLine}></View>
@@ -121,7 +122,7 @@ function OrderDetailScreen(props) {
                 return(
                 <View style={style.taxInnerInnerContainer}>
                   <Text style={style.itemTitle}>{item.name} ({item.percent})</Text>
-                  <Text style={style.summaryPrice}>{GetCurrencySymbol()} {item.value}</Text>
+                  <Text style={style.summaryPrice}>{GetCurrencySymbolFromId(item.value.currency)} {Dinero(item.value).toUnit()}</Text>
                 </View>
                 )
               })}
@@ -130,7 +131,7 @@ function OrderDetailScreen(props) {
           <View style={style.summaryTotalContainer}>
             <Text style={style.summaryTotalText}>Total</Text>
             <Text style={style.summaryPriceWithWhiteColor}>
-              {GetCurrencySymbol()} {orderDetails.finalValue}
+              {GetCurrencySymbolFromId(orderDetails.finalValue.currency)} {Dinero(orderDetails.finalValue).toUnit()}
             </Text>
           </View>
         </View>

@@ -1,6 +1,7 @@
 import React from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import AppConfig from '../../AppConfig.json';
+import { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
 
 function OnGoingOrderCard(props) {
   //handel card press ongoinf -----------------------
@@ -12,7 +13,7 @@ function OnGoingOrderCard(props) {
       <View style={style.cardContainer}>
         <View style={style.orderIdandPriceContainer}>
           <Text style={style.orderId}>#{props.orderID}</Text>
-          <Text style={style.price}>₹ {props.price}</Text>
+          <Text style={style.price}>{GetCurrencySymbolFromId(props.price.currency)} {props.price.amount}</Text>
         </View>
         <Text style={style.date}>Date: {props.date}</Text>
         <Text style={style.items}>{props.items}</Text>

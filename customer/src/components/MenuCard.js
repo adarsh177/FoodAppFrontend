@@ -5,7 +5,8 @@ import AppConfig from '../../AppConfig.json';
 //external poackage ---------------------------------------
 
 import NumericInput from 'react-native-numeric-input';
-import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
+import {GetCurrencySymbolFromId} from '../CurrencyManager/CurrencyManager';
+import Dinero from 'dinero.js'
 
 function InventoryCard(props) {
   // Image source
@@ -20,7 +21,7 @@ function InventoryCard(props) {
     setQuantity(val)
     props.onValueChanged(props.id, {
       count: val,
-      price: val * props.price,
+      price: Dinero(props.price).multiply(val).toJSON(),
       id: props.id,
       name: props.itemName
     })
@@ -33,7 +34,7 @@ function InventoryCard(props) {
         <View style={style.cardDetailsContainer}>
           <View style={style.cardTitleAndPriceContaienr}>
             <Text style={style.itemName}>{props.itemName}</Text>
-            <Text style={style.price}>{GetCurrencySymbol()} {props.price}</Text>
+            <Text style={style.price}>{GetCurrencySymbolFromId(props.price.currency)} {Dinero(props.price).toUnit()}</Text>
           </View>
           <Text style={style.itemDescription}>{props.description}</Text>
           <View style={style.numericInputContainer}>

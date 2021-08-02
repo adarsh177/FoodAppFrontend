@@ -16,7 +16,7 @@ import AppConfig from '../../AppConfig.json';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { GetCommodities, ListItem } from '../APIs/StoreManager';
 import { GetProfile } from '../APIs/ProfileManager';
-import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
+import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
 
 function ListItemScreen(props) {
   // Handle Inventory selection ---------------------------------
@@ -28,6 +28,7 @@ function ListItemScreen(props) {
   const [stock, setStock] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingInventory, setLoadingInventory] = useState(true)
+  const [currenctSymbol, setCurrencySymbol] = useState(GetCurrencySymbolFromId('INR'))
 
   //Handle List item -----------------------------------------
   const handleListItem = () => {
@@ -108,6 +109,13 @@ function ListItemScreen(props) {
       loadInventory();
     })
     loadInventory();
+
+    // LOADING PROFILE TO GET LOCATION AND HENCE CURRENCY SYMBOL
+    GetProfile().then(profile => {
+      if(profile.location.country){
+        setCurrencySymbol(GetCurrencySymbolFromId(profile.location.country === 'India' ? 'INR' : 'USD'))
+      }
+    })
   }, []);
 
   //Handle date picker --------------------------------------------
@@ -146,7 +154,7 @@ function ListItemScreen(props) {
           })}
         </Picker>
       </View>
-      <Text style={style.inputLable}>Selling Price ({GetCurrencySymbol()})</Text>
+      <Text style={style.inputLable}>Selling Price ({currenctSymbol})</Text>
       <View style={style.inputWrapper}>
         <TextInput keyboardType="decimal-pad" style={style.inputTextField} onChangeText={setPrice}/>
       </View>

@@ -12,6 +12,7 @@ import {
   Alert,
   ActivityIndicator,
   RefreshControl,
+  Dimensions,
 } from 'react-native'
 import AppConfig from '../../../../AppConfig.json'
 import IconMI from 'react-native-vector-icons/MaterialIcons'
@@ -36,12 +37,15 @@ function Explore(props) {
   const [seletedFilterTags, setSelectedFilterTags] = useState([])
   const [searchText, setSearchText] = useState('')
   const mapRef = useRef(new MapView())
-  const [sliderYAxis, setSliderYAxis] = useState('70%')
+  const [sliderYAxis, setSliderYAxis] = useState(Dimensions.get('window').height * 0.65)
+  const markerRefs = useRef({})
   // sliding related stuff
   let SLIDER_TOUCH_DOWN = useRef(false)
   let SLIDER_CURR_Y_AXIS = useRef(0)
   let SLIDER_INITIAL_Y_AXIS = useRef(0) // initial y of slider bar
   let TOP_BAR_Y_OCCUPANCY = useRef(0) // y occupied by top bar containing location and profile
+  let SEARCH_BAR_Z_AXIS = useRef(0) // y occupied by top bar containing location and profile
+  const sliderRef = useRef()
   
   let searchTime = 0;
 
@@ -57,18 +61,34 @@ function Explore(props) {
     return locationText ? locationText : 'Fetching Location';
   }
 
+  const handleMapPressForRestro = (restro) => {
+    if(mapRef.current){
+      // contracting slider
+      setSliderYAxis(SLIDER_INITIAL_Y_AXIS.current)
+
+      // animating map camera
+      mapRef.current.animateCamera({
+        center: {
+          latitude: restro.locationPoint.coordinates[1],
+          longitude: restro.locationPoint.coordinates[0],
+        },
+        zoom: 17
+      })
+
+      // opening marker callout if possible
+      if(markerRefs.current[restro.userId]){
+        markerRefs.current[restro.userId].showCallout()
+      }
+    }
+  }
+
   const loadSearchResults = () => {
     setLoadingResults(true)
     SearchNearMe(searchText, seletedFilterTags.join(','), 0).then(val => {
       setRestros(val.data)
       setCurrentPage(parseInt(val.page))
       // setting location to user's location
-      mapRef.current.animateCamera({
-        center: {
-          latitude: locationPoint.coordinates[1],
-          longitude: locationPoint.coordinates[0],
-        },
-      })
+      RecenterMapToUser()
     })
     .catch(err => console.log('error searching', err))
     .finally(() => setLoadingResults(false))
@@ -77,7 +97,6 @@ function Explore(props) {
   const loadMoreResults = () => {
     setLoadingResults(true)
     SearchNearMe(currentPage + 1).then(val => {
-      console.log('SEARCH', val)
       if(val.data.length > 0){
         setRestros([...restros, val.data])
         setCurrentPage(parseInt(val.page))
@@ -101,7 +120,6 @@ function Explore(props) {
           },
           ios: "whenInUse"
       }).then(granted => {
-          console.log('Permission', granted)
           if(!granted){
               if(Object.keys(location).length === 0){
                 Alert.alert('Location Needed', 'Please grant location permission so we could show you restaurants near you', [
@@ -116,20 +134,14 @@ function Explore(props) {
           }
           Geolocation.getCurrentPosition(
               (position) => {
-                console.log(position)
+                console.log('User position', position)
                 const point = {
                     type: "Point",
                     coordinates: [position.coords.longitude, position.coords.latitude]
                 };
                 // updating state
                 setLocationPoint(point)
-                // setting map focus here
-                mapRef.current.animateCamera({
-                  center: {
-                    latitude: point.coordinates[1],
-                    longitude: point.coordinates[0],
-                  },
-                })
+
                 setTimeout(loadSearchResults, 1500)
                 // getting address out of coords
                 ReverseGeocode(position.coords.latitude, position.coords.longitude).then(location => {
@@ -161,6 +173,17 @@ function Explore(props) {
     }
   }
 
+  const RecenterMapToUser = () => {
+    if(mapRef.current && locationPoint.coordinates){
+      mapRef.current.animateCamera({
+        center: {
+          latitude: locationPoint.coordinates[1],
+          longitude: locationPoint.coordinates[0],
+        },
+      })
+    }
+  }
+
   // loading when tags toggled
   useEffect(() => {
     loadSearchResults()
@@ -169,7 +192,6 @@ function Explore(props) {
   useEffect(() => {
     const currTime = new Date().getTime()
     if(searchTime == 0 || searchTime < currTime){
-      console.log('Performing search')
       setTimeout(loadSearchResults, 1000)
       searchTime = currTime + 1000
     }
@@ -181,13 +203,6 @@ function Explore(props) {
     GetProfile().then(profile => {
       setLocation(profile.location ?? {})
       setLocationPoint(profile.locationPoint ?? {})
-
-      mapRef.current.animateCamera({
-        center: {
-          latitude: profile.locationPoint.coordinates[1],
-          longitude: profile.locationPoint.coordinates[0],
-        },
-      })
       
       // checking if location already exists else insisting for new
       if(profile.locationPoint && profile.locationPoint.coordinates && profile.locationPoint.coordinates.length === 2){
@@ -225,28 +240,33 @@ function Explore(props) {
       .catch(err => alert(err))
   }, [])
 
+  useEffect(RecenterMapToUser, [locationPoint])
+
   return (
     <View style={style.storeContainer}>
       <MapView
         ref={mapRef}
+        onMapReady={() => {
+          RecenterMapToUser()
+        }}
+        maxZoomLevel={18}
+        minZoomLevel={12}
         style={style.mapStyle}
         provider={PROVIDER_GOOGLE}
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421}}
+        cacheEnabled
         customMapStyle={MapStyle}
           >
             {restros.map(item => {
               return(
                 <Marker
+                  ref={ref => markerRefs.current[item.userId] = ref}
                   coordinate={{
                     latitude: item.locationPoint.coordinates[1],
                     longitude: item.locationPoint.coordinates[0],
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421
                   }}
+                  icon={require('../../../assets/custom_pin.png')}
                   title={item.name}
                   description={item.description}
                   pinColor={AppConfig.primaryColor}
@@ -256,9 +276,10 @@ function Explore(props) {
             })}
           </MapView>
 
-          <View 
+          <View
             onTouchStart={ev => {
-              if(ev.nativeEvent.locationY < 40){
+              console.log(ev.nativeEvent.pageY, sliderYAxis, SEARCH_BAR_Z_AXIS.current)
+              if(ev.nativeEvent.pageY < (sliderYAxis + SEARCH_BAR_Z_AXIS.current)){
                 SLIDER_TOUCH_DOWN.current = true
                 SLIDER_CURR_Y_AXIS.current = ev.nativeEvent.locationY
               }
@@ -286,12 +307,18 @@ function Explore(props) {
             }}
             style={[style.sliderStyle, {top: sliderYAxis}]}>
               
-              <View style={style.holderBar}>
+              <View onTouchStart={() => console.log('Hp')} style={style.holderBar}>
 
               </View>
 
               {/* Search Container */}
-              <View style={style.textInputContainer}>
+              <View 
+                onLayout={ev => {
+                  if(SEARCH_BAR_Z_AXIS.current === 0){
+                    SEARCH_BAR_Z_AXIS.current = ev.nativeEvent.layout.y - 5
+                  }
+                }}
+                style={style.textInputContainer}>
                 <IconMI
                     name="search"
                     size={25}
@@ -351,6 +378,7 @@ function Explore(props) {
                       image={restro.bannerImage}
                       onPress={() => handelCardPress(restro.userId, false)}
                       onItemPressed={id => handelCardPress(restro.userId, id)}
+                      onMapPressed={() => handleMapPressForRestro(restro)}
                     />
                   )
                 })}
@@ -380,7 +408,7 @@ function Explore(props) {
             style={style.locationContainer}>
             <TouchableOpacity
               activeOpacity={0.6}
-              onPress={handleUserLocation}
+              onPress={() => handleUserLocation()}
               style={style.locationInnerContainer}>
               <IconMI
                 name="location-pin"

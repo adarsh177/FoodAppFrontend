@@ -14,7 +14,8 @@ import {
 import IconMI from 'react-native-vector-icons/MaterialIcons';
 import AppConfig from '../../AppConfig.json';
 import { GetMerchantInfo } from '../APIs/Merchant';
-import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
+import {GetCurrencySymbolFromId} from '../CurrencyManager/CurrencyManager';
+import Dinero from 'dinero.js';
 
 function RestaurantCard(props) {
   
@@ -37,15 +38,27 @@ function RestaurantCard(props) {
 
   return (
     <View style={style.restaurantCardContainer}>
-      <TouchableOpacity activeOpacity={0.8} onPress={props.onPress}>
-        <Text style={style.restroName}>{props.name}</Text>
-        {props.storeOpen !== undefined ? 
-          <Text style={style.subText}><Text style={{fontWeight: 'bold'}}>{props.storeOpen ? "Store Open" : "Store Closed"}</Text> • {props.rating}</Text>
-          :
-          <Text style={style.subText}>{props.distance} Km • {props.rating}</Text>
-        }
-      </TouchableOpacity>
+      <View style={style.restroNameContainer}>
+        <TouchableOpacity style={{flex: 1, marginRight: 20}} activeOpacity={0.8} onPress={props.onPress}>
+          <Text style={style.restroName}>{props.name}</Text>
+          
+          {props.storeOpen !== undefined ? 
+            <Text style={style.subText}><Text style={{fontWeight: 'bold'}}>{props.storeOpen ? "Store Open" : "Store Closed"}</Text> • {props.rating}</Text>
+            :
+            <Text style={style.subText}>{props.distance} Km • {props.rating}</Text>
+          }
+        </TouchableOpacity>
 
+        {props.storeOpen === undefined &&
+        <TouchableOpacity activeOpacity={0.8} onPress={props.onMapPressed}>
+          <IconMI
+            name="map"
+            size={25}
+            color={AppConfig.primaryColor}
+          />
+        </TouchableOpacity>}
+        
+      </View>
       {/* Loading spinner */}
       {loading && 
       <ActivityIndicator style={{alignSelf: 'flex-start'}} size="large" color={AppConfig.primaryColor} />}
@@ -66,15 +79,12 @@ function RestaurantCard(props) {
           //     </View>
           //   </TouchableOpacity>
           // )
-
-          console.log(item)
-          
           return(
            <TouchableOpacity onPress={() => props.onItemPressed(item.id)} activeOpacity={0.8}>
               <ImageBackground source={{uri: item.image}} style={style.listElement}>
                 <Text style={style.stockLeft}>{item.currentStockCount} Left</Text>
                 <Text numberOfLines={1} style={style.itemText}>{item.name}</Text>
-                <Text numberOfLines={1} style={[style.itemText, {paddingTop: 0, fontSize: 14,}]}>{GetCurrencySymbol()} {item.price}</Text>
+                <Text numberOfLines={1} style={[style.itemText, {paddingTop: 0, fontSize: 14,}]}>{GetCurrencySymbolFromId(item.price.currency)} {Dinero(item.price).toUnit()}</Text>
               </ImageBackground>
            </TouchableOpacity>
           )
@@ -88,10 +98,17 @@ const style = StyleSheet.create({
     width: '100%',
     marginBottom: 10
   },
+  restroNameContainer: {
+    width: "100%",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start'
+  },
   restroName:{
     color: AppConfig.primaryColor,
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   subText: {
     color: "#000"

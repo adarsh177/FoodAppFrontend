@@ -3,13 +3,14 @@ import {Text, View, StyleSheet, ScrollView, Touchable, TouchableOpacity, Activit
 import AppConfig from '../../../../AppConfig.json';
 import { GetOrders, GetWalletBalance } from '../../../APIs/ProfileManager';
 import OrderCard from '../../../components/OrderCard';
-import GetCurrencySymbol from '../../../CurrencyManager/CurrencyManager';
+import {GetCurrencySymbolFromId} from '../../../CurrencyManager/CurrencyManager';
 import AddMoneyDialog from '../../../dialogs/AddMoneyDialog';
 import DropDownPicker from 'react-native-dropdown-picker';
+import Dinero from 'dinero.js';
 
 function Wallet(props) {
   const [showAddMoney, setShowAddMoney] = useState(false)
-  const [walletBalance, setWalletBalance] = useState(0)
+  const [walletBalance, setWalletBalance] = useState({})
   const [loading, setLoading] = useState(true)
   const [orders, setOrders] = useState([])
   const [orderFilter, setOrderFilter] = useState(null)
@@ -24,10 +25,6 @@ function Wallet(props) {
   const loadWalletBalance = () => {
     GetWalletBalance().then(bal => setWalletBalance(bal ?? 0))
   }
-
-  useEffect(() => {
-    loadWalletBalance()
-  })
 
   const loadOrders = () => {
     GetOrders()
@@ -46,11 +43,16 @@ function Wallet(props) {
     })
 
     loadOrders()
+    loadWalletBalance()
   }, [])
 
   return (
     <View style={style.orderContainer}>
-      <Text style={style.walletBalance}>{GetCurrencySymbol()}{walletBalance}</Text>
+      <Text style={style.walletBalance}>
+        {walletBalance !== null && walletBalance !== undefined ? 
+        `${GetCurrencySymbolFromId(walletBalance.currency)}${Dinero(walletBalance).toUnit()}`:
+        `0`}
+      </Text>
       <Text style={style.subtext}>Wallet Balance</Text>
 
       <TouchableOpacity activeOpacity={0.8} onPress={() => setShowAddMoney(true)}>

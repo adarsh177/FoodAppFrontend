@@ -13,6 +13,7 @@ import {
 import AppConfig from '../../AppConfig.json';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMIC from 'react-native-vector-icons/MaterialCommunityIcons';
+import IonicIcons from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth';
 import { GetProfile } from '../APIs/ProfileManager';
 import FeedbackDialog from '../dialogs/FeedbackDialog';
@@ -50,66 +51,100 @@ function UserProfile(props) {
   }, [])
 
   return (
-    <ScrollView style={style.profileContainer} contentContainerStyle={{alignItems: "center"}}>
+    <ScrollView style={style.profileContainer} contentContainerStyle={{width: "100%", overflow: "scroll"}}>
       <Image style={style.avtar} source={require('../assets/logo.png')} />
-      <View style={style.detailsContainer}>
-        <Text style={style.boldDescriptionTitle}>{name}</Text>
-        <Text style={style.smallDescriptionTitle}>{phone}</Text>
+      <Text style={style.boldDescriptionTitle}>{name}</Text>
+      <Text style={style.smallDescriptionTitle}>{phone}</Text>
 
-        <TouchableOpacity onPress={handelEditProfile} style={[style.rowFlexContainer, {marginTop: 20}]} activeOpacity={0.8}>
-          <Icon
-            style={style.rightMargin}
-            name="user"
-            size={24}
-            color={AppConfig.primaryColor}
-          />
-          <Text style={style.option}>Edit Profile</Text>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={handelEditProfile} style={[style.rowFlexContainer, {marginTop: 20}]} activeOpacity={0.8}>
+        <Icon
+          style={style.rightMargin}
+          name="user"
+          size={24}
+          color={AppConfig.primaryColor}
+        />
+        <Text style={style.option}>Edit Profile</Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setShowFeedbackDialog(true)} style={[style.rowFlexContainer]} activeOpacity={0.8}>
-          <Icon
-            style={style.rightMargin}
-            name="comment"
-            size={24}
-            color={AppConfig.primaryColor}
-          />
-          <Text style={style.option}>Give Feedback</Text>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => setShowFeedbackDialog(true)} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+        <Icon
+          style={style.rightMargin}
+          name="comment"
+          size={24}
+          color={AppConfig.primaryColor}
+        />
+        <Text style={style.option}>Give Feedback</Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => props.navigation.push('shareScreen')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
-          <Icon
-            style={style.rightMargin}
-            name="share-alt"
-            size={24}
-            color={AppConfig.primaryColor}
-          />
-          <Text style={style.option}>Share with</Text>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => alert('Working on it')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+        <Icon
+          style={style.rightMargin}
+          name="question-circle"
+          size={24}
+          color={AppConfig.primaryColor}
+        />
+        <Text style={style.option}>How to use this app</Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=privacy')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
-          <Icon
-            style={style.rightMargin}
-            name="bullseye"
-            size={24}
-            color={AppConfig.primaryColor}
-          />
-          <Text style={style.option}>Privacy Policy</Text>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => alert('Working')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+        <IonicIcons
+          style={style.rightMargin}
+          name="business"
+          size={24}
+          color={AppConfig.primaryColor}
+        />
+        <Text style={style.option}>Connect your business</Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=terms')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
-          <Icon
-            style={style.rightMargin}
-            name="file"
-            size={24}
-            color={AppConfig.primaryColor}
-          />
-          <Text style={style.option}>Terms and Conditions</Text>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => alert('Working')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+        <IonicIcons
+          style={style.rightMargin}
+          name="notifications"
+          size={24}
+          color={AppConfig.primaryColor}
+        />
+        <Text style={style.option}>Enable Notifications</Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity style={{marginTop: 40}} activeOpacity={0.6} onPress={handleLogout}>
-          <Text style={style.logoutButtonText}>Logout</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={() => props.navigation.push('shareScreen')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+        <Icon
+          style={style.rightMargin}
+          name="share-alt"
+          size={24}
+          color={AppConfig.primaryColor}
+        />
+        <Text style={style.option}>Share with</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=privacy')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+        <Icon
+          style={style.rightMargin}
+          name="bullseye"
+          size={24}
+          color={AppConfig.primaryColor}
+        />
+        <Text style={style.option}>Privacy Policy</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=terms')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+        <Icon
+          style={style.rightMargin}
+          name="file"
+          size={24}
+          color={AppConfig.primaryColor}
+        />
+        <Text style={style.option}>Terms and Conditions</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => handleLogout()} style={[style.rowFlexContainer, {marginBottom: 100}]} activeOpacity={0.8}>
+        <IonicIcons
+          style={style.rightMargin}
+          name="exit"
+          size={24}
+          color="#FF5353"
+        />
+        <Text style={[style.option, {color: "#FF5353", fontWeight: "bold"}]}>Logout</Text>
+      </TouchableOpacity>
 
       <FeedbackDialog
         show={showFeedbackDialog}
@@ -119,8 +154,6 @@ function UserProfile(props) {
 }
 const style = StyleSheet.create({
   profileContainer: {
-    width: '100%',
-    height: '100%',
     backgroundColor: '#fff',
     padding: 20
   },

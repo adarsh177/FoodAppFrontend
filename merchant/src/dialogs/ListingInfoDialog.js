@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text, Modal, Image, ActivityIndicator } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 import { UnlistItem } from '../APIs/StoreManager';
+import { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
 import { GetTimeInWords } from '../Utils';
 
 function ListingInfoDialog(props){
@@ -34,7 +35,8 @@ function ListingInfoDialog(props){
                 <View style={style.dialog}>
                     <Text style={style.itemName}>{props.data.name}</Text>
                     <Image style={style.image} source={{uri: props.data.image}}  />
-                    <Text style={style.price}>Rs {props.data.price}</Text>
+                    {props.data.price && 
+                    <Text style={style.price}>{GetCurrencySymbolFromId(props.data.price.currency)} {props.data.price.amount}</Text>}
 
                     <Text style={style.detail}>
                         <Text style={{fontWeight: "bold"}}>Expires in: </Text>

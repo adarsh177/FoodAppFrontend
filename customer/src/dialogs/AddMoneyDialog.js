@@ -1,3 +1,4 @@
+import Dinero from 'dinero.js';
 import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
@@ -13,7 +14,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AppConfig from '../../AppConfig.json';
 import { AddWalletBalance, GetWalletBalance } from '../APIs/ProfileManager';
-import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
+import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
 
 function AddMoneyDialog(props) {
   const [money, setMoney] = useState('')
@@ -47,7 +48,7 @@ function AddMoneyDialog(props) {
           setWalletBalance(bal ?? 0)
       })
   })
-
+  
   return (
     <Modal
       animationType="fade"
@@ -59,9 +60,9 @@ function AddMoneyDialog(props) {
       <View style={style.mainContainer}>
         <View style={style.dialog}>
           <Text style={style.title}>Add Money</Text>
-          <Text style={style.subtitle}>Current balance: {GetCurrencySymbol()} {walletBalance}</Text>
+          <Text style={style.subtitle}>Current balance: {walletBalance !== null && walletBalance !== undefined ? `${GetCurrencySymbolFromId(walletBalance.currency)} ${Dinero(walletBalance).toUnit()}` : `0`}</Text>
           <TextInput
-            placeholder={GetCurrencySymbol()}
+            placeholder={GetCurrencySymbolFromId(walletBalance !== null && walletBalance !== undefined ? walletBalance.currency : 'INR')}
             keyboardType="numeric"
             style={style.feedbackBox}
             onChangeText={setMoney}
