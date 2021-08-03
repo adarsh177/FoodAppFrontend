@@ -369,6 +369,7 @@ function Explore(props) {
                 contentContainerStyle={{marginTop: 10}}
                 refreshControl={<RefreshControl refreshing={loadingResults} onRefresh={loadSearchResults} />}>
                 {restros.map(restro => {
+                  console.log('restro', restro)
                   return(
                     <RestaurantCard
                       merchantId={restro.userId}

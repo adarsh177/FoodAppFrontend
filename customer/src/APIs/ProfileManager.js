@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = "https://41068315aa37.ngrok.io/customer/"
+const BASE_URL = "https://b04155f32835.ngrok.io/customer/"
 
 async function GetProfile(){
     try{
@@ -121,16 +121,16 @@ async function GetWalletBalance(){
     }
 }
 
-async function AddWalletBalance(amount){
+async function AddWalletBalance(data){
     try{
-        const response = await axios.post(`${BASE_URL}wallet`, {amount: amount}, {
+        const response = await axios.post(`${BASE_URL}wallet`, {balance: data}, {
             method: "POST",
             headers: {
                 "authorization": await GetAuthToken(),
                 "timestamp": new Date().getTime()
             }
         })
-        return Promise.resolve(response.data.walletBalance);
+        return Promise.resolve(response.data.orderInfo);
     }catch(ex){
         console.log("Error ADDING wallet balance", ex);
         return Promise.reject("Server Error");
@@ -146,7 +146,7 @@ async function PostOrder(order){
                 "timestamp": new Date().getTime()
             }
         })
-        return Promise.resolve(response.data.orderId);
+        return Promise.resolve(response.data);
     }catch(ex){
         console.log("Error posting order", ex);
         return Promise.reject("Server Error");

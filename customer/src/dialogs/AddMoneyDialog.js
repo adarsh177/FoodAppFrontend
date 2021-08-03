@@ -13,13 +13,15 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AppConfig from '../../AppConfig.json';
-import { AddWalletBalance, GetWalletBalance } from '../APIs/ProfileManager';
+import { AddWalletBalance, GetProfile, GetWalletBalance } from '../APIs/ProfileManager';
 import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
+import RazorpayCheckout from 'react-native-razorpay'
 
 function AddMoneyDialog(props) {
   const [money, setMoney] = useState('')
   const [walletBalance, setWalletBalance] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [profile, setProfile] = useState({})
 
   const close = () => {
     setMoney('');
@@ -33,13 +35,45 @@ function AddMoneyDialog(props) {
         return;
       
       setLoading(true)
-      AddWalletBalance(parseFloat(money))
-        .then(bal => {
-            setWalletBalance(bal)
-            close()
+      const balanceToAdd = Dinero({
+        amount: Math.round(100 * parseFloat(money)),
+        currency: walletBalance.currency
+      })
+      AddWalletBalance(balanceToAdd.toJSON())
+        .then(orderInfo => {
+            if(orderInfo){
+              CheckOutRazorpay(orderInfo)
+            }else{
+              alert('Error adding money to your wallet')
+            }
         })
-        .catch(err => alert('Error adding money to your wallet'))
+        .catch(err => alert('Error adding money to your wallet: ' + err))
         .finally(() => setLoading(false))
+  }
+
+  const CheckOutRazorpay = (orderInfo) => {
+    var options = {
+      image: 'https://www.goodforlowprice.com/wp-content/uploads/2021/07/logo-2-1-49x49.png',
+      currency: 'INR',
+      key: 'rzp_live_T8YwAYVVJDVMl5',
+      amount: orderInfo.amount_due,
+      name: 'Good For Low Price',
+      order_id: orderInfo.id,//Replace this with an order_id created using Orders API.
+      theme: {color: AppConfig.primaryColor},
+      prefill: {
+        contact: profile.phone,
+        name: profile.name
+      }
+    }
+
+    RazorpayCheckout.open(options).then((data) => {
+      // handle success
+      Alert.alert('Payment Confirmed!', 'Your payment has been confirm and will shortly reflect in your wallet')
+      close()
+    }).catch((error) => {
+      // handle failure
+      alert(`Error Processing your payment at the moment, please try again.`);
+    });
   }
 
   useEffect(() => {
@@ -47,7 +81,9 @@ function AddMoneyDialog(props) {
           console.log('Wallet', bal)
           setWalletBalance(bal ?? 0)
       })
-  })
+
+      GetProfile().then(val => setProfile(val))
+  }, [props])
   
   return (
     <Modal
