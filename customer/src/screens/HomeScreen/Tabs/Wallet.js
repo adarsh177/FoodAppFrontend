@@ -38,6 +38,7 @@ function Wallet(props) {
   useEffect(() => {
     props.navigation.addListener('focus', () => {
       setLoading(true)
+      setWalletBalance({})
       loadWalletBalance()
       loadOrders()
     })

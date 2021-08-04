@@ -8,14 +8,18 @@ import FavouriteTab from './Tabs/FavouriteTab';
 import Wallet from './Tabs/Wallet';
 import messaging from '@react-native-firebase/messaging';
 import { UpdateProfile } from '../../APIs/ProfileManager';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 function HomeScreen() {
   const bottomTab = createBottomTabNavigator();
 
   useEffect(() => {
     // saving fcm token in backend
-    messaging().getToken().then(token => {
-      UpdateProfile({fcmToken: token})
+    messaging().getToken().then(async token => {
+      const notificationsDisabled = await AsyncStorage.getItem('notificationsEnabled')
+      if(notificationsDisabled === null || !notificationsDisabled){
+        UpdateProfile({fcmToken: token})  
+      }
     })
   }, [])
 

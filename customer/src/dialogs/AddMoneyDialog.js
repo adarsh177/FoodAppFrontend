@@ -16,12 +16,14 @@ import AppConfig from '../../AppConfig.json';
 import { AddWalletBalance, GetProfile, GetWalletBalance } from '../APIs/ProfileManager';
 import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
 import RazorpayCheckout from 'react-native-razorpay'
+import {CardField, useStripe, confirmPayment} from '@stripe/stripe-react-native'
 
 function AddMoneyDialog(props) {
   const [money, setMoney] = useState('')
   const [walletBalance, setWalletBalance] = useState(0)
   const [loading, setLoading] = useState(false)
   const [profile, setProfile] = useState({})
+  const { initPaymentSheet, presentPaymentSheet } = useStripe()
 
   const close = () => {
     setMoney('');
@@ -42,13 +44,48 @@ function AddMoneyDialog(props) {
       AddWalletBalance(balanceToAdd.toJSON())
         .then(orderInfo => {
             if(orderInfo){
-              CheckOutRazorpay(orderInfo)
+              if(orderInfo.gateway === 'STRIPE'){
+                console.log('Starting Stripe')
+                CheckOutStripe(orderInfo.stripeInfo)
+              }else{
+                console.log('Starting Razorpay')
+                CheckOutRazorpay(orderInfo.razorpayInfo)
+              }
+              console.log('Starting Stripe')
+              
             }else{
               alert('Error adding money to your wallet')
             }
         })
         .catch(err => alert('Error adding money to your wallet: ' + err))
         .finally(() => setLoading(false))
+  }
+
+  const CheckOutStripe = async (orderInfo) => {
+    try{
+      const { error } = await initPaymentSheet({
+        customerId: orderInfo.customer,
+        customerEphemeralKeySecret: orderInfo.ephemeralKey,
+        paymentIntentClientSecret: orderInfo.paymentIntent,
+      });
+  
+      if(!error){
+        const Result = await presentPaymentSheet({});
+  
+        if (Result.error) {
+          Alert.alert(`Error code: ${presentError.code}`, presentError.message);
+        } else {
+          Alert.alert('Payment Confirmed!', 'Your payment has been confirm and will shortly reflect in your wallet')
+          close()
+        }
+      }else{
+        console.log('sTRIPE ERROR', error)
+        Alert.alert('Payment Error', 'Error making payment at the moment')
+      }
+    }catch(err){
+      console.log('sTRIPE ERROR', err)
+      Alert.alert('Payment Error', 'Error making payment at the moment')
+    }
   }
 
   const CheckOutRazorpay = (orderInfo) => {
@@ -58,7 +95,7 @@ function AddMoneyDialog(props) {
       key: 'rzp_live_T8YwAYVVJDVMl5',
       amount: orderInfo.amount_due,
       name: 'Good For Low Price',
-      order_id: orderInfo.id,//Replace this with an order_id created using Orders API.
+      order_id: orderInfo.id,
       theme: {color: AppConfig.primaryColor},
       prefill: {
         contact: profile.phone,
@@ -103,7 +140,6 @@ function AddMoneyDialog(props) {
             style={style.feedbackBox}
             onChangeText={setMoney}
             />
-          
           {loading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} /> : 
           <TouchableOpacity activeOpacity={0.8} onPress={addMoney}>
             <Text style={style.sendBtn}>Add Money</Text>

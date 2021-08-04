@@ -15,13 +15,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMIC from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonicIcons from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth';
-import { GetProfile } from '../APIs/ProfileManager';
+import { GetProfile, UpdateProfile } from '../APIs/ProfileManager';
 import FeedbackDialog from '../dialogs/FeedbackDialog';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
 
 function UserProfile(props) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState(auth().currentUser.phoneNumber)
   const [showFeedbackDialog, setShowFeedbackDialog] = useState(false)
+  const [notificationEnabled, setNotificationEnabled] = useState(true)
   
   const handelEditProfile = () => {
     props.navigation.push('editProfile');
@@ -44,10 +47,44 @@ function UserProfile(props) {
     ])
   };
 
+  const handleToggleNotifications = () => {
+    if(notificationEnabled){
+      // disable them
+      Alert.alert('Notifications', 'Are you sure you want to disable notifications?\nIt includes notification updates regarding your Order Status, App Updates and Offers.', [
+        {
+          text: "Disable Notifications",
+          onPress: () => {
+            UpdateProfile({
+              fcmToken: 'null'
+            }).then(() => {
+              AsyncStorage.removeItem('notificationsDisabled').then(() => setNotificationEnabled(false))
+            })
+          },
+          style: "default"
+        },
+        {
+          text: "Cancel",
+          style: 'cancel'
+        }
+      ])
+    }else{
+      // enable them
+      messaging().getToken().then(async token => {
+        UpdateProfile({
+          fcmToken: token
+        }).then(() => {
+          AsyncStorage.setItem('notificationsDisabled', 'true').then(() => setNotificationEnabled(true))
+        })
+      })
+    }
+  }
+
   useEffect(() => {
     GetProfile().then(profile => {
       setName(profile.name)
     })
+
+    AsyncStorage.getItem('notificationsDisabled').then(val => setNotificationEnabled(val === null || !val))
   }, [])
 
   return (
@@ -96,14 +133,14 @@ function UserProfile(props) {
         <Text style={style.option}>Connect your business</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => alert('Working')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+      <TouchableOpacity onPress={handleToggleNotifications} style={[style.rowFlexContainer]} activeOpacity={0.8}>
         <IonicIcons
           style={style.rightMargin}
           name="notifications"
           size={24}
           color={AppConfig.primaryColor}
         />
-        <Text style={style.option}>Enable Notifications</Text>
+        <Text style={style.option}>{notificationEnabled ? "Disable": "Enable"} Notifications</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => props.navigation.push('shareScreen')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
