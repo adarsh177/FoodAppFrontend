@@ -13,87 +13,104 @@ import {
 import AppConfig from '../../AppConfig.json';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMIC from 'react-native-vector-icons/MaterialCommunityIcons';
-import IonicIcons from 'react-native-vector-icons/Ionicons'
+import IonicIcons from 'react-native-vector-icons/Ionicons';
 import auth from '@react-native-firebase/auth';
-import { GetProfile, UpdateProfile } from '../APIs/ProfileManager';
+import {GetProfile, UpdateProfile} from '../APIs/ProfileManager';
 import FeedbackDialog from '../dialogs/FeedbackDialog';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 
 function UserProfile(props) {
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState(auth().currentUser.phoneNumber)
-  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false)
-  const [notificationEnabled, setNotificationEnabled] = useState(true)
-  
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState(auth().currentUser.phoneNumber);
+  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
+  const [notificationEnabled, setNotificationEnabled] = useState(true);
+
   const handelEditProfile = () => {
     props.navigation.push('editProfile');
   };
-  
+
   const handleLogout = () => {
     Alert.alert('Log out', 'Are you sure, you want to logout?', [
       {
-        text: "Cancel",
-        style: "cancel"
+        text: 'Cancel',
+        style: 'cancel',
       },
       {
         onPress: async () => {
           await auth().signOut();
           props.navigation.navigate('splash');
         },
-        text: "Log out",
-        style: "default"
-      }
-    ])
+        text: 'Log out',
+        style: 'default',
+      },
+    ]);
   };
 
   const handleToggleNotifications = () => {
-    if(notificationEnabled){
+    if (notificationEnabled) {
       // disable them
-      Alert.alert('Notifications', 'Are you sure you want to disable notifications?\nIt includes notification updates regarding your Order Status, App Updates and Offers.', [
-        {
-          text: "Disable Notifications",
-          onPress: () => {
-            UpdateProfile({
-              fcmToken: 'null'
-            }).then(() => {
-              AsyncStorage.removeItem('notificationsDisabled').then(() => setNotificationEnabled(false))
-            })
+      Alert.alert(
+        'Notifications',
+        'Are you sure you want to disable notifications?\nIt includes notification updates regarding your Order Status, App Updates and Offers.',
+        [
+          {
+            text: 'Disable Notifications',
+            onPress: () => {
+              UpdateProfile({
+                fcmToken: 'null',
+              }).then(() => {
+                AsyncStorage.removeItem('notificationsDisabled').then(() =>
+                  setNotificationEnabled(false),
+                );
+              });
+            },
+            style: 'default',
           },
-          style: "default"
-        },
-        {
-          text: "Cancel",
-          style: 'cancel'
-        }
-      ])
-    }else{
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+        ],
+      );
+    } else {
       // enable them
-      messaging().getToken().then(async token => {
-        UpdateProfile({
-          fcmToken: token
-        }).then(() => {
-          AsyncStorage.setItem('notificationsDisabled', 'true').then(() => setNotificationEnabled(true))
-        })
-      })
+      messaging()
+        .getToken()
+        .then(async token => {
+          UpdateProfile({
+            fcmToken: token,
+          }).then(() => {
+            AsyncStorage.setItem('notificationsDisabled', 'true').then(() =>
+              setNotificationEnabled(true),
+            );
+          });
+        });
     }
-  }
+  };
 
   useEffect(() => {
     GetProfile().then(profile => {
-      setName(profile.name)
-    })
+      setName(profile.name);
+    });
 
-    AsyncStorage.getItem('notificationsDisabled').then(val => setNotificationEnabled(val === null || !val))
-  }, [])
+    AsyncStorage.getItem('notificationsDisabled').then(val =>
+      setNotificationEnabled(val === null || !val),
+    );
+  }, []);
 
   return (
-    <ScrollView style={style.profileContainer} contentContainerStyle={{width: "100%", overflow: "scroll"}}>
+    <ScrollView
+      style={style.profileContainer}
+      contentContainerStyle={{width: '100%', overflow: 'scroll'}}>
       <Image style={style.avtar} source={require('../assets/logo.png')} />
       <Text style={style.boldDescriptionTitle}>{name}</Text>
       <Text style={style.smallDescriptionTitle}>{phone}</Text>
 
-      <TouchableOpacity onPress={handelEditProfile} style={[style.rowFlexContainer, {marginTop: 20}]} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={handelEditProfile}
+        style={[style.rowFlexContainer, {marginTop: 20}]}
+        activeOpacity={0.8}>
         <Icon
           style={style.rightMargin}
           name="user"
@@ -103,7 +120,10 @@ function UserProfile(props) {
         <Text style={style.option}>Edit Profile</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => setShowFeedbackDialog(true)} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={() => setShowFeedbackDialog(true)}
+        style={[style.rowFlexContainer]}
+        activeOpacity={0.8}>
         <Icon
           style={style.rightMargin}
           name="comment"
@@ -113,7 +133,10 @@ function UserProfile(props) {
         <Text style={style.option}>Give Feedback</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => alert('Working on it')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={() => alert('Working on it')}
+        style={[style.rowFlexContainer]}
+        activeOpacity={0.8}>
         <Icon
           style={style.rightMargin}
           name="question-circle"
@@ -123,7 +146,10 @@ function UserProfile(props) {
         <Text style={style.option}>How to use this app</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => alert('Working')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={() => alert('Working')}
+        style={[style.rowFlexContainer]}
+        activeOpacity={0.8}>
         <IonicIcons
           style={style.rightMargin}
           name="business"
@@ -133,17 +159,25 @@ function UserProfile(props) {
         <Text style={style.option}>Connect your business</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleToggleNotifications} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={handleToggleNotifications}
+        style={[style.rowFlexContainer]}
+        activeOpacity={0.8}>
         <IonicIcons
           style={style.rightMargin}
           name="notifications"
           size={24}
           color={AppConfig.primaryColor}
         />
-        <Text style={style.option}>{notificationEnabled ? "Disable": "Enable"} Notifications</Text>
+        <Text style={style.option}>
+          {notificationEnabled ? 'Disable' : 'Enable'} Notifications
+        </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => props.navigation.push('shareScreen')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={() => props.navigation.push('shareScreen')}
+        style={[style.rowFlexContainer]}
+        activeOpacity={0.8}>
         <Icon
           style={style.rightMargin}
           name="share-alt"
@@ -153,7 +187,12 @@ function UserProfile(props) {
         <Text style={style.option}>Share with</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=privacy')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={() =>
+          Linking.openURL('https://www.google.co.in/search?q=privacy')
+        }
+        style={[style.rowFlexContainer]}
+        activeOpacity={0.8}>
         <Icon
           style={style.rightMargin}
           name="bullseye"
@@ -163,7 +202,12 @@ function UserProfile(props) {
         <Text style={style.option}>Privacy Policy</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => Linking.openURL('https://www.google.co.in/search?q=terms')} style={[style.rowFlexContainer]} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={() =>
+          Linking.openURL('https://www.google.co.in/search?q=terms')
+        }
+        style={[style.rowFlexContainer]}
+        activeOpacity={0.8}>
         <Icon
           style={style.rightMargin}
           name="file"
@@ -173,26 +217,32 @@ function UserProfile(props) {
         <Text style={style.option}>Terms and Conditions</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => handleLogout()} style={[style.rowFlexContainer, {marginBottom: 100}]} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={() => handleLogout()}
+        style={[style.rowFlexContainer, {marginBottom: 100}]}
+        activeOpacity={0.8}>
         <IonicIcons
           style={style.rightMargin}
           name="exit"
           size={24}
           color="#FF5353"
         />
-        <Text style={[style.option, {color: "#FF5353", fontWeight: "bold"}]}>Logout</Text>
+        <Text style={[style.option, {color: '#FF5353', fontWeight: 'bold'}]}>
+          Logout
+        </Text>
       </TouchableOpacity>
 
       <FeedbackDialog
         show={showFeedbackDialog}
-        close={() => setShowFeedbackDialog(false)}/>
+        close={() => setShowFeedbackDialog(false)}
+      />
     </ScrollView>
   );
 }
 const style = StyleSheet.create({
   profileContainer: {
     backgroundColor: '#fff',
-    padding: 20
+    padding: 20,
   },
   avtar: {
     width: 100,
@@ -209,17 +259,17 @@ const style = StyleSheet.create({
     color: '#000000',
     fontWeight: 'bold',
     marginTop: 20,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   smallDescriptionTitle: {
     fontSize: 14,
     color: '#707070',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   option: {
     fontSize: 16,
-    color: "#696969",
-    textAlign: 'center'
+    color: '#696969',
+    textAlign: 'center',
   },
   rowFlexContainer: {
     flexDirection: 'row',
@@ -229,7 +279,7 @@ const style = StyleSheet.create({
     borderBottomWidth: 1,
     padding: 10,
     borderRadius: 3,
-    marginTop: 10
+    marginTop: 10,
   },
   rightMargin: {
     width: 40,

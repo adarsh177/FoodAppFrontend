@@ -6,7 +6,7 @@ import AppConfig from '../../AppConfig.json';
 
 import NumericInput from 'react-native-numeric-input';
 import {GetCurrencySymbolFromId} from '../CurrencyManager/CurrencyManager';
-import Dinero from 'dinero.js'
+import Dinero from 'dinero.js';
 
 function InventoryCard(props) {
   // Image source
@@ -17,15 +17,15 @@ function InventoryCard(props) {
   const [quantity, setQuantity] = useState(0);
   console.log(quantity);
 
-  const OnValueChanged = (val) => {
-    setQuantity(val)
+  const OnValueChanged = val => {
+    setQuantity(val);
     props.onValueChanged(props.id, {
       count: val,
       price: Dinero(props.price).multiply(val).toJSON(),
       id: props.id,
-      name: props.itemName
-    })
-  }
+      name: props.itemName,
+    });
+  };
 
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={props.onClick}>
@@ -34,7 +34,10 @@ function InventoryCard(props) {
         <View style={style.cardDetailsContainer}>
           <View style={style.cardTitleAndPriceContaienr}>
             <Text style={style.itemName}>{props.itemName}</Text>
-            <Text style={style.price}>{GetCurrencySymbolFromId(props.price.currency)} {Dinero(props.price).toUnit()}</Text>
+            <Text style={style.price}>
+              {GetCurrencySymbolFromId(props.price.currency)}{' '}
+              {Dinero(props.price).toUnit()}
+            </Text>
           </View>
           <Text style={style.itemDescription}>{props.description}</Text>
           <View style={style.numericInputContainer}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconEN from 'react-native-vector-icons/Entypo';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -11,17 +11,25 @@ import OrderTab from './Tabs/OrderTab/OrderTab';
 import ProfileTab from './Tabs/ProfileTab';
 import EarningTab from './Tabs/EarningTab';
 import messaging from '@react-native-firebase/messaging';
-import { UpdateProfile } from '../../APIs/ProfileManager';
+import {UpdateProfile} from '../../APIs/ProfileManager';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function HomeScreen(props) {
   const bottomTab = createBottomTabNavigator();
 
   useEffect(() => {
     // LOADING FCM TOKEN
-    messaging().getToken().then(token => {
-      UpdateProfile({fcmToken: token})
-    }).catch(err => {})
-  }, [])
+    messaging()
+      .getToken()
+      .then(async token => {
+        const notificationDisabled = await AsyncStorage.getItem(
+          'notificationsDisabled',
+        );
+        if (notificationDisabled !== null || notificationDisabled)
+          UpdateProfile({fcmToken: token});
+      })
+      .catch(err => {});
+  }, []);
 
   return (
     <bottomTab.Navigator
@@ -47,10 +55,26 @@ function HomeScreen(props) {
         activeTintColor: AppConfig.primaryColor,
         inactiveTineColor: '#a4a4a4',
       }}>
-      <bottomTab.Screen options={{title: "Store"}} name="store" component={StoreTab} />
-      <bottomTab.Screen options={{title: "Order"}} name="order" component={OrderTab} />
-      <bottomTab.Screen options={{title: "Profile"}} name="profile" component={ProfileTab} />
-      <bottomTab.Screen options={{title: "Earning"}} name="earning" component={EarningTab} />
+      <bottomTab.Screen
+        options={{title: 'Store'}}
+        name="store"
+        component={StoreTab}
+      />
+      <bottomTab.Screen
+        options={{title: 'Order'}}
+        name="order"
+        component={OrderTab}
+      />
+      <bottomTab.Screen
+        options={{title: 'Profile'}}
+        name="profile"
+        component={ProfileTab}
+      />
+      <bottomTab.Screen
+        options={{title: 'Earning'}}
+        name="earning"
+        component={EarningTab}
+      />
     </bottomTab.Navigator>
   );
 }

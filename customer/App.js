@@ -17,21 +17,20 @@ import ChatScreen from './src/screens/ChatScreen';
 import UserProfile from './src/screens/UserProfile';
 import OrderDetailScreen from './src/screens/OrderDetailScreen';
 import messaging from '@react-native-firebase/messaging';
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 import ShareScreen from './src/screens/ShareScreen';
 import BlockedScreen from './src/screens/BlockedScreen';
 
 const Stack = createStackNavigator();
 
 function App() {
-
   useEffect(() => {
     messaging().onMessage(msg => {
-      if(msg.notification){
-        Alert.alert(msg.notification.title, msg.notification.body)
+      if (msg.notification) {
+        Alert.alert(msg.notification.title, msg.notification.body);
       }
-    })
-  }, [])
+    });
+  }, []);
 
   return (
     <NavigationContainer>
@@ -120,7 +119,7 @@ function App() {
           name="orderDetail"
           component={OrderDetailScreen}
         />
-        
+
         <Stack.Screen
           options={{
             headerShown: true,
@@ -142,7 +141,6 @@ function App() {
           name="blockedScreen"
           component={BlockedScreen}
         />
-        
       </Stack.Navigator>
     </NavigationContainer>
   );

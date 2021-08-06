@@ -14,9 +14,11 @@ import AppConfig from '../../AppConfig.json';
 // External package ----------------------------------
 
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { GetCommodities, ListItem } from '../APIs/StoreManager';
-import { GetProfile } from '../APIs/ProfileManager';
-import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
+import {GetCommodities, ListItem} from '../APIs/StoreManager';
+import {GetProfile} from '../APIs/ProfileManager';
+import GetCurrencySymbol, {
+  GetCurrencySymbolFromId,
+} from '../CurrencyManager/CurrencyManager';
 
 function ListItemScreen(props) {
   // Handle Inventory selection ---------------------------------
@@ -27,8 +29,10 @@ function ListItemScreen(props) {
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loadingInventory, setLoadingInventory] = useState(true)
-  const [currenctSymbol, setCurrencySymbol] = useState(GetCurrencySymbolFromId('INR'))
+  const [loadingInventory, setLoadingInventory] = useState(true);
+  const [currenctSymbol, setCurrencySymbol] = useState(
+    GetCurrencySymbolFromId('INR'),
+  );
 
   //Handle List item -----------------------------------------
   const handleListItem = () => {
@@ -41,113 +45,137 @@ function ListItemScreen(props) {
   };
 
   const loadInventory = () => {
-    setLoadingInventory(true)
-    GetCommodities().then(commodities => {
-      GetProfile().then(profile => {
-        const commodityIds = profile.listings ? profile.listings.map(val => val.commodityId) : [];
-        setInventoryItems(commodities.filter(val => !commodityIds.includes(val.id)));
-      }).catch(err => {})
-    }).catch(err => {})
-    .finally(() => setLoadingInventory(false));
-  }
+    setLoadingInventory(true);
+    GetCommodities()
+      .then(commodities => {
+        GetProfile()
+          .then(profile => {
+            const commodityIds = profile.listings
+              ? profile.listings.map(val => val.commodityId)
+              : [];
+            setInventoryItems(
+              commodities.filter(val => !commodityIds.includes(val.id)),
+            );
+          })
+          .catch(err => {});
+      })
+      .catch(err => {})
+      .finally(() => setLoadingInventory(false));
+  };
 
   const addListing = async () => {
-    if(selectInventory === null || selectInventory === "new"){
-      alert("Please select item to list");
+    if (selectInventory === null || selectInventory === 'new') {
+      alert('Please select item to list');
       return;
     }
-    if(price.length === 0 || isNaN(price)){
-      alert("Please enter a valid price");
+    if (price.length === 0 || isNaN(price)) {
+      alert('Please enter a valid price');
       return;
     }
-    if(stock.length === 0 || isNaN(stock)){
-      alert("Please enter a valid stock count");
+    if (stock.length === 0 || isNaN(stock)) {
+      alert('Please enter a valid stock count');
       return;
     }
-    if(expireDate === null){
-      alert("Please select an expiry date time");
+    if (expireDate === null) {
+      alert('Please select an expiry date time');
       return;
     }
 
-    const commodity = inventoryItems.filter(val => val.id === selectInventory)[0];
+    const commodity = inventoryItems.filter(
+      val => val.id === selectInventory,
+    )[0];
 
     const data = {
       commodityId: commodity.id,
       name: commodity.name,
       description: commodity.description,
       image: commodity.image,
-      price: parseFloat(price),
+      price: parseFloat(price) * 100,
       dateAdded: new Date().getTime(),
       expiresOn: expireDate.getTime(),
       initialStockCount: parseInt(stock),
-      currentStockCount: parseInt(stock)
-    }
+      currentStockCount: parseInt(stock),
+    };
 
     console.log(data);
 
     setLoading(true);
-    ListItem(data).then(() => {
-      Alert.alert('Success', 'Item listed successfully', [
-        {
-          text: "Ok",
-          onPress: () => props.navigation.pop()
-        }
-      ]);
-    }).catch(err => {
-      console.log('Error listing item', err);
-      Alert.alert('Error', 'Error listing item', [
-        {
-          text: "Ok"
-        }
-      ]);
-    }).finally(() => setLoading(false));
-    
-  }
+    ListItem(data)
+      .then(() => {
+        Alert.alert('Success', 'Item listed successfully', [
+          {
+            text: 'Ok',
+            onPress: () => props.navigation.pop(),
+          },
+        ]);
+      })
+      .catch(err => {
+        console.log('Error listing item', err);
+        Alert.alert('Error', 'Error listing item', [
+          {
+            text: 'Ok',
+          },
+        ]);
+      })
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     props.navigation.addListener('focus', () => {
       loadInventory();
-    })
+    });
     loadInventory();
 
     // LOADING PROFILE TO GET LOCATION AND HENCE CURRENCY SYMBOL
     GetProfile().then(profile => {
-      if(profile.location.country){
-        setCurrencySymbol(GetCurrencySymbolFromId(profile.location.country === 'India' ? 'INR' : 'USD'))
+      if (profile.location.country) {
+        setCurrencySymbol(
+          GetCurrencySymbolFromId(
+            profile.location.country === 'India' ? 'INR' : 'CAD',
+          ),
+        );
       }
-    })
+    });
   }, []);
 
   //Handle date picker --------------------------------------------
 
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-    const showDatePicker = () => {
-      setDatePickerVisibility(true);
-    };
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
 
-    const hideDatePicker = () => {
-      setDatePickerVisibility(false);
-    };
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
 
   return (
     <View style={style.listItemContainer}>
       <Text style={style.subhead}>
-        To relist already listed item, first unlist it from store page then list it again from here.
+        To relist already listed item, first unlist it from store page then list
+        it again from here.
       </Text>
       <Text style={style.inputLable}>Select Item</Text>
       <View style={style.inputWrapper}>
         <Picker
           style={style.inputs}
           selectedValue={selectInventory}
-          onValueChange={(itemValue, itemIndex) =>{
-            if(itemValue === "new"){
+          onValueChange={(itemValue, itemIndex) => {
+            if (itemValue === 'new') {
               props.navigation.push('inventory');
               return;
             }
-            setselectInventory(itemValue)
+            setselectInventory(itemValue);
           }}>
-          <Picker.Item label={loadingInventory ? "Loading Inventory..." : "Select Item from Inventory"} value="select" />
+          <Picker.Item
+            label={
+              loadingInventory
+                ? 'Loading Inventory...'
+                : 'Select Item from Inventory'
+            }
+            value="select"
+          />
           <Picker.Item label="Create New Item" value="new" />
           {inventoryItems.map(item => {
             return <Picker.Item label={item.name} value={item.id} />;
@@ -156,38 +184,51 @@ function ListItemScreen(props) {
       </View>
       <Text style={style.inputLable}>Selling Price ({currenctSymbol})</Text>
       <View style={style.inputWrapper}>
-        <TextInput keyboardType="decimal-pad" style={style.inputTextField} onChangeText={setPrice}/>
+        <TextInput
+          keyboardType="decimal-pad"
+          style={style.inputTextField}
+          onChangeText={setPrice}
+        />
       </View>
       <Text style={style.inputLable}>Stock Available</Text>
       <View style={style.inputWrapper}>
-        <TextInput keyboardType="numeric" style={style.inputTextField} onChangeText={setStock} />
+        <TextInput
+          keyboardType="numeric"
+          style={style.inputTextField}
+          onChangeText={setStock}
+        />
       </View>
       <Text style={style.inputLable}>Expiry Date</Text>
       <View style={style.inputWrapper}>
         <TouchableOpacity onPress={showDatePicker} style={style.inputTextField}>
-          <Text>{expireDate ? expireDate.toLocaleString() : "Select Expiry date"}</Text>
+          <Text>
+            {expireDate ? expireDate.toLocaleString() : 'Select Expiry date'}
+          </Text>
         </TouchableOpacity>
 
         <DateTimePickerModal
           isVisible={isDatePickerVisible}
           mode="datetime"
           minimumDate={new Date()}
-          onConfirm={(date) => {
+          onConfirm={date => {
             setExpireDate(date);
-            hideDatePicker()
+            hideDatePicker();
           }}
           onCancel={() => hideDatePicker()}
         />
       </View>
-      {loading ? <ActivityIndicator color={AppConfig.primaryColor} size="large" /> : 
-      <TouchableOpacity
-        activeOpacity={0.6}
-        onPress={addListing}
-        color={AppConfig.primaryColor}
-        accessibilityLabel="List Item button"
-        style={style.listItemButton}>
-        <Text style={style.listItemButtonText}>List Item</Text>
-      </TouchableOpacity>}
+      {loading ? (
+        <ActivityIndicator color={AppConfig.primaryColor} size="large" />
+      ) : (
+        <TouchableOpacity
+          activeOpacity={0.6}
+          onPress={addListing}
+          color={AppConfig.primaryColor}
+          accessibilityLabel="List Item button"
+          style={style.listItemButton}>
+          <Text style={style.listItemButtonText}>List Item</Text>
+        </TouchableOpacity>
+      )}
 
       <TouchableOpacity
         activeOpacity={0.6}
@@ -255,9 +296,9 @@ const style = StyleSheet.create({
   },
   subhead: {
     fontSize: 16,
-    color: "gray",
-    marginBottom: 20
-  }
+    color: 'gray',
+    marginBottom: 20,
+  },
 });
 
 export default ListItemScreen;

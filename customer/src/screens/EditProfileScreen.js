@@ -15,55 +15,69 @@ import {
 import AppConfig from '../../AppConfig.json';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import auth from '@react-native-firebase/auth';
-import { CreateProfile, GetProfile, UpdateProfile } from '../APIs/ProfileManager';
+import {CreateProfile, GetProfile, UpdateProfile} from '../APIs/ProfileManager';
 
 function EditProfileScreen(props) {
   const [name, setname] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState(auth().currentUser.phoneNumber)
+  const [phone, setPhone] = useState(auth().currentUser.phoneNumber);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const saveProfile = () => {
-    if(name.length === 0){
-      alert('Please enter your name')
+    if (name.length === 0) {
+      alert('Please enter your name');
       return;
     }
-    if(email.length === 0){
-      alert('Please enter your email')
+    if (email.length === 0) {
+      alert('Please enter your email');
       return;
     }
 
     const data = {
       name: name,
-      email: email
-    }
+      email: email,
+    };
     setUpdateLoading(true);
-    if(props.route && props.route.params && props.route.params.forced){
-      CreateProfile(data).then(() => {
-        props.navigation.navigate('home')
-      }).catch(err => {
-        alert('Error updating profile')
-      }).finally(() => setUpdateLoading(false))
-    }else{
-      UpdateProfile(data).then(() => {
-        props.navigation.pop()
-      }).catch(err => {
-        alert('Error updating profile')
-      }).finally(() => setUpdateLoading(false))
+    if (props.route && props.route.params && props.route.params.forced) {
+      CreateProfile(data)
+        .then(() => {
+          props.navigation.navigate('home');
+        })
+        .catch(err => {
+          alert('Error updating profile');
+        })
+        .finally(() => setUpdateLoading(false));
+    } else {
+      UpdateProfile(data)
+        .then(() => {
+          props.navigation.pop();
+        })
+        .catch(err => {
+          alert('Error updating profile');
+        })
+        .finally(() => setUpdateLoading(false));
     }
-    
-  }
+  };
 
   useEffect(() => {
-    GetProfile().then(profile => {
-      setname(profile?.name);
-      setEmail(profile?.email);
-    }).then(err => {}).finally(() => setLoading(false))
-  }, [])
+    GetProfile()
+      .then(profile => {
+        setname(profile?.name);
+        setEmail(profile?.email);
+      })
+      .then(err => {})
+      .finally(() => setLoading(false));
+  }, []);
 
-  if(loading)
-    return <ActivityIndicator style={{alignSelf: "center"}} size="large" color={AppConfig.primaryColor} />;
+  if (loading)
+    return (
+      <ActivityIndicator
+        style={{alignSelf: 'center'}}
+        size="large"
+        color={AppConfig.primaryColor}
+      />
+    );
 
   return (
     <ScrollView style={{backgroundColor: '#fff'}}>
@@ -71,7 +85,6 @@ function EditProfileScreen(props) {
         imageStyle={{resizeMode: 'stretch'}}
         source={require('../assets/bg_repeat.png')}
         style={Style.mainContainer}>
-          
         <Text style={Style.Label}>Phone</Text>
         <TextInput
           editable={false}
@@ -80,18 +93,25 @@ function EditProfileScreen(props) {
         />
 
         <Text style={Style.Label}>Name</Text>
-        <TextInput style={Style.Field} value={name} onChangeText={setname}/>
+        <TextInput style={Style.Field} value={name} onChangeText={setname} />
 
         <Text style={Style.Label}>E-mail</Text>
         <TextInput style={Style.Field} value={email} onChangeText={setEmail} />
 
-        {updateLoading ? <ActivityIndicator style={{alignSelf: "center"}} size="large" color={AppConfig.primaryColor} />:
-        <TouchableOpacity
-          onPress={saveProfile}
-          activeOpacity={0.8}
-          style={{width: '100%', marginTop: 20}}>
-          <Text style={Style.SaveBtn}>SAVE PROFILE</Text>
-        </TouchableOpacity>}
+        {updateLoading ? (
+          <ActivityIndicator
+            style={{alignSelf: 'center'}}
+            size="large"
+            color={AppConfig.primaryColor}
+          />
+        ) : (
+          <TouchableOpacity
+            onPress={saveProfile}
+            activeOpacity={0.8}
+            style={{width: '100%', marginTop: 20}}>
+            <Text style={Style.SaveBtn}>SAVE PROFILE</Text>
+          </TouchableOpacity>
+        )}
       </ImageBackground>
     </ScrollView>
   );

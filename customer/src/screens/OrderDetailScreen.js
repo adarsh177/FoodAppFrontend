@@ -10,76 +10,85 @@ import {
   ScrollView,
   Linking,
 } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
+import {ActivityIndicator} from 'react-native-paper';
 import AppConfig from '../../AppConfig.json';
-import { GetMerchantInfo } from '../APIs/Merchant';
-import { GetOrderDetails } from '../APIs/ProfileManager';
+import {GetMerchantInfo} from '../APIs/Merchant';
+import {GetOrderDetails} from '../APIs/ProfileManager';
 import {GetCurrencySymbolFromId} from '../CurrencyManager/CurrencyManager';
 import RateOrderDialog from '../dialogs/RateOrderDialog';
 
 function OrderDetailScreen(props) {
-  const [loading, setLoading] = useState(true)
-  const [orderDetails, setOrderDetails] = useState({})
-  const [merchantInfo, setMerchantInfo] = useState({})
-  const [showRatingDialog, setShowRatingDialog] = useState(false)
+  const [loading, setLoading] = useState(true);
+  const [orderDetails, setOrderDetails] = useState({});
+  const [merchantInfo, setMerchantInfo] = useState({});
+  const [showRatingDialog, setShowRatingDialog] = useState(false);
 
-  
   //handel chat and call button ---------------------
   const handleLocation = () => {
-    Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${merchantInfo.locationPoint.coordinates[1]},${merchantInfo.locationPoint.coordinates[0]}`)
+    Linking.openURL(
+      `https://www.google.com/maps/search/?api=1&query=${merchantInfo.locationPoint.coordinates[1]},${merchantInfo.locationPoint.coordinates[0]}`,
+    );
   };
 
   const handleCall = () => {
-    Linking.openURL(`tel:${merchantInfo.phone}`)
+    Linking.openURL(`tel:${merchantInfo.phone}`);
   };
 
-  const loadMercantInfo = (id) => {
-    GetMerchantInfo(id).then(info => setMerchantInfo(info))
-  }
+  const loadMercantInfo = id => {
+    GetMerchantInfo(id).then(info => setMerchantInfo(info));
+  };
 
   const loadOrder = () => {
     GetOrderDetails(props.route.params.orderId)
       .then(details => {
-        setOrderDetails(details)
-        loadMercantInfo(details.merchantId)
+        setOrderDetails(details);
+        loadMercantInfo(details.merchantId);
 
         // checking if order is rated
-        if(!details.rating && details.status === "CONFIRM"){
-          setShowRatingDialog(true)
+        if (!details.rating && details.status === 'CONFIRM') {
+          setShowRatingDialog(true);
         }
-      }).catch(err => console.log('Error getting order info', err))
-      .finally(() => setLoading(false))
-  }
+      })
+      .catch(err => console.log('Error getting order info', err))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    loadOrder()
-  }, [])
+    loadOrder();
+  }, []);
 
-  if(loading)
-    return <ActivityIndicator size="large" color={AppConfig.primaryColor} />
+  if (loading)
+    return <ActivityIndicator size="large" color={AppConfig.primaryColor} />;
 
   return (
     <ScrollView style={style.mainContainer}>
       <View style={style.orderIdContainer}>
         <Text style={style.orderId}>#{orderDetails._id}</Text>
-        <Text style={style.date}>{new Date(orderDetails.timeOfOrder).toLocaleDateString()}</Text>
+        <Text style={style.date}>
+          {new Date(orderDetails.timeOfOrder).toLocaleDateString()}
+        </Text>
       </View>
       <View style={style.generalContainer}>
         <Text style={style.lightTitle}>Status</Text>
         <Text style={style.indicator}>{orderDetails.status}</Text>
       </View>
 
-      {orderDetails.rating !== undefined && orderDetails.rating !== "" && orderDetails.rating !== null && 
-      <View style={style.generalContainer}>
-        <Text style={style.lightTitle}>Rating</Text>
-        <Text style={style.indicator}>{orderDetails.rating} Stars</Text>
-      </View>}
-      
+      {orderDetails.rating !== undefined &&
+        orderDetails.rating !== '' &&
+        orderDetails.rating !== null && (
+          <View style={style.generalContainer}>
+            <Text style={style.lightTitle}>Rating</Text>
+            <Text style={style.indicator}>{orderDetails.rating} Stars</Text>
+          </View>
+        )}
+
       <View style={style.generalContainer}>
         <Text style={style.lightTitle}>Ordered From</Text>
         <View style={style.orderByContainer}>
           <Text style={style.customerName}>{merchantInfo.name}</Text>
-          <Text style={style.lightTitle}>{merchantInfo.location?.label ?? ""}</Text>
+          <Text style={style.lightTitle}>
+            {merchantInfo.location?.label ?? ''}
+          </Text>
           <View style={style.orderByButtonsContainer}>
             <TouchableOpacity
               activeOpacity={0.6}
@@ -100,50 +109,66 @@ function OrderDetailScreen(props) {
         <Text style={style.lightTitle}>Order</Text>
         <View style={style.summaryContainer}>
           {orderDetails.items.map(item => {
-            return(
+            return (
               <View style={style.itemContainer}>
                 <Text style={style.itemTitle}>{item.name}</Text>
-                <Text style={style.summaryPrice}>{GetCurrencySymbolFromId(item.price.currency)} {Dinero(item.price).toUnit()}</Text>
+                <Text style={style.summaryPrice}>
+                  {GetCurrencySymbolFromId(item.price.currency)}{' '}
+                  {Dinero(item.price).toUnit()}
+                </Text>
               </View>
-            )
+            );
           })}
 
-          {orderDetails.promotion && 
-          <View style={style.itemContainer}>
-            <Text style={style.itemTitle}>PROMO: {orderDetails.promotion.code}</Text>
-            <Text style={[style.summaryPrice, {color: "#a61900"}]}>- {GetCurrencySymbolFromId(orderDetails.promoValue.currency)}{Dinero(orderDetails.promoValue).toUnit()}</Text>
-          </View>}
+          {orderDetails.promotion && (
+            <View style={style.itemContainer}>
+              <Text style={style.itemTitle}>
+                PROMO: {orderDetails.promotion.code}
+              </Text>
+              <Text style={[style.summaryPrice, {color: '#a61900'}]}>
+                - {GetCurrencySymbolFromId(orderDetails.promoValue.currency)}
+                {Dinero(orderDetails.promoValue).toUnit()}
+              </Text>
+            </View>
+          )}
 
           <View style={style.horizontalLine}></View>
           <View>
             <Text style={style.itemTitle}>Tax</Text>
             <View style={style.taxInnerContainer}>
               {orderDetails.taxes.map(item => {
-                return(
-                <View style={style.taxInnerInnerContainer}>
-                  <Text style={style.itemTitle}>{item.name} ({item.percent})</Text>
-                  <Text style={style.summaryPrice}>{GetCurrencySymbolFromId(item.value.currency)} {Dinero(item.value).toUnit()}</Text>
-                </View>
-                )
+                return (
+                  <View style={style.taxInnerInnerContainer}>
+                    <Text style={style.itemTitle}>
+                      {item.name} ({item.percent})
+                    </Text>
+                    <Text style={style.summaryPrice}>
+                      {GetCurrencySymbolFromId(item.value.currency)}{' '}
+                      {Dinero(item.value).toUnit()}
+                    </Text>
+                  </View>
+                );
               })}
             </View>
           </View>
           <View style={style.summaryTotalContainer}>
             <Text style={style.summaryTotalText}>Total</Text>
             <Text style={style.summaryPriceWithWhiteColor}>
-              {GetCurrencySymbolFromId(orderDetails.finalValue.currency)} {Dinero(orderDetails.finalValue).toUnit()}
+              {GetCurrencySymbolFromId(orderDetails.finalValue.currency)}{' '}
+              {Dinero(orderDetails.finalValue).toUnit()}
             </Text>
           </View>
         </View>
       </View>
 
-      <RateOrderDialog 
-        show={showRatingDialog} 
+      <RateOrderDialog
+        show={showRatingDialog}
         name={merchantInfo.name}
         orderId={props.route.params.orderId}
         close={() => {
-          setShowRatingDialog(false)
-        }}/>
+          setShowRatingDialog(false);
+        }}
+      />
     </ScrollView>
   );
 }
@@ -177,7 +202,7 @@ const style = StyleSheet.create({
   },
   indicator: {
     fontSize: 18,
-    fontWeight: '700'
+    fontWeight: '700',
   },
   orderByContainer: {
     borderWidth: 1,

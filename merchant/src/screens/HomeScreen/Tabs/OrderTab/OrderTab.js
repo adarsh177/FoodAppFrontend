@@ -1,7 +1,5 @@
 import React, {useState} from 'react';
-import {
-  StyleSheet,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import AppConfig from '../../../../../AppConfig.json';
 import CompleteOrders from './CompleteOrders';

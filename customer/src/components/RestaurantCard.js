@@ -1,5 +1,5 @@
 import {useLinkProps} from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   Text,
@@ -13,59 +13,75 @@ import {
 } from 'react-native';
 import IconMI from 'react-native-vector-icons/MaterialIcons';
 import AppConfig from '../../AppConfig.json';
-import { GetMerchantInfo } from '../APIs/Merchant';
+import {GetMerchantInfo} from '../APIs/Merchant';
 import {GetCurrencySymbolFromId} from '../CurrencyManager/CurrencyManager';
 import Dinero from 'dinero.js';
 
 function RestaurantCard(props) {
-  
-  const [listings, setListings] = useState([])
-  const [loading , setLoading] = useState(true)
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    GetMerchantInfo(props.merchantId).then(info => {
-      if(info.openTill >= new Date().getTime()){
-        const finalListings  = info.listings ? info.listings.filter(item => item.expiresOn >= new Date().getTime()) : []
-        setListings(finalListings)
-      }
-      
-    }).finally(() => setLoading(false))
-  }, [])
+    GetMerchantInfo(props.merchantId)
+      .then(info => {
+        if (info.openTill >= new Date().getTime()) {
+          const finalListings = info.listings
+            ? info.listings.filter(
+                item => item.expiresOn >= new Date().getTime(),
+              )
+            : [];
+          setListings(finalListings);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  if(!loading && listings.length === 0 && props.storeOpen === undefined ){
-    return <View style={{height: 0, width: 0}}></View>
+  if (!loading && listings.length === 0 && props.storeOpen === undefined) {
+    return <View style={{height: 0, width: 0}}></View>;
   }
 
   return (
     <View style={style.restaurantCardContainer}>
       <View style={style.restroNameContainer}>
-        <TouchableOpacity style={{flex: 1, marginRight: 20}} activeOpacity={0.8} onPress={props.onPress}>
+        <TouchableOpacity
+          style={{flex: 1, marginRight: 20}}
+          activeOpacity={0.8}
+          onPress={props.onPress}>
           <Text style={style.restroName}>{props.name}</Text>
-          
-          {props.storeOpen !== undefined ? 
-            <Text style={style.subText}><Text style={{fontWeight: 'bold'}}>{props.storeOpen ? "Store Open" : "Store Closed"}</Text> • {props.rating}</Text>
-            :
-            <Text style={style.subText}>{props.distance} Km • {props.rating}</Text>
-          }
+
+          {props.storeOpen !== undefined ? (
+            <Text style={style.subText}>
+              <Text style={{fontWeight: 'bold'}}>
+                {props.storeOpen ? 'Store Open' : 'Store Closed'}
+              </Text>{' '}
+              • {props.rating}
+            </Text>
+          ) : (
+            <Text style={style.subText}>
+              {props.distance} Km • {props.rating}
+            </Text>
+          )}
         </TouchableOpacity>
 
-        {props.storeOpen === undefined &&
-        <TouchableOpacity activeOpacity={0.8} onPress={props.onMapPressed}>
-          <IconMI
-            name="map"
-            size={25}
-            color={AppConfig.primaryColor}
-          />
-        </TouchableOpacity>}
-        
+        {props.storeOpen === undefined && (
+          <TouchableOpacity activeOpacity={0.8} onPress={props.onMapPressed}>
+            <IconMI name="map" size={25} color={AppConfig.primaryColor} />
+          </TouchableOpacity>
+        )}
       </View>
       {/* Loading spinner */}
-      {loading && 
-      <ActivityIndicator style={{alignSelf: 'flex-start'}} size="large" color={AppConfig.primaryColor} />}
+      {loading && (
+        <ActivityIndicator
+          style={{alignSelf: 'flex-start'}}
+          size="large"
+          color={AppConfig.primaryColor}
+        />
+      )}
 
       {/* No item found  */}
-      {!loading && listings.length === 0 && 
-      <Text style={style.noListings}>No Item Listed</Text>}
+      {!loading && listings.length === 0 && (
+        <Text style={style.noListings}>No Item Listed</Text>
+      )}
 
       <FlatList
         data={listings}
@@ -79,42 +95,55 @@ function RestaurantCard(props) {
           //     </View>
           //   </TouchableOpacity>
           // )
-          return(
-           <TouchableOpacity onPress={() => props.onItemPressed(item.id)} activeOpacity={0.8}>
-              <ImageBackground source={{uri: item.image}} style={style.listElement}>
-                <Text style={style.stockLeft}>{item.currentStockCount} Left</Text>
-                <Text numberOfLines={1} style={style.itemText}>{item.name}</Text>
-                <Text numberOfLines={1} style={[style.itemText, {paddingTop: 0, fontSize: 14,}]}>{GetCurrencySymbolFromId(item.price.currency)} {Dinero(item.price).toUnit()}</Text>
+          return (
+            <TouchableOpacity
+              onPress={() => props.onItemPressed(item.id)}
+              activeOpacity={0.8}>
+              <ImageBackground
+                source={{uri: item.image}}
+                style={style.listElement}>
+                <Text style={style.stockLeft}>
+                  {item.currentStockCount} Left
+                </Text>
+                <Text numberOfLines={1} style={style.itemText}>
+                  {item.name}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[style.itemText, {paddingTop: 0, fontSize: 14}]}>
+                  {GetCurrencySymbolFromId(item.price.currency)}{' '}
+                  {Dinero(item.price).toUnit()}
+                </Text>
               </ImageBackground>
-           </TouchableOpacity>
-          )
+            </TouchableOpacity>
+          );
         }}
-       />
+      />
     </View>
   );
 }
 const style = StyleSheet.create({
   restaurantCardContainer: {
     width: '100%',
-    marginBottom: 10
+    marginBottom: 10,
   },
   restroNameContainer: {
-    width: "100%",
+    width: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
-  restroName:{
+  restroName: {
     color: AppConfig.primaryColor,
     fontSize: 20,
     fontWeight: 'bold',
   },
   subText: {
-    color: "#000"
+    color: '#000',
   },
   listStyle: {
-    marginVertical: 10
+    marginVertical: 10,
   },
   listElement: {
     width: 160,
@@ -132,26 +161,26 @@ const style = StyleSheet.create({
     color: '#fff',
     paddingVertical: 5,
     paddingHorizontal: 10,
-    fontSize: 12
+    fontSize: 12,
   },
   seeMore: {
     fontSize: 20,
     color: 'gray',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   itemText: {
-    width: "100%",
+    width: '100%',
     padding: 5,
     backgroundColor: 'rgba(0, 0, 0, 0.35)',
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 16
+    fontSize: 16,
   },
   noListings: {
     fontSize: 18,
     color: '#696969',
-    margin: 10
-  }
+    margin: 10,
+  },
 });
 
 export default RestaurantCard;

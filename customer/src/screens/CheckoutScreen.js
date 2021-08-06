@@ -11,50 +11,81 @@ import {
 } from 'react-native';
 import AppConfig from '../../AppConfig.json';
 import IconMCI from 'react-native-vector-icons/MaterialCommunityIcons';
-import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
-import { CheckPromo, GetTaxes, GetWalletBalance, PostOrder } from '../APIs/ProfileManager';
+import GetCurrencySymbol, {
+  GetCurrencySymbolFromId,
+} from '../CurrencyManager/CurrencyManager';
+import {
+  CheckPromo,
+  GetTaxes,
+  GetWalletBalance,
+  PostOrder,
+} from '../APIs/ProfileManager';
 import auth from '@react-native-firebase/auth';
 import AddMoneyDialog from '../dialogs/AddMoneyDialog';
 import Dinero from 'dinero.js';
 
 function CheckoutScreen(props) {
-  const [promoLoading, setPromoLoading] = useState(false)
-  const [items, setItems] = useState([])
-  const [totalBaseValue, setTotalBaseValue] = useState(null)
-  const [promoValue, setPromoValue] = useState(null)
-  const [totalTaxValue, setTotalTaxValue] = useState(null)
-  const [promoUsed, setPromoUsed] = useState(null)
-  const [taxes, setTaxes] = useState([])
-  const [promoText, setPromoText] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [showAddMoney, setShowAddMoney] = useState(false)
-  
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [items, setItems] = useState([]);
+  const [totalBaseValue, setTotalBaseValue] = useState(null);
+  const [promoValue, setPromoValue] = useState(null);
+  const [totalTaxValue, setTotalTaxValue] = useState(null);
+  const [promoUsed, setPromoUsed] = useState(null);
+  const [taxes, setTaxes] = useState([]);
+  const [promoText, setPromoText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showAddMoney, setShowAddMoney] = useState(false);
+
   console.log('Order Details', props.route.params);
 
   //handel handel Promo Code button ---------------------
   const handelPromoCodeButton = () => {
-    setPromoLoading(true)
-    CheckPromo(promoText).then(promo => {
-      if(promo){
-        let promoVal = Dinero(calculateTotalBase()).percentage(promo.offPercent)
-        promoVal = Dinero({currency: promoVal.getCurrency(), amount: Math.min(promoVal.getAmount(), promo.uptoValue * 100)})
-        promo.value = promoVal.toJSON()
-        setPromoUsed(promo)
-        setPromoValue(promoVal.toJSON())
-        Alert.alert(`${promo.offPercent}% off upto ${GetCurrencySymbolFromId(promoVal.getCurrency())}${promo.uptoValue}`, `Promotional code applied successfully.\nWe have applied ${promo.offPercent}% off upto ${GetCurrencySymbolFromId(promoVal.getCurrency())}${promo.uptoValue}`)
-      }else{
-        Alert.alert('Invalid Code', 'Invalid promotional code entered.')
-      }
-    }).catch(err => alert('Error applying promo code: ' + err))
-    .finally(() => setPromoLoading(false))
+    setPromoLoading(true);
+    CheckPromo(promoText)
+      .then(promo => {
+        if (promo) {
+          let promoVal = Dinero(calculateTotalBase()).percentage(
+            promo.offPercent,
+          );
+          promoVal = Dinero({
+            currency: promoVal.getCurrency(),
+            amount: Math.min(promoVal.getAmount(), promo.uptoValue * 100),
+          });
+          promo.value = promoVal.toJSON();
+          setPromoUsed(promo);
+          setPromoValue(promoVal.toJSON());
+          Alert.alert(
+            `${promo.offPercent}% off upto ${GetCurrencySymbolFromId(
+              promoVal.getCurrency(),
+            )}${promo.uptoValue}`,
+            `Promotional code applied successfully.\nWe have applied ${
+              promo.offPercent
+            }% off upto ${GetCurrencySymbolFromId(promoVal.getCurrency())}${
+              promo.uptoValue
+            }`,
+          );
+        } else {
+          Alert.alert('Invalid Code', 'Invalid promotional code entered.');
+        }
+      })
+      .catch(err => alert('Error applying promo code: ' + err))
+      .finally(() => setPromoLoading(false));
   };
 
   const GetGrandTotal = () => {
-    if(totalBaseValue)
-      return Dinero(totalBaseValue).add(Dinero(totalTaxValue ?? {amount: 0, currency: totalBaseValue.currency})).subtract(Dinero(promoValue ?? {amount: 0, currency: totalBaseValue.currency}))
+    if (totalBaseValue)
+      return Dinero(totalBaseValue)
+        .add(
+          Dinero(
+            totalTaxValue ?? {amount: 0, currency: totalBaseValue.currency},
+          ),
+        )
+        .subtract(
+          Dinero(promoValue ?? {amount: 0, currency: totalBaseValue.currency}),
+        );
 
-    return Dinero()
-  }
+    return Dinero();
+  };
 
   const SendOrder = () => {
     const data = {
@@ -65,92 +96,103 @@ function CheckoutScreen(props) {
       taxes: taxes,
       promotion: promoUsed,
       baseValue: totalBaseValue,
-      taxValue: totalTaxValue ?? Dinero({amount: 0, currency: totalBaseValue.currency}).toJSON(),
-      promoValue: promoValue ?? Dinero({amount: 0, currency: totalBaseValue.currency}).toJSON(),
+      taxValue:
+        totalTaxValue ??
+        Dinero({amount: 0, currency: totalBaseValue.currency}).toJSON(),
+      promoValue:
+        promoValue ??
+        Dinero({amount: 0, currency: totalBaseValue.currency}).toJSON(),
       finalValue: GetGrandTotal().toJSON(),
-      status: "PENDING"
-    }
+      status: 'PENDING',
+    };
 
     PostOrder(data)
       .then(id => {
-        props.navigation.pop()
-        props.navigation.push('orderDetail', {orderId: id})
-      }).catch(err => {
-        alert('Error placing order at the moment')
+        props.navigation.pop();
+        props.navigation.push('orderDetail', {orderId: id});
       })
-      .finally(() => setLoading(false))
+      .catch(err => {
+        alert('Error placing order at the moment');
+      })
+      .finally(() => setLoading(false));
 
-    console.log('data', data)
-  }
+    console.log('data', data);
+  };
 
   const payClicked = () => {
-    setLoading(true)
+    setLoading(true);
     GetWalletBalance().then(bal => {
-      const grandTotal = GetGrandTotal()
-      const walletBal = Dinero(bal ?? Dinero({amount: 0, currency: totalBaseValue.currency}))
-      if(grandTotal.greaterThan(walletBal)){
-        Alert.alert('Insufficient Balance', 'You do not have sufficient wallet balance for this order, Please recharge your wallet', [
-          {
-            onPress: () => {
-              setShowAddMoney(true)
-              setLoading(false)
+      const grandTotal = GetGrandTotal();
+      const walletBal = Dinero(
+        bal ?? Dinero({amount: 0, currency: totalBaseValue.currency}),
+      );
+      if (grandTotal.greaterThan(walletBal)) {
+        Alert.alert(
+          'Insufficient Balance',
+          'You do not have sufficient wallet balance for this order, Please recharge your wallet',
+          [
+            {
+              onPress: () => {
+                setShowAddMoney(true);
+                setLoading(false);
+              },
+              text: 'Add Money',
+              style: 'default',
             },
-            text: "Add Money",
-            style: "default"
-          },
-          {
-            text: "Cancel",
-            style: "cancel",
-            onPress: () => setLoading(false)
-          }
-        ])
-      }else{
-        SendOrder()
+            {
+              text: 'Cancel',
+              style: 'cancel',
+              onPress: () => setLoading(false),
+            },
+          ],
+        );
+      } else {
+        SendOrder();
       }
-    })
-  }
-
-  
+    });
+  };
 
   const calculateTotalBase = () => {
-    let total = null
+    let total = null;
     props.route?.params?.items.forEach(val => {
-      if(total == null){
-        total = Dinero(val.price)
-      }else{
-        total = total.add(Dinero(val.price))
+      if (total == null) {
+        total = Dinero(val.price);
+      } else {
+        total = total.add(Dinero(val.price));
       }
-    })
+    });
 
-    return total.toJSON()
-  }
+    return total.toJSON();
+  };
 
   useEffect(() => {
-    const base = Dinero(calculateTotalBase())
-    setItems(props.route?.params?.items ?? [])
-    setTotalBaseValue(base.toJSON())
+    const base = Dinero(calculateTotalBase());
+    setItems(props.route?.params?.items ?? []);
+    setTotalBaseValue(base.toJSON());
 
     GetTaxes().then(val => {
-      console.log('Taxes', val)
-      
-      setTaxes(val.map(item => {
-        return {
-          ...item,
-          value: base.percentage(item.percent).toJSON()
-        }
-      }))
-      
-      let totalTaxPercent = 0
+      console.log('Taxes', val);
+
+      setTaxes(
+        val.map(item => {
+          return {
+            ...item,
+            value: base.percentage(item.percent).toJSON(),
+          };
+        }),
+      );
+
+      let totalTaxPercent = 0;
       val.forEach(item => {
-        totalTaxPercent += item.percent
-      })
+        totalTaxPercent += item.percent;
+      });
 
-      const totalTax = base.percentage(totalTaxPercent).toJSON()
-      console.log('Total tax', totalTax)
+      const totalTax = base.percentage(totalTaxPercent).toJSON();
+      console.log('Total tax', totalTax);
 
-      setTotalTaxValue(totalTax)
-    })
-  }, [])
+      setTotalTaxValue(totalTax);
+    });
+  }, []);
 
   return (
     <View style={style.mainOuterContainer}>
@@ -158,83 +200,120 @@ function CheckoutScreen(props) {
         <View style={style.generalContainer}>
           <Text style={style.lightTitle}>Order from</Text>
           <View style={style.addressContainer}>
-            <Text style={style.customerName}>{props.route.params.merchantName}</Text>
-            <Text style={style.lightTitle}>{props.route.params.merchantAddress}</Text>
+            <Text style={style.customerName}>
+              {props.route.params.merchantName}
+            </Text>
+            <Text style={style.lightTitle}>
+              {props.route.params.merchantAddress}
+            </Text>
           </View>
         </View>
         <View style={style.generalContainer}>
           <Text style={style.lightTitle}>Promotional Code</Text>
           <View style={style.inputTextContainer}>
-            <TextInput onChangeText={setPromoText} style={style.textInput} placeholder="Enter code here" />
-            {promoLoading ? <ActivityIndicator style={style.promoLoad} size="small" color={AppConfig.primaryColor} /> :
+            <TextInput
+              onChangeText={setPromoText}
+              style={style.textInput}
+              placeholder="Enter code here"
+            />
+            {promoLoading ? (
+              <ActivityIndicator
+                style={style.promoLoad}
+                size="small"
+                color={AppConfig.primaryColor}
+              />
+            ) : (
               <TouchableOpacity
                 activeOpacity={0.6}
                 onPress={handelPromoCodeButton}
                 style={style.promoCodeButton}>
                 <Text style={style.promoApply}>APPLY</Text>
-              </TouchableOpacity>}
+              </TouchableOpacity>
+            )}
           </View>
         </View>
         <View style={style.generalContainer}>
           <Text style={style.lightTitle}>Order</Text>
           <View style={style.summaryContainer}>
-
             {items.map(item => {
-              return(
+              return (
                 <View style={style.itemContainer}>
-                  <Text style={style.itemTitle}>{`${item.count} x ${item.name}`}</Text>
-                  <Text style={style.summaryPrice}>{GetCurrencySymbolFromId(item.price.currency)} {Dinero(item.price).toUnit()}</Text>
+                  <Text
+                    style={
+                      style.itemTitle
+                    }>{`${item.count} x ${item.name}`}</Text>
+                  <Text style={style.summaryPrice}>
+                    {GetCurrencySymbolFromId(item.price.currency)}{' '}
+                    {Dinero(item.price).toUnit()}
+                  </Text>
                 </View>
-              )
+              );
             })}
 
-            {promoUsed !== null &&
-            <View style={style.itemContainer}>
-              <Text style={style.itemTitle}>{`PROMO: ${promoUsed.code.toUpperCase()}`}</Text>
-              <Text style={style.promoPrice}>- {GetCurrencySymbolFromId(promoUsed.value.currency)} {Dinero(promoUsed.value).toUnit()}</Text>
-            </View>}
+            {promoUsed !== null && (
+              <View style={style.itemContainer}>
+                <Text
+                  style={
+                    style.itemTitle
+                  }>{`PROMO: ${promoUsed.code.toUpperCase()}`}</Text>
+                <Text style={style.promoPrice}>
+                  - {GetCurrencySymbolFromId(promoUsed.value.currency)}{' '}
+                  {Dinero(promoUsed.value).toUnit()}
+                </Text>
+              </View>
+            )}
 
             <View style={style.horizontalLine}></View>
 
             <View>
               <Text style={style.itemTitle}>Tax</Text>
               <View style={style.taxInnerContainer}>
-                
                 {taxes.map(tax => {
-                  return(
+                  return (
                     <View style={style.taxInnerInnerContainer}>
-                      <Text style={style.itemTitle}>{tax.name} ({tax.percent}%)</Text>
-                      <Text style={style.summaryPrice}>{GetCurrencySymbolFromId(tax.value.currency)} {Dinero(tax.value).toUnit()}</Text>
+                      <Text style={style.itemTitle}>
+                        {tax.name} ({tax.percent}%)
+                      </Text>
+                      <Text style={style.summaryPrice}>
+                        {GetCurrencySymbolFromId(tax.value.currency)}{' '}
+                        {Dinero(tax.value).toUnit()}
+                      </Text>
                     </View>
-                  )
+                  );
                 })}
-
               </View>
             </View>
             <View style={style.summaryTotalContainer}>
               <Text style={style.summaryTotalText}>Total</Text>
               <Text style={style.summaryPriceWithWhiteColor}>
-                {GetCurrencySymbolFromId(GetGrandTotal().getCurrency())} {GetGrandTotal().toUnit()}
+                {GetCurrencySymbolFromId(GetGrandTotal().getCurrency())}{' '}
+                {GetGrandTotal().toUnit()}
               </Text>
             </View>
           </View>
         </View>
       </ScrollView>
       <View style={style.payContainer}>
-        {loading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} /> :
+        {loading ? (
+          <ActivityIndicator size="large" color={AppConfig.primaryColor} />
+        ) : (
           <TouchableOpacity
             style={style.payButton}
             activeOpacity={0.6}
             onPress={payClicked}>
-            <Text style={style.payButtonText}>Pay {GetCurrencySymbolFromId(GetGrandTotal().getCurrency())} {GetGrandTotal().toUnit()}</Text>
+            <Text style={style.payButtonText}>
+              Pay {GetCurrencySymbolFromId(GetGrandTotal().getCurrency())}{' '}
+              {GetGrandTotal().toUnit()}
+            </Text>
             <Text style={style.payButtonTextArrow}>&#9654;</Text>
           </TouchableOpacity>
-        }
+        )}
       </View>
 
       <AddMoneyDialog
         show={showAddMoney}
-        close={() => setShowAddMoney(false)} />
+        close={() => setShowAddMoney(false)}
+      />
     </View>
   );
 }
@@ -337,8 +416,8 @@ const style = StyleSheet.create({
   },
   promoApply: {
     paddingHorizontal: 10,
-    color: "#fff",
-    fontWeight: 'bold'
+    color: '#fff',
+    fontWeight: 'bold',
   },
   summaryContainer: {
     borderWidth: 1,
@@ -360,7 +439,7 @@ const style = StyleSheet.create({
   },
   promoPrice: {
     fontWeight: '700',
-    color: "#911d14"
+    color: '#911d14',
   },
   horizontalLine: {
     width: '100%',

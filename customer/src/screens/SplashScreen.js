@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
-import { GetProfile } from '../APIs/ProfileManager';
+import {GetProfile} from '../APIs/ProfileManager';
 
 function SplashScreen(props) {
   useEffect(() => {
@@ -11,17 +11,16 @@ function SplashScreen(props) {
         if (user !== null) {
           // user logged in
           GetProfile().then(profile => {
-            if(profile){
-              if(profile.blocked){
+            if (profile) {
+              if (profile.blocked) {
                 props.navigation.replace('blockedScreen');
-              }else{
+              } else {
                 props.navigation.replace('home');
               }
-              
-            }else{
+            } else {
               props.navigation.replace('editProfile', {forced: true});
             }
-          })
+          });
         } else {
           // user not logged in
           props.navigation.replace('onboarding');

@@ -1,59 +1,94 @@
-import React, { useEffect, useState } from 'react';
-import {Text, View, Image, StyleSheet, TouchableOpacity, ScrollView, RefreshControl} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
 import AppConfig from '../../../../AppConfig.json';
-import { GetProfile } from '../../../APIs/ProfileManager';
-import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../../../CurrencyManager/CurrencyManager';
+import {GetProfile} from '../../../APIs/ProfileManager';
+import {GetCurrencySymbolFromId} from '../../../CurrencyManager/CurrencyManager';
+import Dinero from 'dinero.js';
 
 function EarningTab(props) {
-  const [profile, setProfile] = useState({})
-  const [loading, setLoading] = useState(false)
+  const [profile, setProfile] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleWithdraw = () => {
     return null;
   };
 
   const loadProfile = () => {
-    GetProfile().then(val => setProfile(val))
-  }
+    GetProfile().then(val => setProfile(val));
+  };
 
   useEffect(() => {
-    props.navigation.addListener('focus', loadProfile)
+    props.navigation.addListener('focus', loadProfile);
 
-    loadProfile()
-  }, [])
+    loadProfile();
+  }, []);
 
   return (
-    <ScrollView 
+    <ScrollView
       style={style.earningContainer}
-      contentContainerStyle={{justifyContent: "flex-start",alignItems: 'center'}}
-      refreshControl={<RefreshControl refreshing={loading} onRefresh={loadProfile} />}>
+      contentContainerStyle={{
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+      }}
+      refreshControl={
+        <RefreshControl refreshing={loading} onRefresh={loadProfile} />
+      }>
+      <Text style={style.hint}>These are your total earnings till date</Text>
       <View style={style.totalBalanceInWalletContainer}>
         <View style={style.moneyContainer}>
-          {profile.totalEarnings !== null && profile.totalEarnings !== undefined ? 
-            <Text style={style.currency}>{GetCurrencySymbolFromId(profile.totalEarnings.currency)} {profile.totalEarnings.amount}</Text> : 
-            <Text style={style.currency}>0</Text>}
-          
+          {profile.totalEarnings !== null &&
+          profile.totalEarnings !== undefined ? (
+            <Text style={style.currency}>
+              {GetCurrencySymbolFromId(profile.totalEarnings.currency)}
+              {Dinero(profile.totalEarnings).toUnit()}
+            </Text>
+          ) : (
+            <Text style={style.currency}>0</Text>
+          )}
         </View>
         <View style={style.titleContainer}>
-          <Text style={style.titleText}>Balance earned till date</Text>
+          <Text style={style.titleText}>Earnings till date</Text>
         </View>
       </View>
 
+      <Text style={style.hint}>
+        This is your outstanding amount which is yet to be settled. Settelments
+        are made everyday and could take upto 2-3 business-days to reflect in
+        your account.
+      </Text>
       <View style={style.totalBalanceInWalletContainer}>
         <View style={style.moneyContainer}>
-          <Text style={style.currency}>{GetCurrencySymbol()} {profile.walletBalance ?? 0}</Text>
+          {profile.walletBalance !== null &&
+          profile.walletBalance !== undefined ? (
+            <Text style={style.currency}>
+              {GetCurrencySymbolFromId(profile.walletBalance.currency)}
+              {Dinero(profile.walletBalance).toUnit()}
+            </Text>
+          ) : (
+            <Text style={style.currency}>0</Text>
+          )}
         </View>
         <View style={style.titleContainer}>
           <Text style={style.titleText}>Outstanding Balance</Text>
         </View>
       </View>
 
-      <TouchableOpacity
+      <Text></Text>
+
+      {/* <TouchableOpacity
           activeOpacity={0.6}
           style={style.withdrawButton}
           onPress={handleWithdraw}>
           <Text style={style.withdrawButtonText}>Withdraw</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <View style={style.horizontalRule} />
     </ScrollView>
@@ -65,7 +100,13 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#fff',
-    padding: 10
+    padding: 10,
+  },
+  hint: {
+    width: '100%',
+    fontSize: 14,
+    color: 'grey',
+    marginVertical: 5,
   },
   totalBalanceInWalletContainer: {
     width: '100%',
@@ -77,9 +118,9 @@ const style = StyleSheet.create({
     shadowOffset: {width: 0, height: 14},
     shadowOpacity: 0.4,
     shadowRadius: 3,
-    elevation: 30,
+    elevation: 3,
     justifyContent: 'center',
-    marginBottom: 20
+    marginBottom: 20,
   },
   moneyContainer: {
     flexDirection: 'row',
@@ -117,7 +158,7 @@ const style = StyleSheet.create({
     backgroundColor: AppConfig.primaryColor,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 3
+    borderRadius: 3,
   },
   withdrawButtonText: {
     color: '#fff',
@@ -125,49 +166,48 @@ const style = StyleSheet.create({
     fontWeight: 'bold',
   },
   horizontalRule: {
-    width: "100%",
+    width: '100%',
     height: 1,
-    backgroundColor: "#E3E3E3",
-    marginBottom: 20
+    backgroundColor: '#E3E3E3',
+    marginBottom: 20,
   },
   summary: {
-    color: "#000",
+    color: '#000',
     fontSize: 24,
-    alignSelf: "flex-start",
-    marginBottom: 20
+    alignSelf: 'flex-start',
+    marginBottom: 20,
   },
   cardContainer: {
-    width: "100%",
+    width: '100%',
     padding: 5,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    borderColor: "#cccccc",
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#cccccc',
     borderWidth: 1,
     borderRadius: 3,
     elevation: 1,
-    shadowColor: "#eeeeee",
-    marginBottom: 20
+    shadowColor: '#eeeeee',
+    marginBottom: 20,
   },
   cardAmount: {
     fontSize: 28,
     color: AppConfig.primaryColor,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     paddingVertical: 20,
     textAlignVertical: 'center',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   cardTitle: {
     fontSize: 16,
-    color: "#fff",
+    color: '#fff',
     backgroundColor: AppConfig.primaryColor,
     textAlign: 'center',
     textAlignVertical: 'center',
-    width: "100%",
+    width: '100%',
     paddingVertical: 5,
-    borderRadius: 3
-  }
+    borderRadius: 3,
+  },
 });
-
 
 export default EarningTab;

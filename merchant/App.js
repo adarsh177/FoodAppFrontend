@@ -15,20 +15,20 @@ import ListItemScreen from './src/screens/ListItemScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 import OrderDetailScreen from './src/screens/OrderDetailScreen';
 import ShareScreen from './src/screens/ShareScreen';
-import messaging from '@react-native-firebase/messaging'
-import { Alert } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import {Alert} from 'react-native';
 import BlockedScreen from './src/screens/BlockedScreen';
 
 const Stack = createStackNavigator();
 
 function App() {
   useEffect(() => {
-    messaging().onMessage((msg) => {
-        console.log('Notification', msg.notification)
-        Alert.alert(msg.notification.title, msg.notification.body)
-    })
-    messaging().subscribeToTopic('merchant')
-  }, [])
+    messaging().onMessage(msg => {
+      console.log('Notification', msg.notification);
+      Alert.alert(msg.notification.title, msg.notification.body);
+    });
+    messaging().subscribeToTopic('merchant');
+  }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -57,7 +57,7 @@ function App() {
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: "Inventory"
+            title: 'Inventory',
           }}
           name="inventory"
           component={InventoryScreen}
@@ -67,7 +67,7 @@ function App() {
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: "List Item"
+            title: 'List Item',
           }}
           name="listItem"
           component={ListItemScreen}
@@ -77,7 +77,7 @@ function App() {
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: "Profile"
+            title: 'Profile',
           }}
           name="editProfile"
           component={EditProfileScreen}
@@ -87,7 +87,7 @@ function App() {
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: "Order Details"
+            title: 'Order Details',
           }}
           name="orderDetail"
           component={OrderDetailScreen}
@@ -97,12 +97,12 @@ function App() {
             headerShown: true,
             headerTintColor: AppConfig.primaryColor,
             headerTitleAlign: 'center',
-            title: "Share App"
+            title: 'Share App',
           }}
           name="shareApp"
           component={ShareScreen}
         />
-        
+
         <Stack.Screen
           options={{
             headerShown: true,
@@ -113,7 +113,6 @@ function App() {
           name="blockedScreen"
           component={BlockedScreen}
         />
-        
       </Stack.Navigator>
     </NavigationContainer>
   );

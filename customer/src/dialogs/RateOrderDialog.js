@@ -12,28 +12,31 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AppConfig from '../../AppConfig.json';
-import { AddWalletBalance, GetWalletBalance, RateOrder } from '../APIs/ProfileManager';
+import {
+  AddWalletBalance,
+  GetWalletBalance,
+  RateOrder,
+} from '../APIs/ProfileManager';
 import GetCurrencySymbol from '../CurrencyManager/CurrencyManager';
-import { Rating, AirbnbRating } from 'react-native-ratings';
-
+import {Rating, AirbnbRating} from 'react-native-ratings';
 
 function RateOrderDialog(props) {
-  const [rating, setRating] = useState(3)
-  const [loading, setLoading] = useState(false)
+  const [rating, setRating] = useState(3);
+  const [loading, setLoading] = useState(false);
 
   const close = () => {
-    setLoading(false)
+    setLoading(false);
 
     props.close();
-  }
+  };
 
   const rateOrder = () => {
-      setLoading(true)
-      RateOrder(props.orderId, rating).finally(() => {
-          setLoading(false)
-          close()
-      })
-  }
+    setLoading(true);
+    RateOrder(props.orderId, rating).finally(() => {
+      setLoading(false);
+      close();
+    });
+  };
 
   return (
     <Modal
@@ -47,20 +50,34 @@ function RateOrderDialog(props) {
         <View style={style.dialog}>
           <Text style={style.title}>Rate Order</Text>
           <Text style={style.subtitle}>
-              How do you liked your order from <Text style={{fontWeight: "bold", color: '#000'}}>{props.name}</Text>? Your ratings will help other users.
+            How do you liked your order from{' '}
+            <Text style={{fontWeight: 'bold', color: '#000'}}>
+              {props.name}
+            </Text>
+            ? Your ratings will help other users.
           </Text>
-          
+
           <AirbnbRating
             onFinishRating={setRating}
             reviewColor={AppConfig.primaryColor}
             starContainerStyle={{justifyContent: 'space-around', width: '100%'}}
             selectedColor={AppConfig.primaryColor}
-           />
+          />
 
-           {loading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} style={{marginTop: 20}}/> :
-            <TouchableOpacity onPress={rateOrder} activeOpacity={0.8} style={{marginTop: 40}}>
-                <Text style={style.rateSave}>SAVE</Text>
-            </TouchableOpacity>}
+          {loading ? (
+            <ActivityIndicator
+              size="large"
+              color={AppConfig.primaryColor}
+              style={{marginTop: 20}}
+            />
+          ) : (
+            <TouchableOpacity
+              onPress={rateOrder}
+              activeOpacity={0.8}
+              style={{marginTop: 40}}>
+              <Text style={style.rateSave}>SAVE</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </Modal>
@@ -94,23 +111,23 @@ const style = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: AppConfig.primaryColor
+    color: AppConfig.primaryColor,
   },
   subtitle: {
     marginTop: 5,
     fontSize: 16,
-    color: "#8c8c8c",
-    marginBottom: 20
+    color: '#8c8c8c',
+    marginBottom: 20,
   },
   rateSave: {
     fontWeight: 'bold',
     textAlign: 'center',
-    width: "100%",
+    width: '100%',
     padding: 10,
     backgroundColor: AppConfig.primaryColor,
-    color: "#fff",
-    fontSize: 18
-  }
+    color: '#fff',
+    fontSize: 18,
+  },
 });
 
 export default RateOrderDialog;

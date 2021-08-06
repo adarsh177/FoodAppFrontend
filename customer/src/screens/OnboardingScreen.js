@@ -35,7 +35,9 @@ function OnboardingScreen(props) {
 
   const Done = ({isLight, ...props}) => (
     <TouchableOpacity style={{marginHorizontal: 20}} onPress={finishOnboard}>
-      <Text style={{color: AppConfig.primaryColor, fontWeight: 'bold'}}>Get Started</Text>
+      <Text style={{color: AppConfig.primaryColor, fontWeight: 'bold'}}>
+        Get Started
+      </Text>
     </TouchableOpacity>
   );
 

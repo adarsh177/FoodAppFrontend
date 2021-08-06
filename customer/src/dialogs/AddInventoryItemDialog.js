@@ -15,7 +15,7 @@ import AppConfig from '../../AppConfig.json';
 import {launchImageLibrary} from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
-import { AddCommodity } from '../APIs/StoreManager';
+import {AddCommodity} from '../APIs/StoreManager';
 
 function AddInventoryItemDialog(props) {
   const [name, setName] = useState('');
@@ -24,7 +24,9 @@ function AddInventoryItemDialog(props) {
   const [loading, setLoading] = useState(false);
   const [imageUploadLoading, setImageUploadLoading] = useState(false);
 
-  const reference = storage().ref(`/CommodityImage/${auth().currentUser.uid}/${new Date().getTime()}`);
+  const reference = storage().ref(
+    `/CommodityImage/${auth().currentUser.uid}/${new Date().getTime()}`,
+  );
 
   const close = () => {
     setName('');
@@ -32,21 +34,20 @@ function AddInventoryItemDialog(props) {
     setImageUrl(null);
 
     props.close();
-  }
+  };
 
   const addClicked = async () => {
-    if(loading || imageUploadLoading)
-      return;
-    
-    if(imageUrl == null){
+    if (loading || imageUploadLoading) return;
+
+    if (imageUrl == null) {
       alert('Please select an image');
       return;
     }
-    if(name.length == 0){
+    if (name.length == 0) {
       alert('Please enter item name');
       return;
     }
-    if(description.length == 0){
+    if (description.length == 0) {
       alert('Please enter item description');
       return;
     }
@@ -55,26 +56,28 @@ function AddInventoryItemDialog(props) {
     AddCommodity({
       name: name,
       description: description,
-      image: imageUrl
-    }).then(() => {
-      alert('Item added successfully');
-      close();
-    }).catch(err => {
-      console.log("Error adding item", err);
-      alert('Error adding item');
-    }).finally(() => setLoading(false))
-  }
+      image: imageUrl,
+    })
+      .then(() => {
+        alert('Item added successfully');
+        close();
+      })
+      .catch(err => {
+        console.log('Error adding item', err);
+        alert('Error adding item');
+      })
+      .finally(() => setLoading(false));
+  };
 
   const selectImage = () => {
-    if(imageUploadLoading)
-      return;
+    if (imageUploadLoading) return;
 
     const options = {
       maxWidth: 2000,
       maxHeight: 2000,
-      mediaType: "photo"
+      mediaType: 'photo',
     };
-    launchImageLibrary(options, (response) => {
+    launchImageLibrary(options, response => {
       if (response.didCancel) {
         Alert.alert('Error', 'No Image selected');
       } else if (response.error) {
@@ -83,23 +86,27 @@ function AddInventoryItemDialog(props) {
         let source = response.assets[0].uri;
 
         console.log(response.assets[0]);
-        
+
         setImageUploadLoading(true);
         setImageUrl(null);
-        reference.putFile(source).then(
-          async (snap) => {
-            console.log('Upload success', snap.state);
-            const url = await reference.getDownloadURL();
-            console.log('Downloadable url', url);
-            setImageUrl(url);
-          }, (error) => {
-            console.log('Error uploading pic', error);
-            alert(`Error Updating Picture : ${error.nativeErrorMessage}`);
-          },
-        ).finally(() => setImageUploadLoading(false));
+        reference
+          .putFile(source)
+          .then(
+            async snap => {
+              console.log('Upload success', snap.state);
+              const url = await reference.getDownloadURL();
+              console.log('Downloadable url', url);
+              setImageUrl(url);
+            },
+            error => {
+              console.log('Error uploading pic', error);
+              alert(`Error Updating Picture : ${error.nativeErrorMessage}`);
+            },
+          )
+          .finally(() => setImageUploadLoading(false));
       }
-    })
-  }
+    });
+  };
 
   return (
     <Modal
@@ -115,17 +122,27 @@ function AddInventoryItemDialog(props) {
             activeOpacity={0.6}
             style={style.getImageButton}
             onPress={() => selectImage()}>
-            {imageUrl ? <Image source={{uri: imageUrl}} style={style.addImageContainer} /> : 
+            {imageUrl ? (
+              <Image source={{uri: imageUrl}} style={style.addImageContainer} />
+            ) : (
               <View style={style.addImageContainer}>
-                {imageUploadLoading ? <ActivityIndicator size="large" color={AppConfig.primaryColor} />
-                : 
-                <>
-                  <Icon name="plus" size={24} color={AppConfig.primaryColor} />
-                  <Text style={style.selectImageText}>Select Image</Text>
-                </>
-                }
+                {imageUploadLoading ? (
+                  <ActivityIndicator
+                    size="large"
+                    color={AppConfig.primaryColor}
+                  />
+                ) : (
+                  <>
+                    <Icon
+                      name="plus"
+                      size={24}
+                      color={AppConfig.primaryColor}
+                    />
+                    <Text style={style.selectImageText}>Select Image</Text>
+                  </>
+                )}
               </View>
-            }
+            )}
           </TouchableOpacity>
 
           <View style={style.modalTextInputContainer}>
@@ -150,10 +167,11 @@ function AddInventoryItemDialog(props) {
             activeOpacity={0.6}
             style={style.addItem}
             onPress={() => addClicked()}>
-              {loading ? <ActivityIndicator color="#FFF" size="large" /> : 
+            {loading ? (
+              <ActivityIndicator color="#FFF" size="large" />
+            ) : (
               <Text style={style.addItemButtonText}>Add Item</Text>
-              }
-            
+            )}
           </TouchableOpacity>
         </View>
       </View>

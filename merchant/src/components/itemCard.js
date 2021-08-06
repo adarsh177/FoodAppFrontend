@@ -1,7 +1,10 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import AppConfig from '../../AppConfig.json';
-import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
+import GetCurrencySymbol, {
+  GetCurrencySymbolFromId,
+} from '../CurrencyManager/CurrencyManager';
+import Dinero from 'dinero.js';
 
 function ItemCard(props) {
   return (
@@ -9,13 +12,13 @@ function ItemCard(props) {
       activeOpacity={0.6}
       onPress={props.handelCardPress}
       style={style.listItemContainer}>
-      <Image
-        style={style.listItemImage}
-        source={{uri: props.image}}
-      />
+      <Image style={style.listItemImage} source={{uri: props.image}} />
       <View style={style.cardTitleAndPriceContainer}>
         <Text style={style.cardTitle}>{props.title}</Text>
-        <Text style={style.cardPrice}>{GetCurrencySymbolFromId(props.price.currency)} {props.price.amount}</Text>
+        <Text style={style.cardPrice}>
+          {GetCurrencySymbolFromId(props.price.currency)}{' '}
+          {Dinero(props.price).toUnit()}
+        </Text>
       </View>
       <View style={style.cardDetailContainer}>
         <Text style={style.cardDetailTitle}>Expires in: </Text>
@@ -33,13 +36,13 @@ const style = StyleSheet.create({
   listItemContainer: {
     borderWidth: 1,
     borderColor: '#cecece',
-    width: "48%",
+    width: '48%',
     borderRadius: 3,
     marginBottom: 20,
-    paddingBottom: 5
+    paddingBottom: 5,
   },
   listItemImage: {
-    width: "100%",
+    width: '100%',
     height: 100,
     resizeMode: 'cover',
     borderRadius: 3,

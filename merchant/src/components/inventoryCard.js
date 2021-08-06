@@ -12,12 +12,14 @@ function InventoryCard(props) {
         <Text style={style.itemName}>{props.itemName}</Text>
         <Text style={style.itemDescription}>{props.description}</Text>
         <Text style={style.itemDescription}>
-          <Text style={{fontWeight: 'bold', color: 'black'}}>Ingredients: </Text>
-           {props.ingredients ? props.ingredients.join(', ') : "None"}
+          <Text style={{fontWeight: 'bold', color: 'black'}}>
+            Ingredients:{' '}
+          </Text>
+          {props.ingredients ? props.ingredients.join(', ') : 'None'}
         </Text>
         <Text style={style.itemDescription}>
           <Text style={{fontWeight: 'bold', color: 'black'}}>Tags: </Text>
-          {props.tags ? props.tags.join(', ') : "None"}
+          {props.tags ? props.tags.join(', ') : 'None'}
         </Text>
         <TouchableOpacity activeOpacity={0.6} onPress={props.handelDelete}>
           <Text style={style.deleteItem}>Delete Item</Text>
@@ -45,7 +47,7 @@ const style = StyleSheet.create({
   },
   InventoryCardImage: {
     width: 120,
-    height: "100%",
+    height: '100%',
     resizeMode: 'cover',
     borderRadius: 3,
   },
@@ -60,7 +62,7 @@ const style = StyleSheet.create({
   itemName: {
     fontSize: 16,
     fontWeight: '700',
-    marginBottom: 5
+    marginBottom: 5,
   },
   itemDescription: {
     fontSize: 14,
@@ -71,7 +73,7 @@ const style = StyleSheet.create({
     color: '#FF5353',
     fontSize: 13,
     fontWeight: '700',
-    alignSelf: 'flex-end'
+    alignSelf: 'flex-end',
   },
 });
 export default InventoryCard;

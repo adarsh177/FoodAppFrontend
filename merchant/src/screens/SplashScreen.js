@@ -1,34 +1,35 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
-import { GetProfile } from '../APIs/ProfileManager';
+import {GetProfile} from '../APIs/ProfileManager';
 
 function SplashScreen(props) {
-  
   useEffect(() => {
     const authSubscription = auth().onAuthStateChanged(user => {
       console.log('User logged in: ', user);
-      if(user === null){
+      if (user === null) {
         // user not logged in
-        props.navigation.replace("onboarding");
-      }else{
+        props.navigation.replace('onboarding');
+      } else {
         // user logged in
-        GetProfile().then(profile => {
-          if(profile !== null){
-            if(profile.blocked){
-              props.navigation.replace("blockedScreen");
-            }else{
-              props.navigation.replace("home");
+        GetProfile()
+          .then(profile => {
+            if (profile !== null) {
+              if (profile.blocked) {
+                props.navigation.replace('blockedScreen');
+              } else {
+                props.navigation.replace('home');
+              }
+            } else {
+              props.navigation.replace('editProfile', {forced: true});
             }
-          }else{
-            props.navigation.replace("editProfile", {forced: true});
-          }
-        }).catch(err => {
-            console.log("ERROR GETTING PROFILE", err);
-            props.navigation.replace("editProfile", {forced: true});
-        })
+          })
+          .catch(err => {
+            console.log('ERROR GETTING PROFILE', err);
+            props.navigation.replace('editProfile', {forced: true});
+          });
       }
-    })
+    });
 
     return authSubscription;
   }, []);

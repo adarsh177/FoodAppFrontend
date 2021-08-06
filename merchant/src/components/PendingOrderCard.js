@@ -1,48 +1,54 @@
+import Dinero from 'dinero.js';
 import React from 'react';
 import {Text, View, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import AppConfig from '../../AppConfig.json';
-import { RejectOrder } from '../APIs/OrderManager';
-import GetCurrencySymbol, { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
+import {RejectOrder} from '../APIs/OrderManager';
+import GetCurrencySymbol, {
+  GetCurrencySymbolFromId,
+} from '../CurrencyManager/CurrencyManager';
 
 function PendingOrderCard(props) {
   //handel card press-------------------------------
   const pendingCardPress = () => {
     return null;
   };
-  
+
   const rejectOrder = () => {
     Alert.alert('Reject order', 'are you sure?', [
       {
         onPress: () => props.reject(),
-        text: "Reject",
-        style: "default"
+        text: 'Reject',
+        style: 'default',
       },
       {
-        text: "Cancel",
-        style: "cancel"
-      }
-    ])
+        text: 'Cancel',
+        style: 'cancel',
+      },
+    ]);
   };
 
   const acceptOrder = () => {
     Alert.alert('Accept order', 'are you sure?', [
       {
         onPress: () => props.accept(),
-        text: "Accept",
-        style: "default"
+        text: 'Accept',
+        style: 'default',
       },
       {
-        text: "Cancel",
-        style: "cancel"
-      }
-    ])
+        text: 'Cancel',
+        style: 'cancel',
+      },
+    ]);
   };
   return (
     <TouchableOpacity activeOpacity={0.6} onPress={props.onCardPressed}>
       <View style={style.cardContainer}>
         <View style={style.orderIdandPriceContainer}>
           <Text style={style.orderId}>#{props.orderID}</Text>
-          <Text style={style.price}>{GetCurrencySymbolFromId(props.price.currency)} {props.price.amount}</Text>
+          <Text style={style.price}>
+            {GetCurrencySymbolFromId(props.price.currency)}{' '}
+            {Dinero(props.price).toUnit()}
+          </Text>
         </View>
         <Text style={style.date}>Date: {props.date}</Text>
         <Text style={style.items}>{props.items}</Text>

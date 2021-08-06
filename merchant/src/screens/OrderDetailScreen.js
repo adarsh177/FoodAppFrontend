@@ -9,51 +9,53 @@ import {
   ScrollView,
   Linking,
 } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
+import {ActivityIndicator} from 'react-native-paper';
 import AppConfig from '../../AppConfig.json';
-import { GetOrderDetails } from '../APIs/OrderManager';
-import { GetCustomerInfo, GetMerchantInfo } from '../APIs/StoreManager';
-import { GetCurrencySymbolFromId } from '../CurrencyManager/CurrencyManager';
+import {GetOrderDetails} from '../APIs/OrderManager';
+import {GetCustomerInfo, GetMerchantInfo} from '../APIs/StoreManager';
+import {GetCurrencySymbolFromId} from '../CurrencyManager/CurrencyManager';
+import Dinero from 'dinero.js';
 
 function OrderDetailScreen(props) {
-  const [loading, setLoading] = useState(true)
-  const [orderDetails, setOrderDetails] = useState({})
-  const [customerInfo, setCustomerInfo] = useState({})
+  const [loading, setLoading] = useState(true);
+  const [orderDetails, setOrderDetails] = useState({});
+  const [customerInfo, setCustomerInfo] = useState({});
 
-  
   //handel chat and call button ---------------------
   const handleChat = () => {
     return null;
   };
   const handleCall = () => {
-    Linking.openURL(`tel:${customerInfo.phone}`)
+    Linking.openURL(`tel:${customerInfo.phone}`);
   };
 
-  const loadCustomerInfo = (id) => {
+  const loadCustomerInfo = id => {
     GetCustomerInfo(id).then(info => {
-      setCustomerInfo(info)
-      console.log('customer Info', id, info)
-    })
-  }
+      setCustomerInfo(info);
+      console.log('customer Info', id, info);
+    });
+  };
 
   useEffect(() => {
     GetOrderDetails(props.route.params.orderId)
       .then(details => {
-        console.log('Order', details)
-        setOrderDetails(details)
-        loadCustomerInfo(details.customerId)
+        console.log('Order', details);
+        setOrderDetails(details);
+        loadCustomerInfo(details.customerId);
       })
-      .finally(() => setLoading(false))
-  }, [])
+      .finally(() => setLoading(false));
+  }, []);
 
-  if(loading)
-    return <ActivityIndicator size="large" color={AppConfig.primaryColor} />
+  if (loading)
+    return <ActivityIndicator size="large" color={AppConfig.primaryColor} />;
 
   return (
     <ScrollView style={style.mainContainer}>
       <View style={style.orderIdContainer}>
         <Text style={style.orderId}>#{orderDetails._id}</Text>
-        <Text style={style.date}>{new Date(orderDetails.timeOfOrder).toLocaleDateString()}</Text>
+        <Text style={style.date}>
+          {new Date(orderDetails.timeOfOrder).toLocaleDateString()}
+        </Text>
       </View>
       <View style={style.generalContainer}>
         <Text style={style.lightTitle}>Status</Text>
@@ -63,7 +65,9 @@ function OrderDetailScreen(props) {
         <Text style={style.lightTitle}>Ordered by</Text>
         <View style={style.orderByContainer}>
           <Text style={style.customerName}>{customerInfo.name}</Text>
-          <Text style={style.lightTitle}>{customerInfo.location?.label ?? ""}</Text>
+          <Text style={style.lightTitle}>
+            {customerInfo.location?.label ?? ''}
+          </Text>
           <View style={style.orderByButtonsContainer}>
             {/* <TouchableOpacity
               activeOpacity={0.6}
@@ -88,38 +92,53 @@ function OrderDetailScreen(props) {
         <Text style={style.lightTitle}>Order</Text>
         <View style={style.summaryContainer}>
           {orderDetails.items.map(item => {
-            return(
+            return (
               <View key={item.name} style={style.itemContainer}>
                 <Text style={style.itemTitle}>{item.name}</Text>
-                <Text style={style.summaryPrice}>{GetCurrencySymbolFromId(item.price.currency)} {item.price.amount}</Text>
+                <Text style={style.summaryPrice}>
+                  {GetCurrencySymbolFromId(item.price.currency)}{' '}
+                  {Dinero(item.price).toUnit()}
+                </Text>
               </View>
-            )
+            );
           })}
 
-          {orderDetails.promotion && 
-          <View style={style.itemContainer}>
-            <Text style={style.itemTitle}>PROMO: {orderDetails.promotion.code}</Text>
-            <Text style={[style.summaryPrice, {color: "#a61900"}]}>- {GetCurrencySymbolFromId(orderDetails.promoValue.currency)}{orderDetails.promoValue.amount}</Text>
-          </View>}
+          {orderDetails.promotion && (
+            <View style={style.itemContainer}>
+              <Text style={style.itemTitle}>
+                PROMO: {orderDetails.promotion.code}
+              </Text>
+              <Text style={[style.summaryPrice, {color: '#a61900'}]}>
+                - {GetCurrencySymbolFromId(orderDetails.promoValue.currency)}
+                {Dinero(orderDetails.promoValue).toUnit()}
+              </Text>
+            </View>
+          )}
 
           <View style={style.horizontalLine}></View>
           <View>
             <Text style={style.itemTitle}>Tax</Text>
             <View style={style.taxInnerContainer}>
               {orderDetails.taxes.map(item => {
-                return(
-                <View key={item.name} style={style.taxInnerInnerContainer}>
-                  <Text style={style.itemTitle}>{item.name} ({item.percent})</Text>
-                  <Text style={style.summaryPrice}>{GetCurrencySymbolFromId(item.value.currency)} {item.value.amount}</Text>
-                </View>
-                )
+                return (
+                  <View key={item.name} style={style.taxInnerInnerContainer}>
+                    <Text style={style.itemTitle}>
+                      {item.name} ({item.percent})
+                    </Text>
+                    <Text style={style.summaryPrice}>
+                      {GetCurrencySymbolFromId(item.value.currency)}{' '}
+                      {Dinero(item.value).toUnit()}
+                    </Text>
+                  </View>
+                );
               })}
             </View>
           </View>
           <View style={style.summaryTotalContainer}>
             <Text style={style.summaryTotalText}>Total</Text>
             <Text style={style.summaryPriceWithWhiteColor}>
-              {GetCurrencySymbolFromId(orderDetails.finalValue.currency)} {orderDetails.finalValue.amount}
+              {GetCurrencySymbolFromId(orderDetails.finalValue.currency)}{' '}
+              {Dinero(orderDetails.finalValue).toUnit()}
             </Text>
           </View>
         </View>

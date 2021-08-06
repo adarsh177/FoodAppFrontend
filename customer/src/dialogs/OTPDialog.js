@@ -1,20 +1,26 @@
-import React, { useState } from 'react';
-import {Alert, Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useState} from 'react';
+import {
+  Alert,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {OTP} from 'react-native-otp-form';
 import AppConfig from '../../AppConfig.json';
 
 function OTPDialog(props) {
-
   const [code, setCode] = useState('');
 
   const Submit = () => {
-    if(code.length < 6){
+    if (code.length < 6) {
       Alert.alert('Error', 'Please enter a valid 6 digit OTP');
       return;
     }
 
     props.submit(code);
-  }
+  };
 
   return (
     <Modal
@@ -39,13 +45,13 @@ function OTPDialog(props) {
               backgroundColor: '#FAFAFA',
               fontSize: 20,
             }}
-            onFinish={(code) => {}}
+            onFinish={code => {}}
           />
           <TouchableOpacity
             activeOpacity={0.6}
             style={style.getOtpButton}
             onPress={() => {
-              Submit()
+              Submit();
             }}>
             <Text style={style.otpButtonText}>Submit</Text>
           </TouchableOpacity>
