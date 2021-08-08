@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = 'https://404bc94a36fa.ngrok.io/merchant/';
+const BASE_URL = 'https://food.adarshshrivastava.in/merchant/';
 
 async function GetProfile() {
   try {
@@ -85,4 +85,47 @@ async function SendFeedback(feedback) {
   }
 }
 
-export {GetProfile, UpdateProfile, CreateProfile, SendFeedback};
+async function GetStripeAccountLink() {
+  try {
+    const response = await axios.get(`${BASE_URL}stripeAccountLink`, {
+      method: 'GET',
+      headers: {
+        authorization: await GetAuthToken(),
+        timestamp: new Date().getTime(),
+      },
+    });
+    return Promise.resolve(response.data.accountLink);
+  } catch (ex) {
+    console.log('Error getting account link', ex);
+    return Promise.reject('Server Error');
+  }
+}
+
+async function PostAccountInfo(dataToUpdate) {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}razorpayAccountInfo`,
+      dataToUpdate,
+      {
+        method: 'POST',
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      },
+    );
+    return Promise.resolve();
+  } catch (ex) {
+    console.log('Error creating profile', ex);
+    return Promise.reject('Server Error');
+  }
+}
+
+export {
+  GetProfile,
+  UpdateProfile,
+  CreateProfile,
+  SendFeedback,
+  GetStripeAccountLink,
+  PostAccountInfo
+};

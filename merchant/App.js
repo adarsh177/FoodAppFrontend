@@ -16,8 +16,9 @@ import EditProfileScreen from './src/screens/EditProfileScreen';
 import OrderDetailScreen from './src/screens/OrderDetailScreen';
 import ShareScreen from './src/screens/ShareScreen';
 import messaging from '@react-native-firebase/messaging';
-import {Alert} from 'react-native';
+import {Alert, View} from 'react-native';
 import BlockedScreen from './src/screens/BlockedScreen';
+import WebViewScreen from './src/screens/WebViewScreen';
 
 const Stack = createStackNavigator();
 
@@ -112,6 +113,24 @@ function App() {
           }}
           name="blockedScreen"
           component={BlockedScreen}
+        />
+
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: '#fff',
+            headerTitleAlign: 'center',
+            headerStyle: {
+              backgroundColor: AppConfig.stripeColor,
+            },
+            headerTitleStyle: {
+              fontWeight: 'bold'
+            },
+            title: 'stripe',
+            headerLeft: null,
+          }}
+          name="webviewScreen"
+          component={WebViewScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

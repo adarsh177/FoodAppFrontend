@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Image,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import {FAB} from 'react-native-paper';
 import AppConfig from '../../../../AppConfig.json';
@@ -40,6 +41,7 @@ function StoreTab(props) {
 
   const [switchLoading, setSwitchLoading] = useState(true);
   const [listedLoading, setListedLoading] = useState(true);
+  const [profile, setProfile] = useState({});
 
   //Changing shop status text with change in switch ----------------
 
@@ -69,7 +71,20 @@ function StoreTab(props) {
   // add List Item Button ---------------------------
 
   const addListItemButton = () => {
-    props.navigation.push('listItem');
+    if (CheckPaymentSetup()) props.navigation.push('listItem');
+  };
+
+  // returns true is payments setup done else returns false and shows alert
+  const CheckPaymentSetup = () => {
+    if (!profile.paymentAccountComplete) {
+      const message =
+        profile.location.country === 'India'
+          ? 'Please enter your bank account details inside Earning Tab to open your store and start listing items.'
+          : 'Please setup payments using Stripe inside Earning Tab to start listing items.';
+      Alert.alert('Account Pending', message);
+      return false;
+    }
+    return true;
   };
 
   function updatePage() {
@@ -111,12 +126,18 @@ function StoreTab(props) {
       });
   }
 
+  const loadProfile = () => {
+    GetProfile().then(val => setProfile(val));
+  };
+
   useEffect(() => {
     props.navigation.addListener('focus', () => {
       updatePage();
+      loadProfile();
     });
 
     updatePage();
+    loadProfile();
   }, []);
 
   return (
@@ -148,7 +169,8 @@ function StoreTab(props) {
               onValueChange={bool => {
                 setSwitchLoading(true);
                 if (bool) {
-                  setStartShowDialogVisibility(true);
+                  if (CheckPaymentSetup()) setStartShowDialogVisibility(true);
+                  else setSwitchLoading(false);
                   return;
                 } else {
                   CloseStore();

@@ -52,6 +52,10 @@ function PendingOrders(props) {
       .catch(err => {
         console.log('Error accepting', err);
         alert('Error accepting order');
+      })
+      .finally(() => {
+        setPendingOrders([]);
+        loadPendingOrders();
       });
   };
 

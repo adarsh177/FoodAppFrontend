@@ -104,7 +104,7 @@ function AddMoneyDialog(props) {
       image:
         'https://www.goodforlowprice.com/wp-content/uploads/2021/07/logo-2-1-49x49.png',
       currency: 'INR',
-      key: 'rzp_live_T8YwAYVVJDVMl5',
+      key: 'rzp_test_9WV64pLnDl8wM4',
       amount: orderInfo.amount_due,
       name: 'Good For Low Price',
       order_id: orderInfo.id,
@@ -133,7 +133,7 @@ function AddMoneyDialog(props) {
   useEffect(() => {
     GetWalletBalance().then(bal => {
       console.log('Wallet', bal);
-      setWalletBalance(bal ?? 0);
+      setWalletBalance(bal ?? {amount: 0, currency: 'INR'});
     });
 
     GetProfile().then(val => setProfile(val));

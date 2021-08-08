@@ -25,7 +25,7 @@ function HomeScreen(props) {
         const notificationDisabled = await AsyncStorage.getItem(
           'notificationsDisabled',
         );
-        if (notificationDisabled !== null || notificationDisabled)
+        if (notificationDisabled === null || !notificationDisabled)
           UpdateProfile({fcmToken: token});
       })
       .catch(err => {});

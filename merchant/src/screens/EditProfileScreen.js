@@ -30,6 +30,7 @@ function EditProfileScreen(props) {
   const [locationPoint, setLocationPoint] = useState({});
   const [banner, setBanner] = useState(null);
   const [locationText, setLocationText] = useState('Get location');
+  const [paymentAccountComplete, setPaymentAccountComplete] = useState(false);
 
   const [dataLoading, setDataLoading] = useState(true);
   const [profileUpdateLoading, setProfileUpdateLoading] = useState(false);
@@ -50,6 +51,7 @@ function EditProfileScreen(props) {
         setLocation(profile.location);
         setLocationPoint(profile.locationPoint);
         setBanner(profile.bannerImage);
+        setPaymentAccountComplete(profile.paymentAccountComplete ?? false);
         setLocationText(
           profile.location && profile.location.label
             ? profile.location.label
@@ -301,7 +303,7 @@ function EditProfileScreen(props) {
             style={{fontSize: 16, flex: 1, marginRight: 10}}>
             {locationText}
           </Text>
-          {(location !== null || Object.keys(location).length > 0) && (
+          {!paymentAccountComplete && (
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => selectLocation()}>

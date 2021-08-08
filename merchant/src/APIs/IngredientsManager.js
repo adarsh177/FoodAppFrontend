@@ -1,6 +1,6 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
-const BASE_URL = 'https://404bc94a36fa.ngrok.io/';
+const BASE_URL = 'https://food.adarshshrivastava.in/';
 
 export async function GetIngredientsAndTags() {
   try {

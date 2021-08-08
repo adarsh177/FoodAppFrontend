@@ -12,12 +12,16 @@ import AppConfig from '../../../../AppConfig.json';
 import {GetProfile} from '../../../APIs/ProfileManager';
 import {GetCurrencySymbolFromId} from '../../../CurrencyManager/CurrencyManager';
 import Dinero from 'dinero.js';
+import RazorpayAccountInfoDialog from '../../../dialogs/RazorpayAccountInfoDialog';
 
 function EarningTab(props) {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showRazorpayAccountInfoDialog, setShowRazorpayAccountInfoDialog] =
+    useState(false);
 
-  const handleWithdraw = () => {
+  const handleStripClicked = () => {
+    props.navigation.push('webviewScreen');
     return null;
   };
 
@@ -26,7 +30,10 @@ function EarningTab(props) {
   };
 
   useEffect(() => {
-    props.navigation.addListener('focus', loadProfile);
+    props.navigation.addListener('focus', () => {
+      console.log('foccuessedddd');
+      loadProfile();
+    });
 
     loadProfile();
   }, []);
@@ -80,17 +87,46 @@ function EarningTab(props) {
           <Text style={style.titleText}>Outstanding Balance</Text>
         </View>
       </View>
+      <View style={style.horizontalRule} />
 
-      <Text></Text>
+      <Text style={style.summary}>Account Information</Text>
 
-      {/* <TouchableOpacity
+      {/* Connect Stripe / Dashboard option */}
+      {profile.location?.country !== 'India' && (
+        <TouchableOpacity
           activeOpacity={0.6}
           style={style.withdrawButton}
-          onPress={handleWithdraw}>
-          <Text style={style.withdrawButtonText}>Withdraw</Text>
-      </TouchableOpacity> */}
+          onPress={handleStripClicked}>
+          <Text style={style.withdrawButtonText}>
+            {profile.paymentAccountComplete ? 'Open' : 'Connect'}{' '}
+            <Text style={{fontWeight: 'bold', fontSize: 20}}>stripe</Text>
+          </Text>
+        </TouchableOpacity>
+      )}
 
-      <View style={style.horizontalRule} />
+      {/* Razorpay card */}
+      {profile.location?.country === 'India' && (
+        <TouchableOpacity
+          activeOpacity={0.6}
+          style={[
+            style.withdrawButton,
+            {backgroundColor: AppConfig.primaryColor},
+          ]}
+          onPress={() => setShowRazorpayAccountInfoDialog(true)}>
+          <Text style={[style.withdrawButtonText, {fontWeight: 'bold'}]}>
+            {profile.paymentAccountComplete ? "Edit" : "Add"} Account Info
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      <RazorpayAccountInfoDialog
+        show={showRazorpayAccountInfoDialog}
+        profile={profile}
+        close={() => {
+          loadProfile();
+          setShowRazorpayAccountInfoDialog(false);
+        }}
+      />
     </ScrollView>
   );
 }
@@ -154,26 +190,25 @@ const style = StyleSheet.create({
   },
   withdrawButton: {
     width: '100%',
-    height: 40,
-    backgroundColor: AppConfig.primaryColor,
+    backgroundColor: AppConfig.stripeColor,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 3,
+    paddingVertical: 10,
   },
   withdrawButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 18,
   },
   horizontalRule: {
     width: '100%',
     height: 1,
     backgroundColor: '#E3E3E3',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   summary: {
     color: '#000',
-    fontSize: 24,
+    fontSize: 22,
     alignSelf: 'flex-start',
     marginBottom: 20,
   },
