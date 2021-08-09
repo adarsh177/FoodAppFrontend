@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
-   Navigation,
-   MobileNavigationTop,
-   MobileNavigationBottom,
+    Navigation,
+    MobileNavigationTop,
+    MobileNavigationBottom,
 } from "../components/navigation/navigation";
 import "./css/Stats.css";
 
@@ -16,59 +16,76 @@ import FirebaseUtil from "../Utils/FirebaseUtil";
 import { withRouter } from "react-router-dom";
 
 const Stats = (props) => {
-   const [data, setData] = useState({})
-   const [loading, setLoading] = useState(true)
+    const [data, setData] = useState({});
+    const [loading, setLoading] = useState(true);
 
-   const FirebaseApp = new FirebaseUtil().app()
+    const FirebaseApp = new FirebaseUtil().app();
 
-   const loadData = () => {
-      setLoading(true)
-      GetStats().then(stats => {
-         setData(stats)
-      }).catch(async err => {
-         alert('Unauthorized: ' + err)
-         if(err === "UNAUTH"){
-            // logout and take outside
-            await FirebaseApp.auth().signOut()
-            props.history.push('./')
-         }
-      }).finally(() => setLoading(false))
-   }
+    const loadData = () => {
+        setLoading(true);
+        GetStats()
+            .then((stats) => {
+                setData(stats);
+            })
+            .catch(async (err) => {
+                alert("Unauthorized: " + err);
+                if (err === "UNAUTH") {
+                    // logout and take outside
+                    await FirebaseApp.auth().signOut();
+                    props.history.push("./");
+                }
+            })
+            .finally(() => setLoading(false));
+    };
 
-   useEffect(() => {
-      loadData()
-   }, [])
+    useEffect(() => {
+        loadData();
+    }, []);
 
-   return (
-      <div className="nav-container">
-         <Navigation />
-         <MobileNavigationTop />
-         <div className="main">
-            <div>
+    return (
+        <div className="nav-container">
+            <Navigation />
+            <MobileNavigationTop />
+            <div className="main">
+                <div>
+                    <h3>Notification</h3>
+                    <div className="detailsContainer">
+                        <button className="notificationButton">Customer</button>
+                        <button className="notificationButton">Merchant</button>
+                    </div>
+                </div>
+                <div>
+                    {loading ? (
+                        <p>Loading...</p>
+                    ) : (
+                        <div className="detailOuterContainer">
+                            <h3>Stats</h3>
 
-               {loading ? <p>Loading...</p> : 
-               <div className="detailOuterContainer">
-                  <div className="detailsContainer">
-                     <h3 className="detailTitle">Total Orders : </h3>
-                     <p className="details">{data.orderCount}</p>
-                  </div>
-                  <div className="detailsContainer">
-                     <h3 className="detailTitle">Total customer : </h3>
-                     <p className="details">{data.customerCount}</p>
-                  </div>
-                  <div className="detailsContainer">
-                     <h3 className="detailTitle">Total Merchant : </h3>
-                     <p className="details">{data.merchantCount}</p>
-                  </div>
-               </div>}
-               
+                            <div className="detailsContainer">
+                                <h3 className="detailTitle">Total Orders : </h3>
+                                <p className="details">{data.orderCount}</p>
+                            </div>
+                            <div className="detailsContainer">
+                                <h3 className="detailTitle">
+                                    Total customer :{" "}
+                                </h3>
+                                <p className="details">{data.customerCount}</p>
+                            </div>
+                            <div className="detailsContainer">
+                                <h3 className="detailTitle">
+                                    Total Merchant :{" "}
+                                </h3>
+                                <p className="details">{data.merchantCount}</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
-         </div>
-         <div className="footer">
-            <MobileNavigationBottom />
-         </div>
-      </div>
-   );
+            <div className="footer">
+                <MobileNavigationBottom />
+            </div>
+        </div>
+    );
 };
 
 export default withRouter(Stats);

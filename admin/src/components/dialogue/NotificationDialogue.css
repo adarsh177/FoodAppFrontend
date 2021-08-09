@@ -1,0 +1,46 @@
+.outerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.dailogueContainer {
+    width: 250px;
+    padding: 30px 20px;
+    border: 1px grey solid;
+    height: 420px;
+    background-color: #fff;
+    box-shadow: -1px 5px 94px 1px rgba(0, 0, 0, 0.55);
+    -webkit-box-shadow: -1px 5px 94px 1px rgba(0, 0, 0, 0.55);
+    -moz-box-shadow: -1px 5px 94px 1px rgba(0, 0, 0, 0.55);
+}
+.title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+.inputContainerNotifi {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+    margin-right: 0;
+}
+.textfield {
+    padding: 5px;
+}
+.textarea {
+    max-width: 99%;
+    min-width: 99%;
+    max-height: 150px;
+    max-height: 150px;
+}
+.sendButtonContainer {
+    display: flex;
+    justify-content: center;
+}
+.sendButton {
+    width: 100%;
+    padding: 10px 0;
+    color: #fff;
+    background-color: #00b875;
+}

@@ -1,30 +1,39 @@
 .flex-space-bw {
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-   padding: 0 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5%;
 }
 .deleteButton {
-   background-color: #fff;
-   border: 2px solid red;
-   font-size: 30px;
-   width: 3rem;
-   color: red;
+    background-color: #fff;
+    border: 2px solid red;
+    font-size: 30px;
+    width: 3rem;
+    color: red;
 }
 .addTaxContainer {
-   margin-top: 30px;
-   padding: 0 3%;
+    margin-top: 30px;
+    padding: 0 3%;
 }
 .addTaxInput {
-   margin: 0 20px;
+    margin: 0 20px;
 }
 .inputContainer {
-   display: inline;
-   margin: 20px 0;
+    display: inline;
+    margin: 20px 10px;
+}
+.saveButton {
+    margin: 30px 50px;
+    display: flex;
+}
+.saveButton button {
+    padding: 10px 30px;
+    color: #fff;
+    background-color: #00b875;
 }
 @media screen and (max-width: 500px) {
-   .inputContainer {
-      display: flex;
-      margin: 30px 0;
-   }
+    .inputContainer {
+        display: flex;
+        margin: 30px 0;
+    }
 }

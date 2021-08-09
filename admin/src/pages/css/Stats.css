@@ -1,23 +1,29 @@
 .header {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .detailsContainer {
-   display: flex;
-   align-items: center;
+    display: flex;
+    align-items: center;
+}
+.notificationButton {
+    margin-right: 20px;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #00b875;
 }
 
 .detailTitle {
-   color: #00b875;
-   margin: 0 10px;
+    color: #00b875;
+    margin: 0 10px;
 }
 
 .details {
-   font-weight: 600;
+    font-weight: 600;
 }
 .detailOuterContainer {
-   margin-top: 30px;
+    margin-top: 30px;
 }
 @media all and (max-width: 500px) {
 }
