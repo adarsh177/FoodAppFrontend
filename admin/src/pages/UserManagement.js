@@ -5,6 +5,7 @@ import {
     MobileNavigationBottom,
 } from "../components/navigation/navigation";
 import "./css/UserManagement.css";
+import NotificationDialogue from "../components/dialogue/NotificationDialogue";
 
 // external package ---------------------------------------------
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
@@ -69,8 +70,15 @@ const UserManagement = () => {
 
     // send notification to user ------------------------------
 
-    const sendUserNotification = () => {
-        return null;
+    // dialogue -----------------------------
+
+    const [showNotificationDialog, setShowNotificationDialog] = useState(false);
+
+    // userNotification trigger ----------------------------------
+
+    const sendUserNotification = (e) => {
+        e.preventDefault();
+        setShowNotificationDialog(true);
     };
 
     return (
@@ -125,11 +133,22 @@ const UserManagement = () => {
                                             </div>
                                             <div>
                                                 <b>Wallet Balance : </b>
-                                                {userData.walletBalance !== null || userData.walletBalance !== undefined ?
-                                                <span>
-                                                    {userData.walletBalance.currency} {userData.walletBalance.amount / 100}
-                                                </span> :
-                                                <span>0</span>}
+                                                {userData.walletBalance !==
+                                                    null ||
+                                                userData.walletBalance !==
+                                                    undefined ? (
+                                                    <span>
+                                                        {
+                                                            userData
+                                                                .walletBalance
+                                                                .currency
+                                                        }{" "}
+                                                        {userData.walletBalance
+                                                            .amount / 100}
+                                                    </span>
+                                                ) : (
+                                                    <span>0</span>
+                                                )}
                                             </div>
                                             <div>
                                                 <b>Location : </b>
@@ -219,7 +238,17 @@ const UserManagement = () => {
                                             <div>
                                                 <b>Total Earnings : </b>
                                                 <span>
-                                                    {merchantData.totalEarnings ? `${merchantData.totalEarnings.currency} ${merchantData.totalEarnings.amount / 100}`: '0'}
+                                                    {merchantData.totalEarnings
+                                                        ? `${
+                                                              merchantData
+                                                                  .totalEarnings
+                                                                  .currency
+                                                          } ${
+                                                              merchantData
+                                                                  .totalEarnings
+                                                                  .amount / 100
+                                                          }`
+                                                        : "0"}
                                                 </span>
                                             </div>
                                             <div>
@@ -270,6 +299,13 @@ const UserManagement = () => {
             <div className="footer">
                 <MobileNavigationBottom />
             </div>
+            {showNotificationDialog && (
+                <NotificationDialogue
+                    onClose={() => {
+                        setShowNotificationDialog(false);
+                    }}
+                />
+            )}
         </div>
     );
 };

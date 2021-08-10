@@ -26,17 +26,18 @@
 .inputContainerNotifi {
     display: flex;
     flex-direction: column;
-    margin-left: 0;
-    margin-right: 0;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 .textfield {
     padding: 5px;
-    width: 100%;
+    width: 237px;
 }
 .textarea {
-    width: 100%;
+    max-width: 243px;
+    min-width: 243px;
     max-height: 150px;
-    max-height: 150px;
+    min-height: 100px;
 }
 .sendButtonContainer {
     display: flex;
@@ -47,4 +48,10 @@
     padding: 10px 0;
     color: #fff;
     background-color: #00b875;
+}
+.cancelButton {
+    border: 1px red solid;
+    background-color: #fff;
+    color: red;
+    margin: 20px 0 0 0;
 }

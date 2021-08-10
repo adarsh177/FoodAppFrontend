@@ -18,19 +18,9 @@ const TaxManagement = () => {
         setValue(value);
     };
 
-    // delete tax ------------------------------------------------
-    const deleteTax = () => {
-        return null;
-    };
-    // add tax -------------------------------------------------
+    // save Button -------------------------------------------------
 
-    const addTax = () => {
-        return null;
-    };
-
-    // search tax ------------------------------------------------
-
-    const searchTax = () => {
+    const saveAll = () => {
         return null;
     };
 
@@ -41,6 +31,53 @@ const TaxManagement = () => {
     // Tax Name Input ----------------------------------------------
 
     const [taxName, settaxName] = useState();
+
+    // All tax array -----------------------------------------------
+
+    const allTax = [
+        {
+            taxName: "CGST",
+            taxPercentage: "9",
+        },
+        {
+            taxName: "SGST",
+            taxPercentage: "9",
+        },
+        {
+            taxName: "AGST",
+            taxPercentage: "5",
+        },
+    ];
+
+    // add tax -------------------------------------------------
+
+    const addTax = (e) => {
+        e.preventDefault();
+        if (!taxName || !taxPercent) {
+            window.alert("add all fields of tax");
+        } else {
+            let tax = {
+                taxName,
+                taxPercent,
+            };
+            allTax.push(tax);
+            console.log(allTax);
+            settaxPercent("");
+            settaxName("");
+        }
+    };
+
+    // delete tax ---------------------------------------------
+
+    const deleteTax = () => {
+        return null;
+    };
+
+    // search tax ------------------------------------------------
+
+    const searchTax = () => {
+        return null;
+    };
 
     // storing the value of county for dependent dropdown --------------
 
@@ -104,7 +141,26 @@ const TaxManagement = () => {
                         </div>
                         <button onClick={searchTax}>Search</button>
                     </div>
-                    <div></div>
+                    <div className="addTaxContainer">
+                        <div className="tagsOuterContainer">
+                            {allTax.map((item) => {
+                                return (
+                                    <div className="tagsContainer flex-row">
+                                        <p>{item.taxName} : </p>
+                                        <p>{item.taxPercentage}%</p>
+                                        <button
+                                            className="deleteTabButton"
+                                            onClick={deleteTax}
+                                        >
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <hr />
+
                     <div className="addTaxContainer">
                         <div className="inputContainer">
                             <lable>Tax Name</lable>
@@ -133,12 +189,11 @@ const TaxManagement = () => {
                         <button onClick={addTax}>Add Tax</button>
                     </div>
                     <div className="saveButton">
-                        <button onClick={addTax}>Save</button>
+                        <button onClick={saveAll}>Save</button>
                     </div>
                 </div>
-                <hr />
 
-                <div>
+                {/* <div>
                     <h3>Current Tax</h3>
                     <div className="flex-space-bw">
                         <div className="flex-row">
@@ -158,7 +213,7 @@ const TaxManagement = () => {
                             &#128465;
                         </button>
                     </div>
-                </div>
+                </div> */}
             </div>
             <div className="footer">
                 <MobileNavigationBottom />

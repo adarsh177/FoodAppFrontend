@@ -19,13 +19,14 @@ import NotificationDialogue from "../components/dialogue/NotificationDialogue";
 const Stats = (props) => {
     // handel notification button ------------------------------------------------
 
-    const notification = () => {
-        return null;
+    const notification = (e) => {
+        e.preventDefault();
+        setShowNotificationDialog(true);
     };
 
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
-    const [showNotificationDialog, setShowNotificationDialog] = useState(!false);
+    const [showNotificationDialog, setShowNotificationDialog] = useState(false);
 
     const FirebaseApp = new FirebaseUtil().app();
 
@@ -107,8 +108,13 @@ const Stats = (props) => {
                 <MobileNavigationBottom />
             </div>
 
-            {showNotificationDialog && 
-            <NotificationDialogue />}
+            {showNotificationDialog && (
+                <NotificationDialogue
+                    onClose={() => {
+                        setShowNotificationDialog(false);
+                    }}
+                />
+            )}
         </div>
     );
 };

@@ -26,6 +26,10 @@ function Payout() {
         setestimateIN("Initiate");
     };
 
+    // payout money ---------------------------------
+
+    const payoutMoney = 5550.02;
+
     return (
         <div className="nav-container">
             <Navigation />
@@ -41,6 +45,7 @@ function Payout() {
                         <span>
                             Last payout date: <span>{lastPayout}</span>
                         </span>
+                        <h1>$ {payoutMoney}</h1>
                         <div>
                             <button
                                 className="payoutButton"
@@ -55,6 +60,7 @@ function Payout() {
                         <span>
                             Last payout date: <span>{lastPayout}</span>
                         </span>
+                        <h1>₹ {payoutMoney}</h1>
                         <div>
                             <button
                                 className="payoutButton"
