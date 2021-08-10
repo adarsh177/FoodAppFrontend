@@ -125,9 +125,11 @@ const UserManagement = () => {
                                             </div>
                                             <div>
                                                 <b>Wallet Balance : </b>
+                                                {userData.walletBalance !== null || userData.walletBalance !== undefined ?
                                                 <span>
-                                                    {userData.walletBalance}
-                                                </span>
+                                                    {userData.walletBalance.currency} {userData.walletBalance.amount / 100}
+                                                </span> :
+                                                <span>0</span>}
                                             </div>
                                             <div>
                                                 <b>Location : </b>
@@ -217,7 +219,7 @@ const UserManagement = () => {
                                             <div>
                                                 <b>Total Earnings : </b>
                                                 <span>
-                                                    {merchantData.totalEarnings}
+                                                    {merchantData.totalEarnings ? `${merchantData.totalEarnings.currency} ${merchantData.totalEarnings.amount / 100}`: '0'}
                                                 </span>
                                             </div>
                                             <div>
