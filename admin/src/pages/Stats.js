@@ -113,6 +113,9 @@ const Stats = (props) => {
                     onClose={() => {
                         setShowNotificationDialog(false);
                     }}
+                    onSend={() => {
+                        window.alert("send notification");
+                    }}
                 />
             )}
         </div>

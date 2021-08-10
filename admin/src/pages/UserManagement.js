@@ -304,6 +304,9 @@ const UserManagement = () => {
                     onClose={() => {
                         setShowNotificationDialog(false);
                     }}
+                    onSend={() => {
+                        window.alert("send notification");
+                    }}
                 />
             )}
         </div>
