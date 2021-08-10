@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Navigation,
     MobileNavigationTop,
@@ -13,6 +13,19 @@ import "react-tabs/style/react-tabs.css";
 
 function Payout() {
     let lastPayout = "2018/11/24";
+
+    // Estimate payout button --------------------------------------------
+
+    const [estimateCN, setestimateCN] = useState("Estimate");
+    const [estimateIN, setestimateIN] = useState("Estimate");
+
+    const estimatePayoutCN = () => {
+        setestimateCN("Initiate");
+    };
+    const estimatePayoutIN = () => {
+        setestimateIN("Initiate");
+    };
+
     return (
         <div className="nav-container">
             <Navigation />
@@ -29,7 +42,12 @@ function Payout() {
                             Last payout date: <span>{lastPayout}</span>
                         </span>
                         <div>
-                            <button className="payoutButton">Estimate</button>
+                            <button
+                                className="payoutButton"
+                                onClick={estimatePayoutCN}
+                            >
+                                {estimateCN}
+                            </button>
                         </div>
                     </TabPanel>
                     <TabPanel>
@@ -38,7 +56,12 @@ function Payout() {
                             Last payout date: <span>{lastPayout}</span>
                         </span>
                         <div>
-                            <button className="payoutButton">Estimate</button>
+                            <button
+                                className="payoutButton"
+                                onClick={estimatePayoutIN}
+                            >
+                                {estimateIN}
+                            </button>
                         </div>
                     </TabPanel>
                 </Tabs>

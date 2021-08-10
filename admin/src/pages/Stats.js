@@ -13,9 +13,15 @@ import Menu, { Item as MenuItem, Divider } from "rc-menu";
 import "rc-dropdown/assets/index.css";
 import { GetStats } from "../APIs/AdminManager";
 import FirebaseUtil from "../Utils/FirebaseUtil";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 
 const Stats = (props) => {
+    // handel notification button ------------------------------------------------
+
+    const notification = () => {
+        return null;
+    };
+
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
 
@@ -50,8 +56,22 @@ const Stats = (props) => {
                 <div>
                     <h3>Notification</h3>
                     <div className="detailsContainer">
-                        <button className="notificationButton">Customer</button>
-                        <button className="notificationButton">Merchant</button>
+                        <Link to="/nav">
+                            <button
+                                className="notificationButton"
+                                onClick={notification}
+                            >
+                                Customer
+                            </button>
+                        </Link>
+                        <Link to="/nav">
+                            <button
+                                className="notificationButton"
+                                onClick={notification}
+                            >
+                                Merchant
+                            </button>
+                        </Link>
                     </div>
                 </div>
                 <div>
