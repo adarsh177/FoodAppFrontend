@@ -9,7 +9,7 @@
     align-items: start;
     background: #00b875;
     transition: all 0.2s linear;
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 .navigation i {
     color: white;

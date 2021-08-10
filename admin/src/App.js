@@ -10,7 +10,6 @@ import Splash from "./pages/Splash";
 import LoginScreen from "./pages/LoginScreen";
 import FirebaseUtil from "./Utils/FirebaseUtil";
 import { CheckAdmin } from "./APIs/AdminManager";
-import NotificationDialogue from "./components/dialogue/NotificationDialogue";
 import Payout from "./pages/Payout";
 
 function App() {
@@ -60,9 +59,6 @@ function App() {
                 </Route>
                 <Route path="/stats" exact>
                     <Stats />
-                </Route>
-                <Route path="/nav" exact>
-                    <NotificationDialogue />
                 </Route>
                 <Route path="/payout" exact>
                     <Payout />

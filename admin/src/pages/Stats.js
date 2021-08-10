@@ -14,6 +14,7 @@ import "rc-dropdown/assets/index.css";
 import { GetStats } from "../APIs/AdminManager";
 import FirebaseUtil from "../Utils/FirebaseUtil";
 import { withRouter, Link } from "react-router-dom";
+import NotificationDialogue from "../components/dialogue/NotificationDialogue";
 
 const Stats = (props) => {
     // handel notification button ------------------------------------------------
@@ -24,6 +25,7 @@ const Stats = (props) => {
 
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [showNotificationDialog, setShowNotificationDialog] = useState(!false);
 
     const FirebaseApp = new FirebaseUtil().app();
 
@@ -104,6 +106,9 @@ const Stats = (props) => {
             <div className="footer">
                 <MobileNavigationBottom />
             </div>
+
+            {showNotificationDialog && 
+            <NotificationDialogue />}
         </div>
     );
 };

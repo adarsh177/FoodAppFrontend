@@ -7,12 +7,8 @@ function NotificationDialogue() {
             <div className="dailogueContainer">
                 <p className="title">Notification</p>
                 <div className="inputContainer inputContainerNotifi">
-                    <lable>Title</lable>
+                    <lable>Title</lable><br />
                     <input className="textfield" type="text" />
-                </div>
-                <div className="inputContainer inputContainerNotifi">
-                    <lable>Select Image</lable>
-                    <input type="file" />
                 </div>
                 <div className="inputContainer inputContainerNotifi">
                     <lable>Title</lable>
