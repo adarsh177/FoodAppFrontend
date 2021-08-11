@@ -17,6 +17,7 @@
 }
 .addTaxInput {
     margin: 0 20px;
+    padding: 5px;
 }
 .inputContainer {
     display: inline;

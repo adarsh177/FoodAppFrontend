@@ -114,104 +114,112 @@
             "name": "Lakshadweep",
             "state": "lakshadweep"
         },
+
         {
             "slno": 19,
+            "abb": "LDK",
+            "name": "Ladakh",
+            "state": "Ladakh"
+        },
+
+        {
+            "slno": 20,
             "abb": "MP",
             "name": "Madhya Pradesh",
             "state": "madhya-pradesh"
         },
         {
-            "slno": 20,
+            "slno": 21,
             "abb": "MH",
             "name": "Maharashtra",
             "state": "maharashtra"
         },
         {
-            "slno": 21,
+            "slno": 22,
             "abb": "MN",
             "name": "Manipur",
             "state": "manipur"
         },
         {
-            "slno": 22,
+            "slno": 23,
             "abb": "ML",
             "name": "Meghalaya",
             "state": "meghalaya"
         },
         {
-            "slno": 23,
+            "slno": 24,
             "abb": "MZ",
             "name": "Mizoram",
             "state": "mizoram"
         },
         {
-            "slno": 24,
+            "slno": 25,
             "abb": "NL",
             "name": "Nagaland",
             "state": "nagaland"
         },
         {
-            "slno": 25,
+            "slno": 26,
             "abb": "OR",
             "name": "Odisha",
             "state": "odhisha"
         },
         {
-            "slno": 26,
+            "slno": 27,
             "abb": "PY",
             "name": "Puducherry",
             "state": "puducherry"
         },
         {
-            "slno": 27,
+            "slno": 28,
             "abb": "PB",
             "name": "Punjab",
             "state": "punjab"
         },
         {
-            "slno": 28,
+            "slno": 29,
             "abb": "RJ",
             "name": "Rajasthan",
             "state": "rajasthan"
         },
         {
-            "slno": 29,
+            "slno": 30,
             "abb": "SK",
             "name": "Sikkim",
             "state": "sikkim"
         },
         {
-            "slno": 30,
+            "slno": 31,
             "abb": "TN",
             "name": "Tamil Nadu",
             "state": "tamil-nadu"
         },
         {
-            "slno": 31,
+            "slno": 32,
             "abb": "TS",
             "name": "Telangana",
             "state": "telangana"
         },
         {
-            "slno": 32,
+            "slno": 33,
             "abb": "TR",
             "name": "Tripura",
             "state": "tripura"
         },
         {
-            "slno": 33,
+            "slno": 34,
             "abb": "UK",
             "name": "Uttar Pradesh",
             "state": "uttar-pradesh"
         },
         {
-            "slno": 34,
+            "slno": 35,
             "abb": "UP",
             "name": "Uttarakhand",
             "state": "uttarakhand"
         },
         {
-            "slno": 35,
+            "slno": 36,
             "abb": "WB",
             "name": "West Bengal",
             "state": "west-bengal"

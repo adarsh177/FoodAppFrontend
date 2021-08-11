@@ -54,3 +54,9 @@ code {
     display: flex;
     flex-direction: column;
 }
+
+.generalButton {
+    padding: 5px 10px;
+    background-color: #00b875;
+    color: #fff;
+}

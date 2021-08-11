@@ -1,52 +1,57 @@
 .tagsOuterContainer {
-   display: flex;
-   justify-content: flex-start;
-   flex-wrap: wrap;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
 }
 .tagsContainer {
-   margin: 10px;
-   padding: 10px 20px;
-   border: 1px solid grey;
-   border-radius: 50px;
-   display: flex;
-   align-items: center;
+    margin: 10px;
+    padding: 10px 20px;
+    border: 1px solid grey;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
 }
-.tagsContainer p{
-   color: #000;
-   font-weight: bold;
-   margin: 0;
-   padding: 0;
+.tagsContainer p {
+    color: #000;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
 }
 .deleteTabButton {
-   background-color: #fff;
-   border: none;
-   font-size: 0.8em;
-   width: 2rem;
-   color: red;
-   margin: 0 10px;
+    background-color: #fff;
+    border: none;
+    font-size: 0.8em;
+    width: 2rem;
+    color: red;
+    margin: 0 10px;
 }
-.deleteTabButton:hover{
-   cursor: pointer;
+.deleteTabButton:hover {
+    cursor: pointer;
 }
 .buttonContainer {
-   width: 100%;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   margin: 50px 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 50px 0;
 }
 .savebutton {
-   width: 150px;
-   height: 3rem;
-   background-color: #00b875;
-   color: #fff;
-   border: none;
-   cursor: pointer;
+    width: 150px;
+    height: 3rem;
+    background-color: #00b875;
+    color: #fff;
+    border: none;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 500px) {
-   .tagsContainer {
-      margin: 5px;
-      padding: 0 5px;
-   }
+    .tagsContainer {
+        margin: 5px;
+        padding: 0 5px;
+    }
+    .tagsContainer p {
+        font-weight: 600;
+        margin: 0;
+        padding: 5px 0 5px 15px;
+    }
 }
