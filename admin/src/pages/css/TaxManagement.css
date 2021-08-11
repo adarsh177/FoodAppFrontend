@@ -37,4 +37,7 @@
         display: flex;
         margin: 30px 0;
     }
+    .saveButton {
+        margin: 30px 0px;
+    }
 }
