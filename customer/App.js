@@ -30,6 +30,8 @@ function App() {
         Alert.alert(msg.notification.title, msg.notification.body);
       }
     });
+
+    messaging().subscribeToTopic('customer');
   }, []);
 
   return (

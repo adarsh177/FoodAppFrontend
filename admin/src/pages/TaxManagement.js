@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
-    Navigation,
-    MobileNavigationTop,
-    MobileNavigationBottom,
+  Navigation,
+  MobileNavigationTop,
+  MobileNavigationBottom,
 } from "../components/navigation/navigation";
 import "./css/TaxManagement.css";
 
@@ -10,216 +10,208 @@ import "./css/TaxManagement.css";
 
 import Select from "react-select";
 import { Item } from "rc-menu";
+import { GetTaxInfo, PutTaxInfo } from "../APIs/AdminManager";
+const states = require("../assets/states.json");
 
 const TaxManagement = () => {
-    const [value, setValue] = useState("");
+  const [country, setCountry] = useState("none");
+  const [state, setState] = useState("none");
+  const [taxPercent, settaxPercent] = useState();
+  const [taxName, settaxName] = useState();
+  const [taxInfo, setTaxInfo] = useState({});
+  const [selectedTaxInfo, setSelectedTaxInfo] = useState([]);
 
-    const changeHandler = (value) => {
-        setValue(value);
-    };
+  const saveAll = () => {
+    const data = taxInfo;
+    data[country == "india" ? "India" : "Canada"][state] = selectedTaxInfo;
+    PutTaxInfo(data)
+      .then(() => {
+        alert("Tax saved");
+        loadGlobalTaxInfo();
+      })
+      .catch((err) => {
+        alert(`Error saving tax: ${err}`);
+      });
+  };
 
-    // save Button -------------------------------------------------
+  const addTax = (e) => {
+    e.preventDefault();
+    if (!taxName || !taxPercent) {
+      window.alert("add all fields of tax");
+    } else {
+      setSelectedTaxInfo((info) => {
+        return [
+          ...info,
+          {
+            name: taxName,
+            percent: taxPercent,
+          },
+        ];
+      });
+      settaxPercent("");
+      settaxName("");
+    }
+  };
 
-    const saveAll = () => {
-        return null;
-    };
+  const deleteTax = (item) => {
+    console.log("Deleting", item, selectedTaxInfo);
+    setSelectedTaxInfo((info) => {
+      return info.filter((val) => {
+        return val.name != item.name;
+      });
+    });
+  };
 
-    // Tax input percentage ----------------------------------------
+  const searchTax = () => {
+    const countryName = country == "india" ? "India" : "Canada";
+    const stateName = state.startsWith("common-") ? "common" : state;
 
-    const [taxPercent, settaxPercent] = useState();
+    console.log("Search", countryName, stateName);
 
-    // Tax Name Input ----------------------------------------------
+    let data = taxInfo[countryName][stateName];
+    if (data == null || data == undefined) data = [];
 
-    const [taxName, settaxName] = useState();
+    setSelectedTaxInfo(data);
+  };
 
-    // All tax array -----------------------------------------------
+  const loadGlobalTaxInfo = () => {
+    GetTaxInfo()
+      .then((val) => {
+        setTaxInfo(val);
+        console.log("Tax", val);
+      })
+      .catch((err) => {
+        alert(`Error loading tax information.\n${err}`);
+      });
+  };
 
-    const allTax = [
-        {
-            taxName: "CGST",
-            taxPercentage: "9",
-        },
-        {
-            taxName: "SGST",
-            taxPercentage: "9",
-        },
-        {
-            taxName: "AGST",
-            taxPercentage: "5",
-        },
-    ];
+  useEffect(() => {
+    loadGlobalTaxInfo();
+  }, []);
 
-    // add tax -------------------------------------------------
+  useEffect(() => {
+    if (country !== "none") searchTax();
+  }, [state]);
 
-    const addTax = (e) => {
-        e.preventDefault();
-        if (!taxName || !taxPercent) {
-            window.alert("add all fields of tax");
-        } else {
-            let tax = {
-                taxName,
-                taxPercent,
-            };
-            allTax.push(tax);
-            console.log(allTax);
-            settaxPercent("");
-            settaxName("");
-        }
-    };
-
-    // delete tax ---------------------------------------------
-
-    const deleteTax = () => {
-        return null;
-    };
-
-    // search tax ------------------------------------------------
-
-    const searchTax = () => {
-        return null;
-    };
-
-    // storing the value of county for dependent dropdown --------------
-
-    const [country, setCountry] = useState();
-
-    // maping the list of states of country -------------------------
-
-    const states = require("../assets/states.json");
-
-    return (
-        <div className="nav-container">
-            <Navigation />
-            <MobileNavigationTop />
-            <div className="main">
-                <h1>Tax Management</h1>
-                <div>
-                    <div className="addTaxContainer">
-                        <div className="inputContainer">
-                            <select>
-                                <option
-                                    key="0"
-                                    value="none"
-                                    onChange={() => {
-                                        setCountry("none");
-                                        console.log(country);
-                                    }}
-                                >
-                                    -- Select Country --
-                                </option>
-                                <option
-                                    key="1"
-                                    value="canada"
-                                    onChange={() => {
-                                        setCountry("canada");
-                                        console.log(country);
-                                    }}
-                                >
-                                    Canada
-                                </option>
-                                <option
-                                    key="2"
-                                    value="india"
-                                    onChange={() => {
-                                        setCountry("india");
-                                        console.log("changed");
-                                    }}
-                                >
-                                    India
-                                </option>
-                            </select>
-                        </div>
-                        <div className="inputContainer">
-                            <select>
-                                <option>-- Select State --</option>
-                                {states.india.map((item) => (
-                                    <option key={item.slno} value={item.name}>
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <button onClick={searchTax}>Search</button>
-                    </div>
-                    <div className="addTaxContainer">
-                        <div className="tagsOuterContainer">
-                            {allTax.map((item) => {
-                                return (
-                                    <div className="tagsContainer flex-row">
-                                        <p>{item.taxName} : </p>
-                                        <p>{item.taxPercentage}%</p>
-                                        <button
-                                            className="deleteTabButton"
-                                            onClick={deleteTax}
-                                        >
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                    <hr />
-
-                    <div className="addTaxContainer">
-                        <div className="inputContainer">
-                            <lable>Tax Name</lable>
-                            <input
-                                className="addTaxInput"
-                                type="text"
-                                value={taxName}
-                                onChange={(e) => {
-                                    settaxName(e.target.value);
-                                }}
-                            />
-                        </div>
-                        <div className="inputContainer">
-                            <lable>Tax Percentage</lable>
-                            <input
-                                className="addTaxInput"
-                                type="number"
-                                placeholder="%"
-                                min="0"
-                                value={taxPercent}
-                                onChange={(e) => {
-                                    settaxPercent(e.target.value);
-                                }}
-                            />
-                        </div>
-                        <button onClick={addTax}>Add Tax</button>
-                    </div>
-                    <div className="saveButton">
-                        <button onClick={saveAll}>Save</button>
-                    </div>
-                </div>
-
-                {/* <div>
-                    <h3>Current Tax</h3>
-                    <div className="flex-space-bw">
-                        <div className="flex-row">
-                            <b>CGST: </b>
-                            <p> 9%</p>
-                        </div>
-                        <button onClick={deleteTax} className="deleteButton">
-                            &#128465;
-                        </button>
-                    </div>
-                    <div className="flex-space-bw">
-                        <div className="flex-row">
-                            <b>SGST: </b>
-                            <p> 9%</p>
-                        </div>
-                        <button onClick={deleteTax} className="deleteButton">
-                            &#128465;
-                        </button>
-                    </div>
-                </div> */}
+  return (
+    <div className="nav-container">
+      <Navigation />
+      <MobileNavigationTop />
+      <div className="main">
+        <h1>Tax Management</h1>
+        <div>
+          <div className="addTaxContainer">
+            <div className="inputContainer">
+              <select
+                value={country}
+                onChange={(ev) => {
+                  setCountry(ev.target.value);
+                  setState("none");
+                  setState(`common-${ev.target.value}`);
+                }}
+              >
+                <option key="0" value="none">
+                  -- Select Country --
+                </option>
+                <option key="1" value="canada">
+                  Canada
+                </option>
+                <option key="2" value="india">
+                  India
+                </option>
+              </select>
             </div>
-            <div className="footer">
-                <MobileNavigationBottom />
+            <div className="inputContainer">
+              {country !== "none" && (
+                <select
+                  value={state.startsWith("common-") ? "common" : state}
+                  onChange={(ev) => {
+                    setState(
+                      ev.target.value.startsWith("common-")
+                        ? "common"
+                        : ev.target.value
+                    );
+                    console.log(country, ev.target.value);
+                  }}
+                >
+                  <option key={-1} value={`common-${country}`}>
+                    Common for all
+                  </option>
+                  {states[country].map((item) => (
+                    <option key={item.slno} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
+          </div>
+          <div className="addTaxContainer">
+            <div className="tagsOuterContainer">
+              {selectedTaxInfo.map((item) => {
+                return (
+                  <div className="tagsContainer flex-row">
+                    <p>{item.name} : </p>
+                    <p>{item.percent}%</p>
+                    <button
+                      className="deleteTabButton"
+                      onClick={(ev) => {
+                        ev.preventDefault();
+                        deleteTax(item);
+                      }}
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                );
+              })}
+              {selectedTaxInfo.length == 0 && country !== "none" && (
+                <p>
+                  No tax info available for{" "}
+                  {state.startsWith("common-") ? "common" : state}, {country}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="addTaxContainer">
+            <div className="inputContainer">
+              <lable>Tax Name</lable>
+              <input
+                className="addTaxInput"
+                type="text"
+                value={taxName}
+                onChange={(e) => {
+                  settaxName(e.target.value);
+                }}
+              />
+            </div>
+            <div className="inputContainer">
+              <lable>Tax Percentage</lable>
+              <input
+                className="addTaxInput"
+                type="number"
+                placeholder="%"
+                min="0"
+                value={taxPercent}
+                onChange={(e) => {
+                  settaxPercent(e.target.value);
+                }}
+              />
+            </div>
+            <button onClick={addTax}>Add Tax</button>
+          </div>
+          <hr />
+          <div className="saveButton">
+            <button onClick={saveAll}>Save</button>
+          </div>
         </div>
-    );
+      </div>
+      <div className="footer">
+        <MobileNavigationBottom />
+      </div>
+    </div>
+  );
 };
 
 export default TaxManagement;
