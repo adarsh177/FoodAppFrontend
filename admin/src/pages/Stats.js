@@ -74,7 +74,7 @@ const Stats = (props) => {
                 className="notificationButton"
                 onClick={(ev) => sendNotification(ev, "merchant")}
               >
-                Merch ants
+                Merchants
               </button>
             </Link>
           </div>
