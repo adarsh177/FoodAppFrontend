@@ -1,7 +1,7 @@
 import axios from "axios";
 import GetAuthToken from "./AuthManager";
-const BASE_URL = "https://5f90d782eb10.ngrok.io/admin/";
-// const BASE_URL = "https://food.adarshshrivastava.in/admin/"
+// const BASE_URL = "https://5f90d782eb10.ngrok.io/admin/";
+const BASE_URL = "https://food.adarshshrivastava.in/admin/";
 
 export async function CheckAdmin() {
   try {
@@ -14,6 +14,7 @@ export async function CheckAdmin() {
     });
     return Promise.resolve(response.data);
   } catch (ex) {
+    console.log("Admin error", ex.response);
     if (ex.response.status === 403) {
       return Promise.reject("UNAUTH");
     }

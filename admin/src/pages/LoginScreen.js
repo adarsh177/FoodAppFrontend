@@ -62,7 +62,7 @@ function LoginScreen(props) {
             props.history.push("/stats");
           })
           .catch((err) => {
-            alert("Admin account not found");
+            alert("Admin account not found: " + err);
             window.location.reload();
           });
       }
