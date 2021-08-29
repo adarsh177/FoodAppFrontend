@@ -86,18 +86,14 @@ const Stats = (props) => {
             <div className="detailOuterContainer">
               <h3>Stats</h3>
 
-              <div className="detailsContainer">
-                <h3 className="detailTitle">Total Orders : </h3>
-                <p className="details">{data.orderCount}</p>
-              </div>
-              <div className="detailsContainer">
-                <h3 className="detailTitle">Total customer : </h3>
-                <p className="details">{data.customerCount}</p>
-              </div>
-              <div className="detailsContainer">
-                <h3 className="detailTitle">Total Merchant : </h3>
-                <p className="details">{data.merchantCount}</p>
-              </div>
+              {Object.keys(data).map((key) => {
+                return (
+                  <div className="detailsContainer">
+                    <h3 className="detailTitle">{key} : </h3>
+                    <p className="details">{data[key]}</p>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

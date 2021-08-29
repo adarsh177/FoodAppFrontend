@@ -174,7 +174,10 @@ function RestaurantMenu(props) {
           </TouchableOpacity>
         </View>
 
-        <Text style={style.location}>{data.location?.label}</Text>
+        <Text
+          style={
+            style.location
+          }>{`${data.location?.label},\n${data.location?.city}, ${data.location?.state}, ${data.location?.country}`}</Text>
 
         <View style={style.menuContainer}>
           {!loading && listings.length === 0 && (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navigation,
   MobileNavigationTop,
@@ -15,6 +15,7 @@ import {
   GetMerchantDetails,
   ToggleBlockCustomer,
   ToggleBlockMerchant,
+  UpdateMerchantCommision,
 } from "../APIs/AdminManager";
 
 const UserManagement = () => {
@@ -46,6 +47,20 @@ const UserManagement = () => {
       })
       .catch((err) => alert("Merchant not found" + err))
       .finally(() => setLoading(false));
+  };
+
+  const UpdateMerchantComm = (ev) => {
+    ev.preventDefault();
+    setLoading(true);
+
+    console.log("Commision", merchantData.commision);
+
+    UpdateMerchantCommision(merchantData.userId, merchantData.commision)
+      .catch((err) => alert("Error updating merchant commision : " + err))
+      .finally(() => {
+        setLoading(false);
+        SearchMerchant();
+      });
   };
 
   const ToggleBlockCustomerClicked = () => {
@@ -246,6 +261,46 @@ const UserManagement = () => {
                           className="notificationButton"
                         >
                           Send Notification
+                        </button>
+                      </div>
+                      <br />
+                      <p>Commision</p>
+                      <div>
+                        <input
+                          type="checkbox"
+                          checked={
+                            merchantData.commision !== null &&
+                            merchantData.commision !== undefined
+                          }
+                          onChange={(ev) => {
+                            setMerchantData((data) => ({
+                              ...data,
+                              commision: ev.target.checked ? 0 : null,
+                            }));
+                          }}
+                        />
+                        <input
+                          className="searchBar"
+                          type="number"
+                          placeholder="Commision Percent"
+                          name="serach merchant"
+                          value={
+                            merchantData.commision ? merchantData.commision : 0
+                          }
+                          style={{ width: "200px" }}
+                          onChange={(e) => {
+                            setMerchantData((data) => ({
+                              ...data,
+                              commision: parseFloat(e.target.value),
+                            }));
+                          }}
+                        />
+
+                        <button
+                          onClick={(ev) => UpdateMerchantComm(ev)}
+                          className="notificationButton"
+                        >
+                          Set Commision
                         </button>
                       </div>
                     </div>

@@ -104,7 +104,7 @@ function AddMoneyDialog(props) {
       image:
         'https://www.goodforlowprice.com/wp-content/uploads/2021/07/logo-2-1-49x49.png',
       currency: 'INR',
-      key: 'rzp_test_9WV64pLnDl8wM4',
+      key: 'rzp_test_CrWreMS3wr9QFy',
       amount: orderInfo.amount_due,
       name: 'Good For Low Price',
       order_id: orderInfo.id,

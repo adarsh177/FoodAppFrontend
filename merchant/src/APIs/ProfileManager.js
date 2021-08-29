@@ -1,6 +1,7 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
 const BASE_URL = 'https://food.adarshshrivastava.in/merchant/';
+// const BASE_URL = 'https://0706-103-82-96-41.ngrok.io/merchant/';
 
 async function GetProfile() {
   try {
@@ -60,7 +61,7 @@ async function CreateProfile(dataToUpdate) {
     );
     return Promise.resolve();
   } catch (ex) {
-    console.log('Error creating profile', ex);
+    console.log('Error creating profile', ex.response.data);
     return Promise.reject('Server Error');
   }
 }
@@ -127,5 +128,5 @@ export {
   CreateProfile,
   SendFeedback,
   GetStripeAccountLink,
-  PostAccountInfo
+  PostAccountInfo,
 };

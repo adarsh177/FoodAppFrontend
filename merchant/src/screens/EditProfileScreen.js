@@ -29,12 +29,12 @@ function EditProfileScreen(props) {
   const [location, setLocation] = useState({});
   const [locationPoint, setLocationPoint] = useState({});
   const [banner, setBanner] = useState(null);
-  const [locationText, setLocationText] = useState('Get location');
   const [paymentAccountComplete, setPaymentAccountComplete] = useState(false);
 
   const [dataLoading, setDataLoading] = useState(true);
   const [profileUpdateLoading, setProfileUpdateLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
 
   const reference = storage().ref(`/MerchantBanner/${auth().currentUser.uid}`);
 
@@ -52,11 +52,6 @@ function EditProfileScreen(props) {
         setLocationPoint(profile.locationPoint);
         setBanner(profile.bannerImage);
         setPaymentAccountComplete(profile.paymentAccountComplete ?? false);
-        setLocationText(
-          profile.location && profile.location.label
-            ? profile.location.label
-            : 'Get location',
-        );
       })
       .catch(err => {
         console.log('Erro get profile', err);
@@ -126,7 +121,7 @@ function EditProfileScreen(props) {
           ]);
           return;
         }
-        setLocationText('Fetching Location...');
+        setLocationLoading(true);
         Geolocation.getCurrentPosition(
           position => {
             console.log(position);
@@ -141,8 +136,10 @@ function EditProfileScreen(props) {
               .then(location => {
                 if (['India', 'Canada'].includes(location.country)) {
                   // only allowing india and canada as of now
-                  setLocation(location);
-                  setLocationText(location.label);
+                  setLocation(loc => ({
+                    ...location,
+                    label: loc.label ? loc.label : location.label,
+                  }));
                 } else {
                   Alert.alert(
                     'Restricted Location',
@@ -152,14 +149,14 @@ function EditProfileScreen(props) {
               })
               .catch(err => {
                 console.log('Error getting rev geocode', err);
-                setLocationText('Get location');
                 alert('Error getting location, please try again');
-              });
+              })
+              .finally(() => setLocationLoading(false));
           },
           error => {
             // See error code charts below.
             console.log(error.code, error.message);
-            setLocationText('Get location');
+            setLocationLoading(false);
             alert('Error getting location, please try again');
           },
           {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
@@ -179,7 +176,7 @@ function EditProfileScreen(props) {
       Alert.alert('Error', 'Please enter a valid store name');
       return;
     }
-    if (!description || description.length < 10) {
+    if (!description || description.length < 3) {
       Alert.alert('Error', 'Please enter a valid store description');
       return;
     }
@@ -296,21 +293,35 @@ function EditProfileScreen(props) {
           onChangeText={setDescription}
         />
 
+        <Text style={Style.Label}>Landmark</Text>
+        <TextInput
+          style={[Style.Field, {textAlignVertical: 'top'}]}
+          value={location.label}
+          onChangeText={val =>
+            setLocation(loc => ({
+              ...loc,
+              label: val,
+            }))
+          }
+        />
+
         <Text style={Style.Label}>Location</Text>
-        <View style={[Style.Field, Style.LocationField]}>
-          <Text
-            numberOfLines={1}
-            style={{fontSize: 16, flex: 1, marginRight: 10}}>
-            {locationText}
-          </Text>
-          {!paymentAccountComplete && (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => selectLocation()}>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => selectLocation()}>
+          <View style={[Style.Field, Style.LocationField]}>
+            <Text
+              numberOfLines={1}
+              style={{fontSize: 16, flex: 1, marginRight: 10}}>
+              {!locationLoading
+                ? location.city
+                  ? `${location.city}, ${location.state}, ${location.country}`
+                  : 'Fetch Location'
+                : 'Fetching location....'}
+            </Text>
+            {!paymentAccountComplete && (
               <Icon name="target" color={AppConfig.primaryColor} size={22} />
-            </TouchableOpacity>
-          )}
-        </View>
+            )}
+          </View>
+        </TouchableOpacity>
 
         {profileUpdateLoading ? (
           <ActivityIndicator

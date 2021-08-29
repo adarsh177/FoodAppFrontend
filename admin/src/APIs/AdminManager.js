@@ -390,6 +390,31 @@ export async function ToggleBlockCustomer(userId) {
   }
 }
 
+export async function UpdateMerchantCommision(userId, commision) {
+  try {
+    const response = await axios.put(
+      `${BASE_URL}merchant/updateCommision/${encodeURI(userId)}`,
+      {
+        commision: commision,
+      },
+      {
+        method: "PUT",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+    );
+    return Promise.resolve();
+  } catch (ex) {
+    console.log("Error updating merchant commision", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
 export async function SendNotification(data) {
   try {
     const response = await axios.post(`${BASE_URL}notifications`, data, {
