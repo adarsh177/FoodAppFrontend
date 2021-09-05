@@ -19,6 +19,7 @@ import messaging from '@react-native-firebase/messaging';
 import {Alert, View} from 'react-native';
 import BlockedScreen from './src/screens/BlockedScreen';
 import WebViewScreen from './src/screens/WebViewScreen';
+import ReviewsScreen from './src/screens/ReviewsScreen';
 
 const Stack = createStackNavigator();
 
@@ -72,6 +73,16 @@ function App() {
           }}
           name="listItem"
           component={ListItemScreen}
+        />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTintColor: AppConfig.primaryColor,
+            headerTitleAlign: 'center',
+            title: 'Customer Reviews',
+          }}
+          name="reviews"
+          component={ReviewsScreen}
         />
         <Stack.Screen
           options={{

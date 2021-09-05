@@ -39,6 +39,10 @@ function ProfileTab(props) {
     props.navigation.push('editProfile');
   };
 
+  const handelReviews = () => {
+    props.navigation.push('reviews');
+  };
+
   // handel Logout button --------------------------------
 
   const handleLogout = async () => {
@@ -145,8 +149,21 @@ function ProfileTab(props) {
         </Text>
 
         <TouchableOpacity
-          onPress={handelEditProfile}
+          onPress={handelReviews}
           style={[style.rowFlexContainer, {marginTop: 20}]}
+          activeOpacity={0.8}>
+          <Icon
+            style={style.rightMargin}
+            name="star"
+            size={24}
+            color={AppConfig.primaryColor}
+          />
+          <Text style={style.option}>See Reviews</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handelEditProfile}
+          style={[style.rowFlexContainer]}
           activeOpacity={0.8}>
           <Icon
             style={style.rightMargin}

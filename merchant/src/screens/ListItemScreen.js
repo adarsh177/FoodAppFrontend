@@ -26,6 +26,7 @@ function ListItemScreen(props) {
   const [selectInventory, setselectInventory] = useState(null);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [expireDate, setExpireDate] = useState(null);
+  const [listPrice, setListPrice] = useState('');
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
   const [loading, setLoading] = useState(false);
@@ -80,6 +81,12 @@ function ListItemScreen(props) {
       alert('Please select an expiry date time');
       return;
     }
+    if (expireDate.getTime() < new Date().getTime()) {
+      alert(
+        'Please select a valid expiry date.\nExpiry date should be of future',
+      );
+      return;
+    }
 
     const commodity = inventoryItems.filter(
       val => val.id === selectInventory,
@@ -90,6 +97,7 @@ function ListItemScreen(props) {
       name: commodity.name,
       description: commodity.description,
       image: commodity.image,
+      listPrice: parseFloat(listPrice) * 100,
       price: parseFloat(price) * 100,
       dateAdded: new Date().getTime(),
       expiresOn: expireDate.getTime(),
@@ -181,6 +189,14 @@ function ListItemScreen(props) {
             return <Picker.Item label={item.name} value={item.id} />;
           })}
         </Picker>
+      </View>
+      <Text style={style.inputLable}>List Price ({currenctSymbol})</Text>
+      <View style={style.inputWrapper}>
+        <TextInput
+          keyboardType="decimal-pad"
+          style={style.inputTextField}
+          onChangeText={setListPrice}
+        />
       </View>
       <Text style={style.inputLable}>Selling Price ({currenctSymbol})</Text>
       <View style={style.inputWrapper}>

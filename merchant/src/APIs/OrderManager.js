@@ -90,6 +90,23 @@ async function RejectOrder(id) {
   }
 }
 
+// review contains : {orderId, customerName, customerPhone, review, rating}
+async function GetReviews() {
+  try {
+    const response = await axios.get(`${BASE_URL}order/reviews`, {
+      method: 'GET',
+      headers: {
+        authorization: await GetAuthToken(),
+        timestamp: new Date().getTime(),
+      },
+    });
+    return response.data;
+  } catch (ex) {
+    console.log('Error rejecting pending  order', ex);
+    return Promise.reject('Server Error');
+  }
+}
+
 export {
   GetPendingOrders,
   GetCompleteOrders,

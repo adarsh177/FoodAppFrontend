@@ -1,3 +1,4 @@
+import DineroFactory from 'dinero.js';
 import React, {useState} from 'react';
 import {
   StyleSheet,
@@ -47,7 +48,7 @@ function ListingInfoDialog(props) {
           {props.data.price && (
             <Text style={style.price}>
               {GetCurrencySymbolFromId(props.data.price.currency)}{' '}
-              {props.data.price.amount}
+              {DineroFactory(props.data.price).toUnit()}
             </Text>
           )}
 

@@ -7,6 +7,7 @@ import GetCurrencySymbol, {
 import Dinero from 'dinero.js';
 
 function ItemCard(props) {
+  console.log('price', props.price, Dinero(props.price).toUnit());
   return (
     <TouchableOpacity
       activeOpacity={0.6}
