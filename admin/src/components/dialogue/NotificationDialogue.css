@@ -2,15 +2,14 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: 100vw;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.4);
 }
 .dailogueContainer {
-    width: 250px;
     padding: 30px 20px;
     border: 1px grey solid;
     height: 420px;
@@ -34,6 +33,7 @@
     width: 237px;
 }
 .textarea {
+    display: block;
     max-width: 243px;
     min-width: 243px;
     max-height: 150px;

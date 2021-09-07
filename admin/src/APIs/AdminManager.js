@@ -1,7 +1,7 @@
 import axios from "axios";
 import GetAuthToken from "./AuthManager";
-// const BASE_URL = "https://5f90d782eb10.ngrok.io/admin/";
-const BASE_URL = "https://food.adarshshrivastava.in/admin/";
+const BASE_URL = "https://1827-42-106-16-126.ngrok.io/admin/";
+// const BASE_URL = "https://food.adarshshrivastava.in/admin/";
 
 export async function CheckAdmin() {
   try {
@@ -334,9 +334,79 @@ export async function GetMerchantDetails(identifier) {
         },
       }
     );
+    console.log(response);
     return Promise.resolve(response.data.merchant);
   } catch (ex) {
     console.log("Error getting merchant", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
+export async function GetMerchantOrders(identifier) {
+  try {
+    console.log("MERCHORDERS" + identifier)
+    const response = await axios.get(
+      `${BASE_URL}orders/merchant/${encodeURI(identifier)}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+    );
+    return Promise.resolve(response.data.orders);
+  } catch (ex) {
+    console.log("Error getting merchant orders", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
+export async function GetMerchantCommodities(identifier) {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}commodity/merchant/${encodeURI(identifier)}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+      );
+      console.log("MERCHComm" + identifier+ response)
+    return Promise.resolve(response.data);
+  } catch (ex) {
+    console.log("Error getting merchant orders", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
+export async function GetMerchantListing(identifier) {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}listing/merchant/${encodeURI(identifier)}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+      );
+      console.log("MERCHComm" + identifier+ response.data)
+    return Promise.resolve(response.data.listing);
+  } catch (ex) {
+    console.log("Error getting merchant orders", ex);
     if (ex.response.status === 403) {
       return Promise.reject("UNAUTH");
     }

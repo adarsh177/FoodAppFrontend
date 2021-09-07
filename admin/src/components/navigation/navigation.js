@@ -97,7 +97,7 @@ export const Navigation = (props) => {
                     </div>
                 </NavLink>
 
-                {isSuperAdmin && (
+                {isSuperAdmin ? (
                     <NavLink
                         className="nav-links"
                         activeClassName="activenav"
@@ -112,7 +112,7 @@ export const Navigation = (props) => {
                             User Management
                         </div>
                     </NavLink>
-                )}
+                ): null}
 
                 <NavLink
                     className="nav-links"

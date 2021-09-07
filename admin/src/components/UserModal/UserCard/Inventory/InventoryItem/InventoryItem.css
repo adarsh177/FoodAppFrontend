@@ -1,0 +1,63 @@
+.InventoryItem {
+    border: 1px solid gray;
+    border-radius: 5px;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    position: relative;
+}
+.InventoryItem img {
+    border: 1px solid gray;
+    border-radius: 5px;
+    height: 6rem;
+    width: 6rem;
+    margin-right: 1rem;
+}
+
+.Inv_Mid p,  .Inv_Right .Expiry{
+    margin-top: 0.2rem;
+    color: grey;
+    font-size: 0.9rem;
+}
+
+.Inv_Mid .Item_Name {
+    font-weight: bold;
+    color: rgb(39, 39, 39);
+    font-size: 1.1rem;
+}
+
+
+.Inv_Mid p span, .Inv_Right .Expiry span {
+    color: rgb(46, 46, 46);
+    font-weight: bold;
+}
+
+.Inv_Right {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    text-align: end;
+    height: 100%;
+    width: 40%;
+}
+.Inv_Right .Inv_Pricing {
+    font-weight: bold;
+    color: #00b875;
+}
+
+.Inv_Right .Inv_Pricing span {
+    text-decoration: line-through;
+    color: gray;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    font-weight: 400;
+}
+
+.Inv_Right .Expiry {
+    position: absolute;
+    width: 100%;
+    bottom: 1.1rem;
+    right: 0;
+}

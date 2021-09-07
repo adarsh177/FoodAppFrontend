@@ -1,0 +1,20 @@
+.SingleOrderHistory {
+    border: 1px solid gray;
+    border-radius: 5px;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    display: flex;
+    cursor: pointer;
+}
+
+.SingleOrderHistory .OrderHis_Left p {
+    color: grey;
+    font-size: 0.8rem;
+}
+
+.SingleOrderHistory .OrderHis_Right  {
+    text-align: end;
+    flex: 1;
+    color: #00b875;
+    font-weight: bold;
+}

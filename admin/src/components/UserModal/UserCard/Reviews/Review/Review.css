@@ -1,0 +1,27 @@
+.Review {
+    border: 1px solid gray;
+    margin-top: 1rem;
+    border-radius: 5px;
+    padding: 0.5rem;
+}
+
+.Review h3 {
+    color: #00b875;
+}
+
+.Review p span{
+    font-weight: bold;
+    color: rgb(73, 73, 73);
+}
+
+.Review a {
+    text-decoration: none;
+    text-align: center;
+    border-radius: 5px;
+    width: 3rem;
+    display: block;
+    margin: 1rem auto;
+    color: white;
+    background-color: #00b875;
+    padding: 0.2rem;
+}

@@ -1,0 +1,76 @@
+
+.Order_Card h1 {
+    text-align: center;
+    margin: 0;
+}
+
+.Order_Card > div {
+    margin-top: 1rem;
+}
+
+.Order_Card  p, h3  {
+    color: rgb(65, 65, 65);
+    margin: 0;
+}
+
+.Order_Card  .Order_Date, .Order_Status p:first-of-type, .Order_Customer p, .Order_Merchant p {
+    font-size: 0.8rem;
+    color: gray;
+}
+
+.Order_Merchant, .Order_Customer{
+    position: relative;
+}
+.Order_Customer a, .Order_Merchant a {
+    text-decoration: none;
+    color: white;
+    background-color: #00b875;
+    margin-left: 4rem;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    text-align: center;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.9rem;
+    border-radius: 5px;
+
+} 
+
+.Order_Breakup {
+    border-radius: 10px;
+    border: 1px solid gray;
+    height: fit-content;
+    overflow: hidden;
+}
+
+
+.Order_Breakup .Order_List, .Order_taxes {
+    padding: 1rem 0;
+    margin: 0.5rem 1rem;
+    border-bottom: rgb(185, 185, 185) 1px solid;
+}
+
+.Order_Breakup .Order_List .Order_item span, .promo span, .Order_taxes .Order_tax span, .Order_Total span{
+    position: absolute;
+    font-weight: bold;
+    right: 2rem;
+    font-size: 0.9rem;
+}
+
+.promo span {
+    color: rgb(167, 0, 0);
+}
+
+.Order_taxes .Order_tax {
+    margin-left: 1rem;
+}
+
+.Order_Breakup  .Order_Total {
+    height: 1.5rem;
+    background-color: #00b875;
+    color: white;
+    width: 100%;
+    height: 2rem;
+    padding-top: 0.3rem;
+    padding-left: 1rem;
+}

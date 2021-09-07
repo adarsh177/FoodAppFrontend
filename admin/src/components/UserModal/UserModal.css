@@ -1,0 +1,26 @@
+.UserModal {
+    position: absolute;
+    z-index: 500;
+    background-color: rgb(255, 255, 255);
+    /* border: 1px solid #ccc; */
+    box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.253);
+    padding: 1rem;
+    border-radius: 8px;
+    height: 70%;
+    top: 20%;
+    left: 30%;
+    box-sizing: border-box;
+    transition: all 0.1s ease-out;
+    /* overflow: auto; */
+}
+
+.Backdrop{
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    background-color: black;
+    opacity: 0.5;
+}

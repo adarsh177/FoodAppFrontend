@@ -16,7 +16,9 @@ import {
   ToggleBlockCustomer,
   ToggleBlockMerchant,
   UpdateMerchantCommision,
+  CheckAdmin
 } from "../APIs/AdminManager";
+import { useHistory } from "react-router";
 
 const UserManagement = () => {
   const [userSearchBox, setUserSearchBox] = useState();
@@ -24,6 +26,15 @@ const UserManagement = () => {
   const [userData, setUserData] = useState(null);
   const [merchantData, setMerchantData] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const linkStack = useHistory()
+
+  useEffect(() => {
+    CheckAdmin().then((data) => {
+        if(!data.superAdmin) linkStack.replace('/stats')
+    });
+}, []);
+
 
   const SearchUser = () => {
     setLoading(true);
