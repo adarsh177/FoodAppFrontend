@@ -84,7 +84,7 @@ function App() {
             </Route>
           </Switch>
           {/* <UserModal/> */}
-          <OrderModal/>
+          <UserModal/>
         </Router>
 
       </ModalContext.Provider>

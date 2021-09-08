@@ -1,7 +1,7 @@
 import axios from "axios";
 import GetAuthToken from "./AuthManager";
-const BASE_URL = "https://1827-42-106-16-126.ngrok.io/admin/";
-// const BASE_URL = "https://food.adarshshrivastava.in/admin/";
+// const BASE_URL = "https://1827-42-106-16-126.ngrok.io/admin/";
+const BASE_URL = "https://food.adarshshrivastava.in/admin/";
 
 export async function CheckAdmin() {
   try {
