@@ -1,26 +1,43 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import './UserModal.css';
 import AUX from '../Auxiliary/Auxiliary'
-import { ModalContext } from '../../App';
+import { UserModalContext } from '../../App';
 import UserCard from './UserCard/UserCard';
 
-const UserModal = () => {
+import CancelIcon from '@material-ui/icons/Cancel';
+import { UserCardContext } from '../../pages/UserManagement';
 
-    const [showModal, setShowModal] = useContext(ModalContext);
+const UserModal = (props) => {
 
-    
+    const [customerPhone, setCustomerPhone, merchantPhone, setMerchantPhone, userType, setUserType, userData, setUserData] = useContext(UserCardContext);
+    const [showUserModal, setShowUserModal] = useContext(UserModalContext);
+
+
+    useEffect(() => {
+        
+        return () => {
+            setCustomerPhone(null);
+            setMerchantPhone(null);
+            setUserData(null)
+        }
+    }, [])
+
     return (
         <AUX>
-            { showModal ? <div className="Backdrop" onClick={() => setShowModal(false)} ></div> : null}
-            
+            {showUserModal ? <div className="Backdrop" onClick={() => setShowUserModal(false)} ></div> : null}
+
             <div className="UserModal"
                 style={{
-                    transform: showModal ? 'translateY(0)' : 'translateY(-100vh)',
-                    opacity: showModal ? '1' : '0'
+                    transform: showUserModal ? 'translateY(0)' : 'translateY(-100vh)',
+                    opacity: showUserModal ? '1' : '0'
                 }}>
 
-                <UserCard/>
+                <span onClick={() => setShowUserModal(false)}>
+                    <CancelIcon />
+                </span>
+
+                <UserCard />
             </div>
         </AUX>)
 }

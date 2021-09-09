@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   Navigation,
   MobileNavigationTop,
@@ -8,8 +8,10 @@ import "./css/UserManagement.css";
 import NotificationDialogue from "../components/dialogue/NotificationDialogue";
 
 // external package ---------------------------------------------
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import {
   GetCustomerDetails,
   GetMerchantDetails,
@@ -19,109 +21,118 @@ import {
   CheckAdmin
 } from "../APIs/AdminManager";
 import { useHistory } from "react-router";
+import { OrderModalContext, UserModalContext } from "../App";
+import UserModal from "../components/UserModal/UserModal";
+import PaginateUserList from "../components/PaginateUserList/PaginateUserList";
+import OrderModal from "../components/OrderModal/OrderModal";
+
+
+export const UserCardContext = createContext();
+export const IsMainLoading = createContext();
+
 
 const UserManagement = () => {
+
   const [userSearchBox, setUserSearchBox] = useState();
   const [merchantSearchBox, setMerchantSearchBox] = useState();
-  const [userData, setUserData] = useState(null);
-  const [merchantData, setMerchantData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [customerPhone, setCustomerPhone] = useState(null);
+  const [merchantPhone, setMerchantPhone] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState();
+
+  const [userData, setUserData] = useState()
+
+
+  const [showUserModal, setShowUserModal] = useContext(UserModalContext);
 
   const linkStack = useHistory()
 
   useEffect(() => {
+    setIsLoading(true);
     CheckAdmin().then((data) => {
-        if(!data.superAdmin) linkStack.replace('/stats')
-    });
-}, []);
+      if (!data.superAdmin) linkStack.replace('/stats')
+    }).catch(() => alert("Customer not found"))
+    .finally(() => setIsLoading(false));;
+  }, []);
 
 
-  const SearchUser = () => {
-    setLoading(true);
-    setUserData(null);
-
+  const SearchCustomer = () => {
+    setUserType("customer")
+    setCustomerPhone(userSearchBox);
+    setIsLoading(true);
     GetCustomerDetails(userSearchBox)
       .then((data) => {
         setUserData(data);
+        setShowUserModal(true);
       })
       .catch(() => alert("Customer not found"))
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   };
 
   const SearchMerchant = () => {
-    setLoading(true);
-    setMerchantData(null);
-
+    setUserType("merchant")
+    setIsLoading(true);
+    setMerchantPhone(merchantSearchBox);
     GetMerchantDetails(merchantSearchBox)
       .then((data) => {
-        setMerchantData(data);
+        setUserData(data);
       })
       .catch((err) => alert("Merchant not found" + err))
-      .finally(() => setLoading(false));
-  };
-
-  const UpdateMerchantComm = (ev) => {
-    ev.preventDefault();
-    setLoading(true);
-
-    console.log("Commision", merchantData.commision);
-
-    UpdateMerchantCommision(merchantData.userId, merchantData.commision)
-      .catch((err) => alert("Error updating merchant commision : " + err))
-      .finally(() => {
-        setLoading(false);
-        SearchMerchant();
-      });
-  };
-
-  const ToggleBlockCustomerClicked = () => {
-    setLoading(true);
-    ToggleBlockCustomer(userData.userId)
-      .catch((err) => alert(err))
-      .finally(() => {
-        setLoading(false);
-        SearchUser();
-      });
-  };
-
-  const ToggleBlockMerchantClicked = () => {
-    setLoading(true);
-    ToggleBlockMerchant(merchantData.userId)
-      .catch((err) => alert(err))
-      .finally(() => {
-        setLoading(false);
-        SearchMerchant();
-      });
+      .finally(() => setIsLoading(false));
+    setShowUserModal(true);
   };
 
   // send notification to user ------------------------------
 
   // dialogue -----------------------------
 
+  const [showOrderModal, setShowOrderModal, singleOrderId, setSingleOrderId] = useContext(OrderModalContext)
+
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
   const [fcmToken, setFcmToken] = useState("");
 
   // userNotification trigger ----------------------------------
+  const [value, setValue] = React.useState(0);
 
-  const sendUserNotification = (e, token) => {
-    e.preventDefault();
-    setFcmToken(token);
-    setShowNotificationDialog(true);
+  useEffect(() => {
+    if (value === 0) setUserType('customer');
+    else setUserType('merchant');
+  }, [value])
+
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    if (newValue === 0) {
+      setUserType("customer")
+    }
+    else if (newValue === 1) {
+      setUserType("merchant")
+    }
   };
+
+
 
   return (
     <div className="nav-container">
-      <Navigation />
-      <MobileNavigationTop />
-      <div className="main">
-        <Tabs>
-          <TabList>
-            <Tab>Users</Tab>
-            <Tab>Merchants</Tab>
-          </TabList>
-          {/* User managenment Tab-------------------------------------------- */}
-          <TabPanel>
-            <div>
+      <UserCardContext.Provider value={[customerPhone, setCustomerPhone, merchantPhone, setMerchantPhone, userType, setUserType, userData, setUserData]}>
+        <IsMainLoading.Provider value={[isLoading, setIsLoading]}>
+          {
+            (merchantPhone && userType === "merchant") || (customerPhone && userType === "customer") ? <UserModal /> : null
+          }
+          {singleOrderId? <OrderModal/>: null}
+          <Navigation />
+          <MobileNavigationTop />
+          <div className="main">
+            <AppBar position="static" >
+              <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
+                <Tab label="Customers" />
+                <Tab label="Merchants" />
+              </Tabs>
+            </AppBar>
+
+            {value === 0 ? <div className="userSearchScreen">
+
+
               <div className="serachContainer">
                 <input
                   className="searchBar"
@@ -136,206 +147,70 @@ const UserManagement = () => {
                 <button
                   className="searchButton"
                   type="submit"
-                  onClick={SearchUser}
+                  onClick={SearchCustomer}
                 >
                   Search
                 </button>
               </div>
-              <div className="userDetailContainer">
-                {loading ? (
-                  <p>Loading...</p>
-                ) : (
-                  userData !== null && (
-                    <div>
-                      <div>
-                        <b>UserId : </b>
-                        <span>{userData.userId}</span>
-                      </div>
-                      <div>
-                        <b>Name : </b>
-                        <span>{userData.name}</span>
-                      </div>
-                      <div>
-                        <b>Phone number : </b>
-                        <span>{userData.phone}</span>
-                      </div>
-                      <div>
-                        <b>Wallet Balance : </b>
-                        {userData.walletBalance !== null &&
-                        userData.walletBalance !== undefined ? (
-                          <span>
-                            {userData.walletBalance.currency}{" "}
-                            {userData.walletBalance.amount / 100}
-                          </span>
-                        ) : (
-                          <span>0</span>
-                        )}
-                      </div>
-                      <div>
-                        <b>Location : </b>
-                        <span>{userData.location.label}</span>
-                      </div>
-                      <div>
-                        <b>Joined On : </b>
-                        <span>{new Date(userData.joinDate).toISOString()}</span>
-                      </div>
-                      <div>
-                        <button onClick={ToggleBlockCustomerClicked}>
-                          {userData.blocked ? "Unblock" : "Block"}
-                        </button>
-                        <button
-                          onClick={(ev) =>
-                            sendUserNotification(ev, userData.fcmToken)
-                          }
-                          className="notificationButton"
-                        >
-                          Send Notification
-                        </button>
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          </TabPanel>
 
-          {/* Merchant managenment Tab-------------------------------------------- */}
 
-          <TabPanel>
-            <div>
-              <div className="serachContainer">
-                <input
-                  className="searchBar"
-                  type="text"
-                  placeholder="Search merchant by phone number"
-                  name="serach merchant"
-                  value={merchantSearchBox}
-                  onChange={(e) => {
-                    setMerchantSearchBox(e.target.value);
-                  }}
-                />
-                <button
-                  className="searchButton"
-                  type="submit"
-                  onClick={SearchMerchant}
-                >
-                  Search
-                </button>
-              </div>
-              {loading ? (
-                <p>Loading...</p>
-              ) : (
-                merchantData !== null && (
-                  <div className="userDetailContainer">
-                    <div>
-                      <div>
-                        <b>UserId : </b>
-                        <span>{merchantData.userId}</span>
-                      </div>
-                      <div>
-                        <b>Name : </b>
-                        <span>{merchantData.name}</span>
-                      </div>
-                      <div>
-                        <b>Phone number : </b>
-                        <span>{merchantData.phone}</span>
-                      </div>
-                      <div>
-                        <b>Total Earnings : </b>
-                        <span>
-                          {merchantData.totalEarnings
-                            ? `${merchantData.totalEarnings.currency} ${
-                                merchantData.totalEarnings.amount / 100
-                              }`
-                            : "0"}
-                        </span>
-                      </div>
-                      <div>
-                        <b>Location : </b>
-                        <span>{merchantData.location.label}</span>
-                      </div>
-                      <div>
-                        <b>Joined On : </b>
-                        <span>
-                          {new Date(merchantData.joinDate).toISOString()}
-                        </span>
-                      </div>
-                      <div>
-                        <button onClick={ToggleBlockMerchantClicked}>
-                          {merchantData.blocked ? "Unblock" : "Block"}
-                        </button>
+              <PaginateUserList />
+            </div> : null
+            }
+            {
+              value === 1 ?
 
-                        <button
-                          onClick={(ev) =>
-                            sendUserNotification(ev, merchantData.fcmToken)
-                          }
-                          className="notificationButton"
-                        >
-                          Send Notification
-                        </button>
-                      </div>
-                      <br />
-                      <p>Commision</p>
-                      <div>
-                        <input
-                          type="checkbox"
-                          checked={
-                            merchantData.commision !== null &&
-                            merchantData.commision !== undefined
-                          }
-                          onChange={(ev) => {
-                            setMerchantData((data) => ({
-                              ...data,
-                              commision: ev.target.checked ? 0 : null,
-                            }));
-                          }}
-                        />
-                        <input
-                          className="searchBar"
-                          type="number"
-                          placeholder="Commision Percent"
-                          name="serach merchant"
-                          value={
-                            merchantData.commision ? merchantData.commision : 0
-                          }
-                          style={{ width: "200px" }}
-                          onChange={(e) => {
-                            setMerchantData((data) => ({
-                              ...data,
-                              commision: parseFloat(e.target.value),
-                            }));
-                          }}
-                        />
+                <div className="userSearchScreen">
 
-                        <button
-                          onClick={(ev) => UpdateMerchantComm(ev)}
-                          className="notificationButton"
-                        >
-                          Set Commision
-                        </button>
-                      </div>
-                    </div>
+                  <div className="serachContainer">
+                    <input
+                      className="searchBar"
+                      type="text"
+                      placeholder="Search merchant by phone number"
+                      name="serach merchant"
+                      value={merchantSearchBox}
+                      onChange={(e) => {
+                        setMerchantSearchBox(e.target.value);
+                      }}
+                    />
+                    <button
+                      className="searchButton"
+                      type="submit"
+                      onClick={SearchMerchant}
+                    >
+                      Search
+                    </button>
                   </div>
-                )
-              )}
-            </div>
-          </TabPanel>
-        </Tabs>
-      </div>
-      <div className="footer">
-        <MobileNavigationBottom />
-      </div>
-      {showNotificationDialog && (
-        <NotificationDialogue
-          fcmToken={fcmToken}
-          onClose={() => {
-            setShowNotificationDialog(false);
-          }}
-          onSend={() => {
-            window.alert("send notification");
-          }}
-        />
-      )}
+
+                  <PaginateUserList />
+                </div>
+                : null
+            }
+
+          </div>
+
+
+
+
+
+
+
+          <div className="footer">
+            <MobileNavigationBottom />
+          </div>
+          {showNotificationDialog && (
+            <NotificationDialogue
+              fcmToken={fcmToken}
+              onClose={() => {
+                setShowNotificationDialog(false);
+              }}
+              onSend={() => {
+                window.alert("send notification");
+              }}
+            />
+          )}
+        </IsMainLoading.Provider>
+      </UserCardContext.Provider>
     </div>
   );
 };

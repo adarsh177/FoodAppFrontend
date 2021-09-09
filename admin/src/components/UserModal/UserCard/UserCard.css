@@ -1,5 +1,9 @@
 .UserCard {
-    width: 40rem;
+    width: 100%;
     height: 90%;
 }
 
+
+.UserCard header div div svg {
+    display: block;
+}

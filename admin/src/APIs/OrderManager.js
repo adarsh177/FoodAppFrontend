@@ -1,7 +1,7 @@
 import axios from 'axios';
 import GetAuthToken from './AuthManager';
 
-const BASE_URL = "https://1827-42-106-16-126.ngrok.io/merchant/";
+const BASE_URL = "https://5165-42-106-17-0.ngrok.io/merchant/";
 // const BASE_URL = 'https://food.adarshshrivastava.in/merchant/';
 
 
@@ -52,9 +52,6 @@ async function GetReviews() {
     return Promise.reject('Server Error');
   }
 }
-
-
-
 
 
 export {

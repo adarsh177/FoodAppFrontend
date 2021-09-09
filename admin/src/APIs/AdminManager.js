@@ -1,7 +1,7 @@
 import axios from "axios";
 import GetAuthToken from "./AuthManager";
-// const BASE_URL = "https://1827-42-106-16-126.ngrok.io/admin/";
-const BASE_URL = "https://food.adarshshrivastava.in/admin/";
+const BASE_URL = "https://5165-42-106-17-0.ngrok.io/admin/";
+// const BASE_URL = "https://food.adarshshrivastava.in/admin/";
 
 export async function CheckAdmin() {
   try {
@@ -322,6 +322,145 @@ export async function GetCustomerDetails(identifier) {
   }
 }
 
+export async function GetAllCustomers(itemsPerPage, page) {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}allcustomers/${itemsPerPage}/${page}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+    );
+    console.log(response.data);
+    return Promise.resolve(response.data);
+  } catch (ex) {
+    console.log("Error getting merchant", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
+export async function GetIndianCustomers(itemsPerPage, page) {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}customers/india/${itemsPerPage}/${page}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+    );
+    console.log(response.data);
+    return Promise.resolve(response.data);
+  } catch (ex) {
+    console.log("Error getting merchant", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
+export async function GetCanadianCustomers(itemsPerPage, page) {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}customers/canada/${itemsPerPage}/${page}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+    );
+    console.log(response.data);
+    return Promise.resolve(response.data);
+  } catch (ex) {
+    console.log("Error getting merchant", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
+
+export async function GetAllMerchants(itemsPerPage, page) {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}allmerchants/${itemsPerPage}/${page}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+    );
+    console.log(response.data);
+    return Promise.resolve(response.data);
+  } catch (ex) {
+    console.log("Error getting merchant", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
+export async function GetIndianMerchants(itemsPerPage, page) {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}merchants/india/${itemsPerPage}/${page}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+    );
+    console.log(response.data);
+    return Promise.resolve(response.data);
+  } catch (ex) {
+    console.log("Error getting merchant", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
+export async function GetCanadianMerchants(itemsPerPage, page) {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}merchants/canada/${itemsPerPage}/${page}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+    );
+    console.log(response.data);
+    return Promise.resolve(response.data);
+  } catch (ex) {
+    console.log("Error getting merchant", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
 export async function GetMerchantDetails(identifier) {
   try {
     const response = await axios.get(
@@ -361,6 +500,28 @@ export async function GetMerchantOrders(identifier) {
     return Promise.resolve(response.data.orders);
   } catch (ex) {
     console.log("Error getting merchant orders", ex);
+    if (ex.response.status === 403) {
+      return Promise.reject("UNAUTH");
+    }
+    return Promise.reject("Server Error");
+  }
+}
+
+export async function GetCustomerOrders(identifier) {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}orders/customer/${encodeURI(identifier)}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: await GetAuthToken(),
+          timestamp: new Date().getTime(),
+        },
+      }
+    );
+    return Promise.resolve(response.data.orders);
+  } catch (ex) {
+    console.log("Error getting customer orders", ex);
     if (ex.response.status === 403) {
       return Promise.reject("UNAUTH");
     }

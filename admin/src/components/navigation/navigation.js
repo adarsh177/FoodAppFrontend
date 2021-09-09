@@ -36,7 +36,7 @@ export const Navigation = (props) => {
                     className={`nav-hamburger ${slide}-hide-burger`}
                     onClick={showSlide}
                 >
-                    <i class="fas fa-bars"></i>
+                    <i className="fas fa-bars"></i>
                 </div>
                 <div
                     className={`nav-cross ${slide}-hide-cross`}
@@ -66,7 +66,7 @@ export const Navigation = (props) => {
                     to="/stats"
                 >
                     <div className="nav-icon">
-                        <i class="fas fa-chart-line"></i>
+                        <i className="fas fa-chart-line"></i>
                     </div>
                     <div className={`nav-link-item ${slide}-nav-link-item `}>
                         Stats
@@ -78,7 +78,7 @@ export const Navigation = (props) => {
                     to="/tax"
                 >
                     <div className="nav-icon">
-                        <i class="fas fa-clipboard-list"></i>
+                        <i className="fas fa-clipboard-list"></i>
                     </div>
                     <div className={`nav-link-item ${slide}-nav-link-item `}>
                         Tax management
@@ -90,7 +90,7 @@ export const Navigation = (props) => {
                     to="/payout"
                 >
                     <div className="nav-icon">
-                        <i class="fas fa-money-check-alt"></i>
+                        <i className="fas fa-money-check-alt"></i>
                     </div>
                     <div className={`nav-link-item ${slide}-nav-link-item `}>
                         Payouts
@@ -104,7 +104,7 @@ export const Navigation = (props) => {
                         to="/users"
                     >
                         <div className="nav-icon">
-                            <i class="fas fa-user-cog"></i>
+                            <i className="fas fa-user-cog"></i>
                         </div>
                         <div
                             className={`nav-link-item ${slide}-nav-link-item `}
@@ -120,7 +120,7 @@ export const Navigation = (props) => {
                     to="/config"
                 >
                     <div className="nav-icon">
-                        <i class="fas fa-cogs"></i>
+                        <i className="fas fa-cogs"></i>
                     </div>
                     <div className={`nav-link-item ${slide}-nav-link-item `}>
                         Configuration
@@ -132,7 +132,7 @@ export const Navigation = (props) => {
                     to="/feedback"
                 >
                     <div className="nav-icon">
-                        <i class="fas fa-comment-dots"></i>
+                        <i className="fas fa-comment-dots"></i>
                     </div>
                     <div className={`nav-link-item ${slide}-nav-link-item `}>
                         Feedback
@@ -140,7 +140,7 @@ export const Navigation = (props) => {
                 </NavLink>
                 <div className="nav-logout" onClick={logoutUser}>
                     <div className="nav-icon">
-                        <i class="fas fa-sign-out-alt"></i>
+                        <i className="fas fa-sign-out-alt"></i>
                     </div>
                     <div className={`nav-link-item ${slide}-nav-link-item`}>
                         Log Out
@@ -166,7 +166,7 @@ export const MobileNavigationTop = () => {
                         <img src={logo} alt="Logo" />
                     </div>
                     <div className="mobile-logout " onClick={logoutUser}>
-                        <i class="fas fa-sign-out-alt"></i>
+                        <i className="fas fa-sign-out-alt"></i>
                     </div>
                 </div>
             </div>
@@ -185,42 +185,42 @@ export const MobileNavigationBottom = () => {
                             className="mobile-nav-icon"
                             to="/stats"
                         >
-                            <i class="fas fa-chart-line"></i>
+                            <i className="fas fa-chart-line"></i>
                         </NavLink>
                         <NavLink
                             className="mobile-nav-icon"
                             activeClassName="activenav"
                             to="/tax"
                         >
-                            <i class="fas fa-clipboard-list"></i>
+                            <i className="fas fa-clipboard-list"></i>
                         </NavLink>
                         <NavLink
                             className="mobile-nav-icon"
                             activeClassName="activenav"
                             to="/payout"
                         >
-                            <i class="fas fa-money-check-alt"></i>
+                            <i className="fas fa-money-check-alt"></i>
                         </NavLink>
                         <NavLink
                             activeClassName="activenav"
                             className="mobile-nav-icon"
                             to="/users"
                         >
-                            <i class="fas fa-user-cog"></i>
+                            <i className="fas fa-user-cog"></i>
                         </NavLink>
                         <NavLink
                             activeClassName="activenav"
                             className="mobile-nav-icon"
                             to="/config"
                         >
-                            <i class="fas fa-cogs"></i>
+                            <i className="fas fa-cogs"></i>
                         </NavLink>
                         <NavLink
                             activeClassName="activenav"
                             className="mobile-nav-icon"
                             to="/feedback"
                         >
-                            <i class="fas fa-comment-dots"></i>
+                            <i className="fas fa-comment-dots"></i>
                         </NavLink>
                     </div>
                 </div>

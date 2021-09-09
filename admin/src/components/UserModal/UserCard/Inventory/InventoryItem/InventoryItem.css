@@ -16,6 +16,17 @@
     margin-right: 1rem;
 }
 
+.InventoryItem p {
+    margin: 0;
+}
+
+.Inv_Info {
+    width: 100%;
+}
+.Inv_Mid {
+    width: 50%;
+}
+
 .Inv_Mid p,  .Inv_Right .Expiry{
     margin-top: 0.2rem;
     color: grey;
@@ -26,6 +37,8 @@
     font-weight: bold;
     color: rgb(39, 39, 39);
     font-size: 1.1rem;
+    margin:  0;
+    padding: 0;
 }
 
 
@@ -36,11 +49,12 @@
 
 .Inv_Right {
     position: absolute;
-    right: 0.5rem;
-    top: 0.5rem;
+    right: 0;
+    top: 0;
+    padding: 0.5rem;
     text-align: end;
     height: 100%;
-    width: 40%;
+    width: 50%;
 }
 .Inv_Right .Inv_Pricing {
     font-weight: bold;
@@ -57,7 +71,65 @@
 
 .Inv_Right .Expiry {
     position: absolute;
-    width: 100%;
-    bottom: 1.1rem;
-    right: 0;
+    right: 0.5rem;
+    width: 60%;
+    bottom: 1.5rem;
 }
+
+@media screen and (max-width: 620px) {
+    .Inv_Right {
+        position: unset;
+        text-align: unset;
+        width: 100%;
+        padding: unset;
+    }
+    .Inv_Mid {
+        width: 100%;
+    }
+    
+    .Inv_Right .Expiry {
+        position: unset;
+        width: unset;
+    }
+    
+    .InventoryItem img {
+        height: 7rem;
+        width: 7rem;
+        margin-right: 1rem;
+    }
+}
+
+
+
+@media screen and (max-width: 540px) {
+    .InventoryItem {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+    }
+    .Inv_Right {
+        position: absolute;
+        width: 48%;
+        text-align: end;
+        right: 0.5rem;
+        top: 0.5rem;
+    }
+}
+
+
+@media screen and (max-width: 405px) {
+    .InventoryItem {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+    }
+    .Inv_Right {
+        position: absolute;
+        width: 48%;
+        text-align: end;
+        right: 0.5rem;
+        top: 0.5rem;
+    }
+}
+
+

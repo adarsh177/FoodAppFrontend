@@ -1,26 +1,57 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import './OrderModal.css';
 import AUX from '../Auxiliary/Auxiliary'
-import { ModalContext } from '../../App';
+import { OrderModalContext } from '../../App';
 import OrderCard from './OrderCard/OrderCard';
+import { useParams } from 'react-router';
+import { GetOrderDetails } from '../../APIs/OrderManager';
+
+import CancelIcon from '@material-ui/icons/Cancel';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 const OrderModal = () => {
 
-    const [showModal, setShowModal] = useContext(ModalContext);
+    const [showOrderModal, setShowOrderModal, singleOrderId, setSingleOrderId] = useContext(OrderModalContext)
+    const [Order, setOrder] = useState();
+
+    useEffect(() => {
+        if(!singleOrderId) return;
+
+        setShowOrderModal(true);
+
+        GetOrderDetails(singleOrderId).then(order => {
+            setOrder(order);
+        }).catch(err => {
+            console.log(err);
+            alert("Error occured while fetching order!");
+        })
+
+        return () => {
+            singleOrderId(null);
+        }
+
+    }, [])
 
     
     return (
         <AUX>
-            { showModal ? <div className="Backdrop" onClick={() => setShowModal(false)} ></div> : null}
+            { showOrderModal ? <div className="Backdrop" onClick={() => setShowOrderModal(false)} ></div> : null}
             
             <div className="OrderModal"
                 style={{
-                    transform: showModal ? 'translateY(0)' : 'translateY(-100vh)',
-                    opacity: showModal ? '1' : '0'
+                    transform: showOrderModal ? 'translateY(0)' : 'translateY(-100vh)',
+                    opacity: showOrderModal ? '1' : '0'
                 }}>
 
-                <OrderCard/>
+                    
+                <span onClick={()=> setShowOrderModal(false)}>
+                    <CancelIcon />
+                </span>
+
+               {Order? <OrderCard order={OrderModal} /> :  <CircularProgress disableShrink />}
             </div>
         </AUX>)
 }

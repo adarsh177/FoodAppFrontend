@@ -7,6 +7,9 @@
     display: flex;
     align-items: center;
 }
+.detailsContainer a {
+    text-decoration: none;
+}
 .notificationButton {
     margin-right: 20px;
     padding: 10px 20px;

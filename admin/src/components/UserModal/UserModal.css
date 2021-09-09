@@ -6,12 +6,21 @@
     box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.253);
     padding: 1rem;
     border-radius: 8px;
-    height: 70%;
-    top: 20%;
-    left: 30%;
+    height: 75%;
+    width: 70%;
+    top: 15%;
+    left: 15%;
     box-sizing: border-box;
-    transition: all 0.1s ease-out;
+    transition: all 0.4s ease-out;
     /* overflow: auto; */
+}
+
+.UserModal > span > svg {
+    position: absolute;
+    right: -1.4rem;
+    top: -1.4rem;
+   font-size: 2rem;
+   color: rgba(0, 0, 0, 0.767);
 }
 
 .Backdrop{
@@ -23,4 +32,44 @@
     top: 0;
     background-color: black;
     opacity: 0.5;
+}
+
+@media screen and (max-width: 1200px) {
+    .UserModal {
+        height: 80%;
+        top: 10%;
+        width: 70%;
+        left: 15%;
+    }
+}
+@media screen and (max-width: 540px) {
+    .UserModal {
+        height: 80%;
+        top: 10%;
+        width: 85%;
+        left: 7.5%;
+    }
+}
+@media screen and (max-width: 360px) {
+    .UserModal {
+        width: 90%;
+        left: 5%;
+    }
+
+    @media screen and (max-width: 360px) {
+        .OrderModal {
+            left: 5%;
+            width: 90%;
+        }
+    
+        
+    .UserModal > span > svg {
+        position: absolute;
+        right: 50%;
+        transform: translateX(50%);
+        top: -2rem;
+       font-size: 2.5rem;
+    }
+    
+    }
 }

@@ -1,29 +1,58 @@
-.serachContainer {
+.nav-container .serachContainer {
     display: flex;
+    align-items: center;
     justify-content: center;
+    width: 70%;
+    margin: 0 auto;
 }
 
-.searchBar {
+.nav-container .searchBar {
     width: 80%;
     height: 2rem;
 }
-.searchButton {
+
+.nav-container .searchButton {
     background-color: #00b875;
     color: #fff;
     margin: 0 10px;
 }
-.userDetailContainer {
-    border-top: 1px solid grey;
-    margin: 30px 0;
-}
-.userOrderDetails {
+
+.nav-container .userOrderDetails {
     display: flex;
     align-items: center;
     width: 100%;
 }
-.notificationButton {
+
+.nav-container .notificationButton {
     color: #fff;
     background-color: #00b875;
     padding: 10px 20px;
     margin: 0 20px;
+}
+
+.nav-container .main .MuiAppBar-colorPrimary {
+    background-color: #00b875;
+}
+
+.nav-container .main > header.MuiAppBar-root {
+    margin: 2rem auto;
+    width: 50%;
+    display: block;
+}
+
+.nav-container header .MuiTabs-scroller.MuiTabs-fixed {
+    display: flex;
+    justify-content: center;
+}
+
+@media screen and (max-width: 1200px) {
+    .nav-container .main >  header.MuiAppBar-root {
+        width: 70%;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .nav-container .main >  header.MuiAppBar-root {
+        width: 100%;
+    }
 }

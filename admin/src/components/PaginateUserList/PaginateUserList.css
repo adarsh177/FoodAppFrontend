@@ -1,0 +1,84 @@
+.PaginateUserList {
+    margin-top: 2rem;
+    position: relative;
+    box-sizing: border-box;
+    padding: 0 2rem;
+}
+
+.Country_Filter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    padding: 0 2rem;
+    border-radius: 7px;
+    margin: 3rem auto;
+    height: 5rem;
+    border: 1px solid black;
+    align-items: center;
+    box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.153);
+}
+
+.Country_Filter:hover {
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.Country_Filter .MuiBottomNavigationAction-root.Mui-selected {
+    color: black;
+}
+
+.Country_Filter .MuiBottomNavigationAction-root, .Country_Filter img {
+    width: 2rem;
+    height: 2rem;
+    margin: 0.6rem 0;
+}
+
+.Country_Filter img:hover {
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.PaginateUserList .Pagination {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+
+.PaginateUserList .Pagination div.MuiTablePagination-root {
+    width: fit-content;
+    background-color: rgba(109, 109, 109, 0.205);
+    display: flex;
+    justify-content: center;
+}
+
+.PaginateUserList .USERLIST {
+    margin-top: 2rem;
+}
+
+@media screen and (max-width: 760px) {
+    .PaginateUserList .Pagination {
+        justify-content: center;
+    }
+}
+@media screen and (max-width: 540px) {
+
+    .PaginateUserList .Pagination div.MuiTablePagination-root {
+        width: 100%;
+    }
+}
+@media screen and (max-width: 460px) {
+    .PaginateUserList {
+        padding: 0 0.5rem;
+    }
+    
+   
+}
+@media screen and (max-width: 420px) {
+    .PaginateUserList {
+        font-size: 0.9rem;
+    }
+    .PaginateUserList .Pagination p.MuiTypography-root:first-of-type{
+        display: none;
+    }
+   
+}
+

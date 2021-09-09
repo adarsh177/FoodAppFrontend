@@ -7,6 +7,13 @@
     cursor: pointer;
 }
 
+.SingleOrderHistory .OrderHis_Left {
+    width: 80%;
+}
+.SingleOrderHistory .OrderHis_Left h3{
+    word-wrap: break-word;
+    width: 100%;
+}
 .SingleOrderHistory .OrderHis_Left p {
     color: grey;
     font-size: 0.8rem;
