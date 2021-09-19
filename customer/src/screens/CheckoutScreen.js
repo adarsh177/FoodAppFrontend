@@ -103,7 +103,8 @@ function CheckoutScreen(props) {
         promoValue ??
         Dinero({amount: 0, currency: totalBaseValue.currency}).toJSON(),
       finalValue: GetGrandTotal().toJSON(),
-      status: 'PENDING',
+      status: 'UNPAID', // UNPAID
+      useWallet: false, 
     };
 
     PostOrder(data)
